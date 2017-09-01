@@ -13,6 +13,8 @@
 
 </head>
 <body>
-	<h4><?php echo "Hello there!"; ?></h4>
+	<h4><?php echo "Hello there!!"; ?></h4>
+	<p>Base url: <?php echo base_url(); ?></p>
+	<p>Site url: <?php echo site_url(); ?></p>
 </body>
 </html>
