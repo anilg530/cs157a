@@ -1,7 +1,4 @@
-<?php
-
-if (!defined('BASEPATH'))
-	exit('No direct script access allowed');
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Default extends CI_Controller {
 
