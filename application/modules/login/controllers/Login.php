@@ -21,9 +21,11 @@ class Login extends CI_Controller {
 	function login_submit() {
 		$this->session->set_userdata('username', $_POST['username']);
 		$this->load->view('login/login_page');
-		echo "<pre>";
-		print_r($_POST);
-		echo "</pre>";
+		$post_output =
+		"<pre>"
+		.print_r($_POST, true).
+		"</pre>";
+		$this->output->append_output($post_output);
 	}
 
 	function logout() {
