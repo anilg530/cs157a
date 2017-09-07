@@ -12,7 +12,7 @@
 	<meta name="author" content="#" />
 	<link rel="icon" type="image/x-icon" href="#">
 
-	<title>Filehub Login Page</title>
+	<title>jennifer test page</title>
 	<?php include 'application/modules/common/views/top.php'; ?>
 </head>
 <body>
