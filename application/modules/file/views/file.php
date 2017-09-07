@@ -1,4 +1,3 @@
-
 <?php 
 ?>
 <!DOCTYPE html>
@@ -12,24 +11,16 @@
 	<meta name="author" content="#" />
 	<link rel="icon" type="image/x-icon" href="#">
 
-	<title>jennifer test page</title>
+	<title>File Browser</title>
 	<?php include 'application/modules/common/views/top.php'; ?>
 </head>
 <body>
 
-<div class="row">
-	<div class="col-xs-12">
-		<h4><?php echo "hi"; ?></h4>
+	<div class="row">
+		<div class="col-xs-12">
+			<h4><?php echo "hi"; ?></h4>
+		</div>
 	</div>
-</div>
-
-<div class="row">
-	<div class="col-xs-12">
-		<pre>
-		<?php print_r($extra_data); ?>
-		</pre>
-	</div>
-</div>
 
 	<?php include 'application/modules/common/views/bottom.php'; ?>
 </body>
