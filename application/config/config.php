@@ -24,7 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 $config['base_url'] = 'http://cs157a.bakatrinh.com/';
-
+$config['public_upload_path'] = '/home/myluovadev/public_html/demodev/uploads/';
 /*
 |--------------------------------------------------------------------------
 | Index File

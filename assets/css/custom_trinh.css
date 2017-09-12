@@ -47,3 +47,16 @@ html, body {
 	vertical-align: middle;
 	font: 16px/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+
+.dropzone .dz-preview .dz-error-message {
+	top: 150px !important;
+}
+
+.custom-dropzone {
+	min-height: 0px !important;
+	padding: 0px 0px 0px 0px !important;
+	border-style: dotted;
+	border-color: #3fa7cc;
+	border-width: 3px;
+	margin: 5px;
+}

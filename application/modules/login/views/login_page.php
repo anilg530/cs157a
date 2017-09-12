@@ -19,6 +19,7 @@ if ($is_logged_in_check) {
 	<?php include 'application/modules/common/views/top.php'; ?>
 </head>
 <body>
+	<?php include 'application/modules/common/views/menu.php'; ?>
 
 	<div class="vertical-center-70">
 		<div class="vertical-center-container">

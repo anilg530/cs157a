@@ -10,6 +10,7 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/third_party/font-awesome-4.7.0/css/font-awesome.min.css');?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/third_party/sweetalert/sweetalert.css');?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/third_party/toastr-2.1.3/toastr.min.css');?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/third_party/dropzone-5.0.0/dropzone.css');?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/css/custom_trinh.css');?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/css/custom_anil.css');?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/css/custom_jennifer.css');?>" />

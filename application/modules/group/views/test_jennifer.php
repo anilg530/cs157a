@@ -16,6 +16,7 @@
 	<?php include 'application/modules/common/views/top.php'; ?>
 </head>
 <body>
+<?php include 'application/modules/common/views/menu.php'; ?>
 
 <div class="row">
 	<div class="col-xs-12">

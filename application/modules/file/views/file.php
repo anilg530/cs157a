@@ -18,7 +18,7 @@
 
 	<div class="row">
 		<div class="col-xs-12">
-			<h4><?php echo "hi"; ?></h4>
+			<a href="<?php echo site_url('file/group_files/1') ?>">File Browser for Group 1</a>
 		</div>
 	</div>
 
