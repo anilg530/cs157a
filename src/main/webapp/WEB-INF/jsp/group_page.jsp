@@ -8,7 +8,7 @@
     <meta name="description" content="#"/>
     <meta name="author" content="#"/>
     <link rel="icon" type="image/x-icon" href="#"/>
-    <title>Our Title</title>
+    <title>${page_name}</title>
 
     <jsp:include page="common/top.jsp"/>
 </head>
