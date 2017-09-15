@@ -7,30 +7,29 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("group")
 public class GroupController {
 
-    @RequestMapping
+    @RequestMapping("group")
     public String main(Model model) {
         System.out.println("hi there"+ UUID.randomUUID());
         model.addAttribute("page_name", "Group Page 01");
         return "group_page";
     }
 
-    @RequestMapping("/create_group")
+    @RequestMapping("group/create_group")
     public String createGroup(Model model) {
         model.addAttribute("page_name", "Create Group");
         return "group_page";
     }
 
-    @RequestMapping("/add")
+    @RequestMapping("group/add")
     public String createGroupTest(Model model) {
         model.addAttribute("page_name", "Create Group Test");
         GroupModel.insertGroupTest();
         return "group_page";
     }
 
-    @RequestMapping("/all")
+    @RequestMapping("group/all")
     public String listGroups(Model model) {
         ArrayList<Groups> allGroup = GroupModel.getAllGroup();
         for (Groups e : allGroup) {

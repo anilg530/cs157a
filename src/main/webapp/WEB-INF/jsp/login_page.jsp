@@ -1,9 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<head th:replace="fragments/top :: top"></head>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="#"/>
+    <meta name="author" content="#"/>
+    <link rel="icon" type="image/x-icon" href="#"/>
+    <title>Our Title</title>
+
+    <jsp:include page="common/top.jsp"/>
+</head>
 <body>
 
-<nav th:replace="fragments/navigation :: navigation"></nav>
+<jsp:include page="common/navigation.jsp"/>
+
 
 <div class="vertical-center-70">
     <div class="vertical-center-container">
@@ -35,6 +47,6 @@
     </div>
 </div>
 
-<div th:replace="fragments/bottom :: bottom"></div>
+<jsp:include page="common/bottom.jsp" />
 </body>
 </html>
