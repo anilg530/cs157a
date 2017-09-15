@@ -3,7 +3,10 @@ package filehub.demo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.UUID;
 
 @Controller
@@ -11,7 +14,7 @@ public class GroupController {
 
     @RequestMapping("group")
     public String main(Model model) {
-        System.out.println("hi there"+ UUID.randomUUID());
+        System.out.println("Timestamp: "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()));
         model.addAttribute("page_name", "Group Page 01");
         return "group_page";
     }
