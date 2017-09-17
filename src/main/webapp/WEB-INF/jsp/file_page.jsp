@@ -1,3 +1,7 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="x" uri="http://java.sun.com/jsp/jstl/xml" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,6 +21,12 @@
 <jsp:include page="common/navigation.jsp"/>
 
 <a href="/file/view/1">Browse Files</a>
+<br>
+<% if (session.getAttribute("username") == null) { %>
+<p>no username session</p>
+<% } else {%>
+<p>${sessionScope.username}</p>
+<% } %>
 
 <jsp:include page="common/bottom.jsp" />
 </body>

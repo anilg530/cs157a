@@ -11,7 +11,6 @@ import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-@Scope("session")
 @Controller
 public class FileController {
 

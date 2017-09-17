@@ -1,3 +1,7 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="x" uri="http://java.sun.com/jsp/jstl/xml" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,11 +22,11 @@
 
 
 <div class="row">
-    <div class="col-xs-12">
-        <h3>this is group page</h3>
+    <div class="col-sm-offset-1 col-xs-10">
+        <a class="btn btn-default" href="/group/create_group">Create a Group</a>
     </div>
 </div>
 
-<jsp:include page="common/bottom.jsp" />
+<jsp:include page="common/bottom.jsp"/>
 </body>
 </html>
