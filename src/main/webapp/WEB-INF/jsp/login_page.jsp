@@ -1,3 +1,7 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="x" uri="http://java.sun.com/jsp/jstl/xml" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,9 +23,16 @@
 
 <div class="vertical-center-70">
     <div class="vertical-center-container">
+        <c:if test="${not empty username}">
+            <div class="row">
+                <div class="col-xs-offset-1 col-xs-10 col-sm-offset-4 col-sm-4 col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-3">
+                    <h4>You are logged in as: ${username}</h4>
+                </div>
+            </div>
+        </c:if>
         <div class="row">
             <div class="col-xs-offset-1 col-xs-10 col-sm-offset-4 col-sm-4 col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-3">
-                <form action="#" method="post" accept-charset="utf-8">
+                <form action="/" method="post" accept-charset="utf-8">
                     <div class="form-group">
                         <label class="control-label">Username</label>
                         <input type="email" class="form-control" name="username" value="" placeholder="email"
@@ -30,7 +41,7 @@
                     </div>
                     <div class="form-group">
                         <label class="control-label">Password</label>
-                        <input type="text" class="form-control" name="password" value="" placeholder="password"
+                        <input type="password" class="form-control" name="password" value="" placeholder="password"
                                autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
                                required="true"/>
                     </div>
@@ -47,6 +58,6 @@
     </div>
 </div>
 
-<jsp:include page="common/bottom.jsp" />
+<jsp:include page="common/bottom.jsp"/>
 </body>
 </html>
