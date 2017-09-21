@@ -1,5 +1,6 @@
 package filehub.demo;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -10,8 +11,8 @@ public class FileModel {
     static final String USER = "cs157a_main";
     static final String PASS = "cs157a_db";
 
-    public static ArrayList<Groups> isInGroup() {
-        ArrayList<Groups> returnGroup = new ArrayList<>();
+    public static boolean isInGroup(int user_id, int group_id) {
+        boolean returnBoolean = false;
         Connection conn = null;
         Statement stmt = null;
         try {
@@ -21,38 +22,26 @@ public class FileModel {
 
             stmt = conn.createStatement();
             String myQuery;
-            myQuery = "SELECT * FROM groups";
-            ResultSet allGroup = stmt.executeQuery(myQuery);
-
-            if (allGroup != null) {
-                try {
-                    while (allGroup.next()) {
-                        int id = allGroup.getInt("id");
-                        String group_name = allGroup.getString("group_name");
-                        int group_owner = allGroup.getInt("group_owner");
-                        String group_password = allGroup.getString("group_password");
-                        String group_status = allGroup.getString("group_status");
-                        String created_on = allGroup.getString("created_on");
-                        System.out.println(created_on);
-                        returnGroup.add(new Groups(id, group_name, group_owner, group_password, group_status, created_on));
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
+            myQuery = "SELECT * FROM group_members WHERE (user_id='" + user_id + "' AND group_id='" + group_id + "')";
+            ResultSet sqlResult = stmt.executeQuery(myQuery);
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    returnBoolean = true;
+                } else {
+                    returnBoolean = false;
                 }
+                sqlResult.close();
             }
-
-            stmt.close();
-            conn.close();
-            allGroup.close();
-            return returnGroup;
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null)
+                if (stmt != null) {
                     stmt.close();
+                }
+                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -62,41 +51,27 @@ public class FileModel {
                 se.printStackTrace();
             }
         }
-        return null;
+        return returnBoolean;
     }
 
-    public static void insertGroupTest() {
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            Class.forName(JDBC_DRIVER).newInstance();
+    public static ArrayList<String> getDirectory(String key) {
+        ArrayList<String> returnArray = new ArrayList<>();
+        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+        File theDir = new File("group_files/"+key);
 
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+        if (!theDir.exists()) {
+            System.out.println("creating directory: " + theDir.getName());
+            boolean result = false;
 
-            stmt = conn.createStatement();
-            String myQuery;
-            myQuery = "INSERT INTO groups (group_name, group_owner, group_password, group_status) " +
-                    "VALUES ('chicken', 3, 'frog', 'Active');";
-            stmt.executeUpdate(myQuery);
-
-            stmt.close();
-            conn.close();
-        } catch (SQLException se) {
-            se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
             try {
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException se2) {
+                theDir.mkdir();
+                result = true;
+            } catch (SecurityException se) {
             }
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException se) {
-                se.printStackTrace();
+            if (result) {
+                System.out.println("DIR created");
             }
         }
+        return returnArray;
     }
 }

@@ -20,27 +20,17 @@
 
 <jsp:include page="common/navigation.jsp"/>
 
-<div class="row">
-    <div class="col-xs-12">
-        <div id="root_html">
-            <div class="row">
-                <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
-                    <div id="includes_files_table_html">
-                        <jsp:include page="includes_files_table.jsp"/>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
-                    <div id="includes_drag_drop_file_html">
-                        <jsp:include page="includes_drag_drop_file.jsp"/>
-                    </div>
-                </div>
+
+<div class="vertical-center-70">
+    <div class="vertical-center-container">
+        <div class="row">
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-4 col-sm-4 col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-3">
+                <h4>You are not logged in. Please <a href="/">log in</a> to continue</h4>
             </div>
         </div>
     </div>
 </div>
 
-<jsp:include page="common/bottom.jsp" />
+<jsp:include page="common/bottom.jsp"/>
 </body>
 </html>
