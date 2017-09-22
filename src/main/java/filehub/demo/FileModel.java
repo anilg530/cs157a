@@ -3,6 +3,9 @@ package filehub.demo;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class FileModel {
 
@@ -56,22 +59,27 @@ public class FileModel {
 
     public static ArrayList<String> getDirectory(String key) {
         ArrayList<String> returnArray = new ArrayList<>();
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
-        File theDir = new File("group_files/"+key);
+        //System.out.println("Working Directory = " + System.getProperty("user.dir"));
+        String baseDIR = System.getProperty("user.dir");
+        String groupDIR = baseDIR + key;
+        File workingDIR = new File(groupDIR);
 
-        if (!theDir.exists()) {
-            System.out.println("creating directory: " + theDir.getName());
-            boolean result = false;
-
+        if (!workingDIR.exists()) {
+            //System.out.println("creating directory: " + theDir.getName());
+            //boolean result = false;
             try {
-                theDir.mkdir();
-                result = true;
+                workingDIR.mkdirs();
             } catch (SecurityException se) {
             }
-            if (result) {
-                System.out.println("DIR created");
+        }
+        ArrayList<File> files = new ArrayList<>(Arrays.asList(workingDIR.listFiles()));
+        for (File file : files) {
+            if (file.isDirectory()) {
+                returnArray.add(file.getName());
             }
         }
+        //returnArray = new ArrayList<>(Arrays.asList(workingDIR.list()));
+        Collections.sort(returnArray, (s1, s2) -> s1.compareToIgnoreCase(s2));
         return returnArray;
     }
 }
