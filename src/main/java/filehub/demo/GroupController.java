@@ -27,6 +27,7 @@ public class GroupController {
 
     @RequestMapping("group/create_group")
     public String createGroup(HttpServletRequest request, HttpSession session, Model model) {
+
         if (request.getMethod().equals("POST")) {
             String group_name = request.getParameter("group_name");
             String group_password = request.getParameter("group_password");
@@ -35,6 +36,11 @@ public class GroupController {
             model.addAttribute("group_name", group_name);
             // code to check if group is not already on DB goes here.
             // if group doesn't already exist, add it to DB
+            if(GroupModel.checkGroupExit(group_name)==0){
+                GroupModel.insertGroupTest();
+            }
+
+           // int user_id = (int) session.getAttribute("username");
         }
         model.addAttribute("page_name", "Create Group");
         return "group_create";
