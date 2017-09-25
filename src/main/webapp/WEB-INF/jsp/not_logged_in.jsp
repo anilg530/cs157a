@@ -21,9 +21,13 @@
 <jsp:include page="common/navigation.jsp"/>
 
 
-<div class="row">
-    <div class="col-sm-offset-1 col-xs-10">
-        <a class="btn btn-default" href="/group/create_group">Create a Group</a>
+<div class="vertical-center-70">
+    <div class="vertical-center-container">
+        <div class="row">
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-4 col-sm-4 col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-3">
+                <h4>You are not logged in. Please <a href="/">log in</a> to continue</h4>
+            </div>
+        </div>
     </div>
 </div>
 

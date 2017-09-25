@@ -23,36 +23,27 @@
 
 <div class="vertical-center-70">
     <div class="vertical-center-container">
-        <c:if test="${not empty username}">
-            <div class="row">
-                <div class="col-xs-offset-1 col-xs-10 col-sm-offset-4 col-sm-4 col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-3">
-                    <h4>You are logged in as: ${username}</h4>
-                </div>
-            </div>
-        </c:if>
         <div class="row">
             <div class="col-xs-offset-1 col-xs-10 col-sm-offset-4 col-sm-4 col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-3">
-                <form action="/" method="post" accept-charset="utf-8">
+                <p>Enter the following information to create your group:</p>
+                <hr>
+                <form action="/group/create_group" method="post" accept-charset="utf-8">
                     <div class="form-group">
-                        <label class="control-label">Username</label>
-                        <input type="email" class="form-control" name="username" value="" placeholder="email"
+                        <label class="control-label">Group Name</label>
+                        <input type="text" class="form-control" name="group_name" value="" placeholder="group name"
                                autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
                                autofocus="true" required="true"/>
                     </div>
                     <div class="form-group">
-                        <label class="control-label">Password</label>
-                        <input type="password" class="form-control" name="password" value="" placeholder="password"
+                        <label class="control-label">Group Password</label>
+                        <input type="text" class="form-control" name="group_password" value="" placeholder="group password"
                                autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
                                required="true"/>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-block">Log In</button>
+                        <button type="submit" class="btn btn-success btn-block">Create Group</button>
                     </div>
                 </form>
-                <div>
-                    <a class="pull-left white" href="#">Sign Up</a>
-                    <a class="pull-right white" href="#">Forgot your password?</a>
-                </div>
             </div>
         </div>
     </div>
