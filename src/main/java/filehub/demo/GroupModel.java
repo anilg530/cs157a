@@ -65,9 +65,11 @@ public class GroupModel {
         return null;
     }
 
+
     public static void insertGroupTest() {
         Connection conn = null;
         Statement stmt = null;
+
         try {
             Class.forName(JDBC_DRIVER).newInstance();
 
@@ -100,6 +102,51 @@ public class GroupModel {
         }
     }
 
+    public static int checkGroupExit(String groupName){
+        Connection conn = null;
+        Statement stmt = null;
+        int found = 0;
+
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = conn.createStatement();
+
+            String myQuery = "SELECT EXISTS (SELECT * FROM  groups WHERE group_name="+"'"+groupName+"')";
+
+            ResultSet re = stmt.executeQuery(myQuery);
+
+            while(re.next()){
+                found = re.getInt(1);
+            }
+
+            stmt.close();
+            conn.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return found;
+    }
     public static void testSQLConnectionWorking() {
         Connection connection = null;
         try {

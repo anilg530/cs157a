@@ -25,7 +25,6 @@ public class GroupController {
     @RequestMapping("group/add")
     public String createGroupTest(Model model) {
         model.addAttribute("page_name", "Create Group Test");
-        GroupModel.insertGroupTest();
         return "group_page";
     }
 
