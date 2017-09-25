@@ -20,13 +20,14 @@
 
 <jsp:include page="common/navigation.jsp"/>
 
+<a href="/file/view/1">Browse Files</a>
+<br>
+<% if (session.getAttribute("username") == null) { %>
+<p>no username session</p>
+<% } else {%>
+<p>${sessionScope.username}</p>
+<% } %>
 
-<div class="row">
-    <div class="col-sm-offset-1 col-xs-10">
-        <a class="btn btn-default" href="/group/create_group">Create a Group</a>
-    </div>
-</div>
-
-<jsp:include page="common/bottom.jsp"/>
+<jsp:include page="common/bottom.jsp" />
 </body>
 </html>
