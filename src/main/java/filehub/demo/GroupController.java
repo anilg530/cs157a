@@ -36,11 +36,12 @@ public class GroupController {
             model.addAttribute("group_name", group_name);
             // code to check if group is not already on DB goes here.
             // if group doesn't already exist, add it to DB
+            int user_id = (int) session.getAttribute("user_id");
             if(GroupModel.checkGroupExit(group_name)==0){
-                GroupModel.insertGroupTest();
+                GroupModel.insertGroup(group_name, user_id, group_password);
             }
 
-           // int user_id = (int) session.getAttribute("username");
+
         }
         model.addAttribute("page_name", "Create Group");
         return "group_create";
