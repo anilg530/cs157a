@@ -66,7 +66,7 @@ public class GroupModel {
     }
 
 
-    public static void insertGroupTest() {
+    public static void insertGroup(String groupName, int groupOwner, String groupPassword) {
         Connection conn = null;
         Statement stmt = null;
 
@@ -78,7 +78,7 @@ public class GroupModel {
             stmt = conn.createStatement();
             String myQuery;
             myQuery = "INSERT INTO groups (group_name, group_owner, group_password, group_status) " +
-                    "VALUES ('chicken', 3, 'frog', 'Active');";
+                    "VALUES ('"+groupName+"', "+groupOwner+", '"+groupPassword+"', 'Active');";
             stmt.executeUpdate(myQuery);
 
             stmt.close();
