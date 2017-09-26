@@ -16,7 +16,6 @@ public class GroupController {
         return "group_page";
     }
 
-    @RequestMapping("group/create_group")
     public String createGroup(Model model) {
         model.addAttribute("page_name", "Create Group");
         return "group_page";
