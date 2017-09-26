@@ -3,6 +3,7 @@ package filehub.demo;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
@@ -13,30 +14,32 @@ import java.util.Calendar;
 @Scope("session")
 @Controller
 public class FileController {
+
     @RequestMapping("file")
-    public String main(HttpServletRequest request, Model model) {
-        request.getSession().setAttribute("user_id", 1);
-        request.getSession().setAttribute("username", "bakatrinh@gmail.com");
+    public String main(Model model) {
         System.out.println("Timestamp: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()));
         model.addAttribute("page_name", "File Test Page");
         return "file_page";
     }
 
     @RequestMapping(value = "file/view/{id}")
-    public String file_browser(@PathVariable("id") int group_id, HttpServletRequest request, HttpSession session, Model model) {
-        if (request.getSession() == null || session.getAttribute("user_id") == null) {
-            return "not_logged_in";
-        }
-        int user_id = (int) session.getAttribute("user_id");
+    public String file_browser(@PathVariable("id") int id, ModelMap model) {
         model.addAttribute("page_name", "File Browser");
-        boolean isInGroup = FileModel.isInGroup(user_id, 1);
-        if (isInGroup) {
-            FileModel.getDirectory(Integer.toString(group_id));
-            System.out.println("in group!");
-            return "file_browser";
-        } else {
-            System.out.println("not in group!");
-            return "file_browser_error";
-        }
+        return "file_browser";
+    }
+
+    @RequestMapping(value = "file/test1")
+    public String test1(HttpServletRequest request, ModelMap model) {
+        request.getSession().setAttribute("cart","this is a session");
+        model.addAttribute("page_name", "Test1");
+        return "file_browser";
+    }
+
+    @RequestMapping(value = "file/test2")
+    public String test2(HttpSession session, ModelMap model) {
+        String tempString = (String) session.getAttribute("cart");
+        System.out.println(tempString);
+        model.addAttribute("page_name", "Test2");
+        return "file_browser";
     }
 }
