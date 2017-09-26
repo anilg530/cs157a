@@ -1,4 +1,4 @@
-<%@ page import="java.util.ArrayList" %><%--<?php--%>
+<%--<?php--%>
 <%--$root_path = $this->file_model->get_root_dir();--%>
 <%--//$get_files = $this->file_model->user_file_upload_get_files($uuid, $current_path);--%>
 <%--$folders_list_array = $this->file_model->get_folder_list($current_path);--%>
@@ -30,23 +30,9 @@
             </thead>
 
             <tbody>
-            <%
-                ArrayList<String> folderList = (ArrayList<String>) request.getAttribute("folderList");
-
-                for (String folderName : folderList) {
-            %>
             <tr>
-                <td><%=folderName%>
-                </td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td colspan="6"><span>files goes here</span></td>
             </tr>
-            <%
-                }
-            %>
             </tbody>
         </table>
     </div>

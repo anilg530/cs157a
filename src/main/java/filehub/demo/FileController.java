@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 @Controller
@@ -16,7 +15,7 @@ public class FileController {
     public String main(HttpServletRequest request, Model model) {
         request.getSession().setAttribute("user_id", 1);
         request.getSession().setAttribute("username", "bakatrinh@gmail.com");
-        //System.out.println("Timestamp: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()));
+        System.out.println("Timestamp: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()));
         model.addAttribute("page_name", "File Test Page");
         return "file_page";
     }
@@ -28,17 +27,13 @@ public class FileController {
         }
         int user_id = (int) session.getAttribute("user_id");
         model.addAttribute("page_name", "File Browser");
-        String folderKey = "/group_files/" + group_id;
-        boolean isInGroup = FileModel.isInGroup(user_id, group_id);
+        boolean isInGroup = FileModel.isInGroup(user_id, 1);
         if (isInGroup) {
-            request.getSession().setAttribute("folderKey", folderKey);
-            request.getSession().setAttribute("group_id", group_id);
-            ArrayList<String> folderList = FileModel.getDirectory(folderKey);
-            model.addAttribute("folderList", folderList);
-            model.addAttribute("folderKey", folderKey);
-            model.addAttribute("group_id", group_id);
+            FileModel.getDirectory(Integer.toString(group_id));
+            System.out.println("in group!");
             return "file_browser";
         } else {
+            System.out.println("not in group!");
             return "file_browser_error";
         }
     }
