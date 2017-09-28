@@ -42,5 +42,6 @@
 </div>
 
 <jsp:include page="common/bottom.jsp" />
+<script src="/assets/js/file.js"></script>
 </body>
 </html>

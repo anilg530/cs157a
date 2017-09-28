@@ -4,9 +4,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 @Controller
@@ -15,7 +17,7 @@ public class FileController {
     public String main(HttpServletRequest request, Model model) {
         request.getSession().setAttribute("user_id", 1);
         request.getSession().setAttribute("username", "bakatrinh@gmail.com");
-        System.out.println("Timestamp: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()));
+        //System.out.println("Timestamp: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()));
         model.addAttribute("page_name", "File Test Page");
         return "file_page";
     }
@@ -27,13 +29,18 @@ public class FileController {
         }
         int user_id = (int) session.getAttribute("user_id");
         model.addAttribute("page_name", "File Browser");
-        boolean isInGroup = FileModel.isInGroup(user_id, 1);
+        boolean isInGroup = FileModel.isInGroup(user_id, group_id);
         if (isInGroup) {
-            FileModel.getDirectory(Integer.toString(group_id));
-            System.out.println("in group!");
+            String current_path = "group_files/" + Integer.toString(group_id);
+            request.getSession().setAttribute("group_id", group_id);
+            request.getSession().setAttribute("root_dir", current_path);
+            ArrayList<String> folder_directory = FileModel.getDirectory(current_path);
+            request.getSession().setAttribute("current_path", current_path);
+            model.addAttribute("folder_directory", folder_directory);
+            // in group
             return "file_browser";
         } else {
-            System.out.println("not in group!");
+            // not in group
             return "file_browser_error";
         }
     }

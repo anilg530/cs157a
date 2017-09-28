@@ -26,7 +26,7 @@ $(document).ready(function() {
 			}
 		});
 		},
-		url: location.protocol+'//'+window.location.hostname+'/index.php/file/group_files_upload/',
+		url: location.protocol+'//'+window.location.hostname+'/file/group_files_upload/',
 		paramName: 'fileToUpload',
 		parallelUploads: 1,
 		maxFilesize: 2,
@@ -34,8 +34,9 @@ $(document).ready(function() {
 		dictRemoveFile: 'Clear',
 		acceptedFiles: 'image/jpeg,image/png,image/gif,application/pdf,.jpeg,.jpg,.png,.gif,.csv,.xls,.xlsx,.doc,.docx,.pdf,.txt',
 		accept: function(file, done) {
-			luova_user_file_upload_file_exist_check(file, done);
+			group_file_upload_file_exist_check(file, done);
 		}
 	};
 
+    $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
 });
