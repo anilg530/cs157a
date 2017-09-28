@@ -68,3 +68,11 @@ html, body {
 .vertical-align-middle {
     vertical-align: middle !important;
 }
+
+.sweet-alert button.cancel {
+    background-color: #3fa7cc;
+}
+
+.sweet-alert button.cancel:hover {
+    background-color: #0f8dcc;
+}

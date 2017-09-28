@@ -1,15 +1,16 @@
 package filehub.demo;
 
+import com.google.gson.Gson;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.HashMap;
 
 @Controller
 public class FileController {
@@ -43,5 +44,21 @@ public class FileController {
             // not in group
             return "file_browser_error";
         }
+    }
+
+    @RequestMapping(value = {"/", "file/ajax_test"})
+    @ResponseBody
+    public String ajax_test(HttpServletRequest request, HttpSession session, Model model) {
+        if (request.getMethod().equals("POST")) {
+            String test = request.getParameter("bob");
+            System.out.println(test);
+        }
+        HashMap<String, String> resultArray = new HashMap<>();
+        resultArray.put("status", "success");
+        resultArray.put("hello", "there");
+        resultArray.put("toastr", "this is a toast message");
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(resultArray));
+        return gson.toJson(resultArray);
     }
 }
