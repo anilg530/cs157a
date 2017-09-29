@@ -12,7 +12,7 @@ function file_reinitialization() {
 
             });
             this.on('queuecomplete', function (file) {
-                luova_refresh_user_file_upload();
+                filehub_refresh_files_table();
             });
             this.on('success', function (file, response) {
                 var jsonResponse = jQuery.parseJSON(response);
@@ -29,7 +29,7 @@ function file_reinitialization() {
                 }
             });
         },
-        url: location.protocol + '//' + window.location.hostname + '/file/group_files_upload/',
+        url: '/file/group_files_upload/',
         paramName: 'fileToUpload',
         parallelUploads: 1,
         maxFilesize: 2,
@@ -73,7 +73,7 @@ function ajaxTest() {
     return false;
 }
 
-function refresh_files_table() {
+function filehub_refresh_files_table() {
     $.ajax({
         type: 'GET',
         url: '/file/refresh_files_table',
@@ -81,10 +81,50 @@ function refresh_files_table() {
         beforeSend: function () {
         },
         success: function (response) {
-            console.log(response);
             $('#includes_files_table_html').html(response).promise().done(function () {
                 file_reinitialization();
                 toastr.success("Files table is refreshed", null, {'positionClass': 'toast-bottom-right'});
+            });
+        },
+        error: function (xhr, status, error) {
+            console.log(xhr.responseText);
+            internet_connectivity_swal();
+            //$('body').html(xhr.responseText);
+        }
+    });
+    return false;
+}
+
+function filehub_add_new_folder_html_ajax() {
+    $.ajax({
+        type: 'GET',
+        url: '/file/add_new_folder_html_ajax',
+        dataType: 'html',
+        beforeSend: function () {
+        },
+        success: function (response) {
+            $('#includes_files_table_header_html').html(response).promise().done(function () {
+                $('#filehub_folder_name').focus();
+            });
+        },
+        error: function (xhr, status, error) {
+            console.log(xhr.responseText);
+            internet_connectivity_swal();
+            //$('body').html(xhr.responseText);
+        }
+    });
+    return false;
+}
+
+function filehub_exit_new_folder_html_ajax() {
+    $.ajax({
+        type: 'GET',
+        url: '/file/exit_new_folder_html_ajax',
+        dataType: 'html',
+        beforeSend: function () {
+        },
+        success: function (response) {
+            $('#includes_files_table_header_html').html(response).promise().done(function () {
             });
         },
         error: function (xhr, status, error) {

@@ -24,14 +24,26 @@
     <div class="col-xs-12">
         <div id="root_html">
             <div class="row">
-                <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
+                <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <h4>My Files:</h4>
+                            </div>
+                            <div class="col-xs-6">
+                                <div id="includes_files_table_header_html" class="pull-right">
+                                    <jsp:include page="includes_files_table_header.jsp"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div id="includes_files_table_html">
                         <jsp:include page="includes_files_table.jsp"/>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
+                <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8">
                     <div id="includes_drag_drop_file_html">
                         <jsp:include page="includes_drag_drop_file.jsp"/>
                     </div>
@@ -41,7 +53,7 @@
     </div>
 </div>
 
-<jsp:include page="common/bottom.jsp" />
+<jsp:include page="common/bottom.jsp"/>
 <script src="/assets/js/file.js"></script>
 </body>
 </html>

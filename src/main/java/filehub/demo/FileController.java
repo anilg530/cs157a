@@ -70,4 +70,14 @@ public class FileController {
         model.addAttribute("folder_directory", folder_directory);
         return "includes_files_table";
     }
+
+    @RequestMapping(value = {"file/exit_new_folder_html_ajax"})
+    public String exit_new_folder_html_ajax(HttpSession session, Model model) {
+        return "includes_files_table_header";
+    }
+
+    @RequestMapping(value = {"file/add_new_folder_html_ajax"})
+    public String add_new_folder_html_ajax(HttpSession session, Model model) {
+        return "includes_files_table_header_edit";
+    }
 }

@@ -76,3 +76,7 @@ html, body {
 .sweet-alert button.cancel:hover {
     background-color: #0f8dcc;
 }
+
+.auto-width {
+    width: auto;
+}

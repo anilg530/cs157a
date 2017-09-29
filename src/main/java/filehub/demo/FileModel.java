@@ -1,14 +1,8 @@
 package filehub.demo;
 
-import org.directwebremoting.WebContext;
-import org.directwebremoting.util.SwallowingHttpServletResponse;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.StringWriter;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -218,5 +212,15 @@ public class FileModel {
             returnString = targetFormat.format(date);
         }
         return returnString;
+    }
+
+    public static boolean isAllowedAddNewFolder(int userID, int groupID) {
+        boolean returnBoolean = true;
+        return returnBoolean;
+    }
+
+    public static boolean isAllowedDeleteFolder(int userID, int groupID) {
+        boolean returnBoolean = true;
+        return returnBoolean;
     }
 }
