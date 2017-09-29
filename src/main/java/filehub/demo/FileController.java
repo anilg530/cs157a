@@ -6,7 +6,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -14,6 +13,7 @@ import java.util.HashMap;
 
 @Controller
 public class FileController {
+
     @RequestMapping("file")
     public String main(HttpServletRequest request, Model model) {
         request.getSession().setAttribute("user_id", 1);
@@ -46,7 +46,7 @@ public class FileController {
         }
     }
 
-    @RequestMapping(value = {"/", "file/ajax_test"})
+    @RequestMapping(value = {"file/ajax_test"})
     @ResponseBody
     public String ajax_test(HttpServletRequest request, HttpSession session, Model model) {
         if (request.getMethod().equals("POST")) {
@@ -57,8 +57,17 @@ public class FileController {
         resultArray.put("status", "success");
         resultArray.put("hello", "there");
         resultArray.put("toastr", "this is a toast message");
+        model.addAttribute("extra_attribute", "this is an extra attribute");
         Gson gson = new Gson();
         System.out.println(gson.toJson(resultArray));
         return gson.toJson(resultArray);
+    }
+
+    @RequestMapping(value = {"file/refresh_files_table"})
+    public String refresh_files_table(HttpSession session, Model model) {
+        String current_path = (String) session.getAttribute("current_path");
+        ArrayList<String> folder_directory = FileModel.getDirectory(current_path);
+        model.addAttribute("folder_directory", folder_directory);
+        return "includes_files_table";
     }
 }

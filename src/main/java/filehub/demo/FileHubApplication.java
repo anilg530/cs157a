@@ -11,4 +11,6 @@ public class FileHubApplication {
 		//SpringApplication.run(FileHubApplication.class, new String[]{"--debug"});
 		SpringApplication.run(FileHubApplication.class, args);
 	}
+
+
 }

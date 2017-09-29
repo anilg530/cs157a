@@ -49,7 +49,7 @@
             <tr>
                 <td class="vertical-align-middle">
                     <span id="user_file_upload_folder_rename_span_<% out.print(temp_folder_id); %>"
-                          data-attr="<% out.print(temp_folder_id); %>">
+                          class="text-nowrap" data-attr="<% out.print(temp_folder_id); %>">
                     <a href="javascript:;" class="icon-black"
                        data-attr="<% out.print(temp_folder_id); %>"
                        onclick="group_file_upload_folder_open(this);"

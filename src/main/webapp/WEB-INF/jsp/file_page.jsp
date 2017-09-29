@@ -21,15 +21,8 @@
 <jsp:include page="common/navigation.jsp"/>
 
 <a href="/file/view/1">Browse Files</a>
-<br>
-<button type="button" onclick="ajaxTest();">ajax_test</button>
-<% if (session.getAttribute("username") == null) { %>
-<p>no username session</p>
-<% } else { %>
-<p>${sessionScope.username}</p>
-<% } %>
 
-<jsp:include page="common/bottom.jsp" />
+<jsp:include page="common/bottom.jsp"/>
 <script src="/assets/js/file.js"></script>
 </body>
 </html>

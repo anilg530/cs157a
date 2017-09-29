@@ -1,5 +1,8 @@
 $(document).ready(function () {
+    file_reinitialization();
+});
 
+function file_reinitialization() {
     Dropzone.options.dropzoneFileUpload = {
         init: function () {
             this.on('addedfile', function (file) {
@@ -39,7 +42,7 @@ $(document).ready(function () {
     };
 
     $('[data-toggle="tooltip"]').tooltip({container: 'body'});
-});
+}
 
 function ajaxTest() {
     $.ajax({
@@ -50,17 +53,11 @@ function ajaxTest() {
         beforeSend: function () {
         },
         success: function (response) {
-            console.log(response);
             if (response.status == 'success') {
                 if (response.toastr) {
                     toastr.success(response.toastr, null, {'positionClass': 'toast-bottom-right'});
                 }
-                if (response.html) {
-
-                }
-                else if (response.url) {
-                    window.location.href = response.url;
-                }
+                refresh_files_table();
             }
             else if (response.error) {
                 var error_array = response.error;
@@ -76,8 +73,31 @@ function ajaxTest() {
     return false;
 }
 
+function refresh_files_table() {
+    $.ajax({
+        type: 'GET',
+        url: '/file/refresh_files_table',
+        dataType: 'html',
+        beforeSend: function () {
+        },
+        success: function (response) {
+            console.log(response);
+            $('#includes_files_table_html').html(response).promise().done(function () {
+                file_reinitialization();
+                toastr.success("Files table is refreshed", null, {'positionClass': 'toast-bottom-right'});
+            });
+        },
+        error: function (xhr, status, error) {
+            console.log(xhr.responseText);
+            internet_connectivity_swal();
+            //$('body').html(xhr.responseText);
+        }
+    });
+    return false;
+}
+
 function internet_connectivity_swal() {
-    setTimeout(function() {
+    setTimeout(function () {
         swal({
             html: true,
             title: 'Oops...',
