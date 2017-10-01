@@ -30,7 +30,7 @@ public class FileController {
         }
         int user_id = (int) session.getAttribute("user_id");
         model.addAttribute("page_name", "File Browser");
-        boolean isInGroup = FileModel.isInGroup(user_id, group_id);
+        boolean isInGroup = CommonModel.isInGroup(user_id, group_id);
         if (isInGroup) {
             String current_path = "group_files/" + Integer.toString(group_id);
             request.getSession().setAttribute("group_id", group_id);
@@ -38,7 +38,7 @@ public class FileController {
             ArrayList<String> folder_directory = FileModel.getDirectory(current_path);
             request.getSession().setAttribute("current_path", current_path);
             model.addAttribute("folder_directory", folder_directory);
-            String group_name = FileModel.getGroupName(Integer.toString(group_id));
+            String group_name = CommonModel.getGroupName(Integer.toString(group_id));
             model.addAttribute("group_name", group_name);
             // in group
             return "file_browser";

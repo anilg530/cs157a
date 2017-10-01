@@ -20,49 +20,6 @@ public class FileModel {
     static final String USER = "cs157a_main";
     static final String PASS = "cs157a_db";
 
-    public static boolean isInGroup(int user_id, int group_id) {
-        boolean returnBoolean = false;
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            Class.forName(JDBC_DRIVER).newInstance();
-
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
-
-            stmt = conn.createStatement();
-            String myQuery;
-            myQuery = "SELECT * FROM group_members WHERE (user_id='" + user_id + "' AND group_id='" + group_id + "')";
-            ResultSet sqlResult = stmt.executeQuery(myQuery);
-            if (sqlResult != null) {
-                if (sqlResult.isBeforeFirst()) {
-                    returnBoolean = true;
-                } else {
-                    returnBoolean = false;
-                }
-                sqlResult.close();
-            }
-        } catch (SQLException se) {
-            se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-                conn.close();
-            } catch (SQLException se2) {
-            }
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }
-        }
-        return returnBoolean;
-    }
-
     public static boolean isInRootDIR(HttpSession session, String currentPath) {
         boolean returnBoolean = false;
         if (session.getAttribute("root_dir") != null && session.getAttribute("root_dir").equals(currentPath)) {
@@ -142,49 +99,6 @@ public class FileModel {
         }
 
         return returnArray;
-    }
-
-    public static String getGroupName(String group_id) {
-        String returnString = "";
-        if (group_id == null || group_id.isEmpty()) {
-            return returnString;
-        }
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            Class.forName(JDBC_DRIVER).newInstance();
-
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
-
-            stmt = conn.createStatement();
-            String myQuery;
-            myQuery = "SELECT group_name FROM groups " +
-                    "WHERE (id='" + group_id + "')";
-            ResultSet sqlResult = stmt.executeQuery(myQuery);
-            if (sqlResult != null && sqlResult.next()) {
-                returnString = sqlResult.getString(1);
-                sqlResult.close();
-            }
-        } catch (SQLException se) {
-            se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-                conn.close();
-            } catch (SQLException se2) {
-            }
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }
-        }
-        return returnString;
     }
 
     public static String getTopLevelFolder(String currentPath) {
