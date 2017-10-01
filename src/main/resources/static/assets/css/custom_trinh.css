@@ -80,3 +80,43 @@ html, body {
 .auto-width {
     width: auto;
 }
+
+.padding-right-15 {
+    padding-right: 15px;
+}
+
+.flex-new-folder-row {
+    display: flex;
+    flex-flow: row;
+}
+
+.flex-new-folder-row-reverse {
+    display: flex;
+    flex-flow: row-reverse;
+}
+
+.flex-new-folder-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-new-folder-column-reverse {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.flex-new-folder-child {
+    margin: 5px !important;
+}
+
+@media all and (max-width: 640px) {
+    .flex-new-folder-row {
+        flex-direction: column;
+        margin-bottom: 5px;
+    }
+
+    .flex-new-folder-row-reverse {
+        flex-direction: column-reverse;
+        margin-bottom: 5px;
+    }
+}

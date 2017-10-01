@@ -4,12 +4,8 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 
 public class FileModel {
 
@@ -18,7 +14,7 @@ public class FileModel {
     static final String USER = "cs157a_main";
     static final String PASS = "cs157a_db";
 
-    public static boolean isInGroup(int userID, int groupID) {
+    public static boolean isInGroup(int user_id, int group_id) {
         boolean returnBoolean = false;
         Connection conn = null;
         Statement stmt = null;
@@ -29,7 +25,7 @@ public class FileModel {
 
             stmt = conn.createStatement();
             String myQuery;
-            myQuery = "SELECT * FROM group_members WHERE (user_id='" + userID + "' AND group_id='" + groupID + "')";
+            myQuery = "SELECT * FROM group_members WHERE (user_id='" + user_id + "' AND group_id='" + group_id + "')";
             ResultSet sqlResult = stmt.executeQuery(myQuery);
             if (sqlResult != null) {
                 if (sqlResult.isBeforeFirst()) {
@@ -79,8 +75,7 @@ public class FileModel {
             boolean result = false;
 
             try {
-                theDir.mkdir();
-                result = true;
+                result = theDir.mkdirs();
             } catch (SecurityException se) {
             }
             if (result) {
@@ -148,6 +143,49 @@ public class FileModel {
         return returnArray;
     }
 
+    public static String getGroupName(String group_id) {
+        String returnString = "";
+        if (group_id == null || group_id.isEmpty()) {
+            return returnString;
+        }
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT group_name FROM groups " +
+                    "WHERE (id='" + group_id + "')";
+            ResultSet sqlResult = stmt.executeQuery(myQuery);
+            if (sqlResult != null && sqlResult.next()) {
+                returnString = sqlResult.getString(1);
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnString;
+    }
+
     public static String getFullName(String user_id) {
         String returnString = "";
         if (user_id == null || user_id.isEmpty()) {
@@ -202,25 +240,125 @@ public class FileModel {
         return new File("group_files/" + currentPath).getName();
     }
 
-    public static String timeStampToFormalDate(String timestamp) throws ParseException {
-        String returnString = "";
-        if (timestamp != null && !timestamp.isEmpty()) {
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = dateFormatter.parse(timestamp);
-
-            DateFormat targetFormat = new SimpleDateFormat("EEEE, MMM d, yyyy");
-            returnString = targetFormat.format(date);
-        }
-        return returnString;
-    }
-
-    public static boolean isAllowedAddNewFolder(int userID, int groupID) {
+    public static boolean isAllowedAddNewFolder(int user_id, int group_id) {
         boolean returnBoolean = true;
         return returnBoolean;
     }
 
-    public static boolean isAllowedDeleteFolder(int userID, int groupID) {
+    public static boolean isAllowedDeleteFolder(int user_id, int group_id) {
         boolean returnBoolean = true;
+        return returnBoolean;
+    }
+
+    public static boolean isFolderAlreadyExist(HttpSession session, String new_folder_name) {
+        boolean returnBoolean = true;
+        int group_id = (int) session.getAttribute("group_id");
+        String current_path = (String) session.getAttribute("current_path");
+        String new_path = current_path + "/" + new_folder_name;
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT id FROM file_data WHERE (group_id='" + group_id + "' AND file_path='" + new_path + "' AND file_status='Active')";
+            ResultSet sqlResult = stmt.executeQuery(myQuery);
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    returnBoolean = true;
+                } else {
+                    returnBoolean = false;
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnBoolean;
+    }
+
+    public static boolean createNewFolder(HttpSession session, String new_folder_name) {
+        boolean returnBoolean = false;
+        boolean sqlInsertSuccess = false;
+        boolean mkdirSuccess = false;
+        String group_id = Integer.toString((int) session.getAttribute("group_id"));
+        String current_path = (String) session.getAttribute("current_path");
+        String file_path = current_path + "/" + new_folder_name;
+        String file_name = new_folder_name;
+        String file_status = "Active";
+        String type = "Folder";
+        String uploaded_by = Integer.toString((int) session.getAttribute("user_id"));
+
+        File theDir = new File(file_path);
+
+        if (!theDir.exists()) {
+            try {
+                mkdirSuccess = theDir.mkdirs();
+            } catch (SecurityException se) {
+            }
+        }
+
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "INSERT INTO file_data(group_id,file_name,file_path,file_status,type,uploaded_by)" +
+                    "VALUES ('" + group_id + "','" + file_name + "','" + file_path + "','" + file_status + "','" + type + "','" + uploaded_by + "')";
+            stmt.executeUpdate(myQuery, Statement.RETURN_GENERATED_KEYS);
+            ResultSet sqlResult = stmt.getGeneratedKeys();
+            if (sqlResult != null) {
+                if (sqlResult.next()) {
+                    //int insert_id = sqlResult.getInt(1);
+                    sqlInsertSuccess = true;
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        if (sqlInsertSuccess && mkdirSuccess) {
+            returnBoolean = true;
+        }
         return returnBoolean;
     }
 }

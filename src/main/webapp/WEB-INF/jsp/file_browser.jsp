@@ -28,10 +28,10 @@
                     <div class="col-xs-12">
                         <div class="row">
                             <div class="col-xs-6">
-                                <h4>My Files:</h4>
+                                <h4>Group: ${group_name}</h4>
                             </div>
                             <div class="col-xs-6">
-                                <div id="includes_files_table_header_html" class="pull-right">
+                                <div id="includes_files_table_header_html">
                                     <jsp:include page="includes_files_table_header.jsp"/>
                                 </div>
                             </div>

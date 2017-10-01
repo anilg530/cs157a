@@ -57,7 +57,7 @@ function ajaxTest() {
                 if (response.toastr) {
                     toastr.success(response.toastr, null, {'positionClass': 'toast-bottom-right'});
                 }
-                refresh_files_table();
+                filehub_refresh_files_table();
             }
             else if (response.error) {
                 var error_array = response.error;
@@ -74,21 +74,59 @@ function ajaxTest() {
 }
 
 function filehub_refresh_files_table() {
+    var backup_html = $('#client_info_html').html();
     $.ajax({
         type: 'GET',
         url: '/file/refresh_files_table',
         dataType: 'html',
         beforeSend: function () {
+            $('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>')
         },
         success: function (response) {
             $('#includes_files_table_html').html(response).promise().done(function () {
                 file_reinitialization();
+                $('.form-submit-btn').prop('disabled', false);
                 toastr.success("Files table is refreshed", null, {'positionClass': 'toast-bottom-right'});
             });
         },
         error: function (xhr, status, error) {
+            $('#includes_files_table_html').html(backup_html).promise().done(function () {
+                file_reinitialization();
+                $('.form-submit-btn').prop('disabled', false);
+                internet_connectivity_swal();
+            });
             console.log(xhr.responseText);
-            internet_connectivity_swal();
+            //$('body').html(xhr.responseText);
+        }
+    });
+    return false;
+}
+
+function filehub_refresh_files_table_and_header() {
+    var backup_html = $('#client_info_html').html();
+    $.ajax({
+        type: 'GET',
+        url: '/file/refresh_files_table',
+        dataType: 'html',
+        beforeSend: function () {
+            $('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>')
+        },
+        success: function (response) {
+            $('#includes_files_table_html').html(response).promise().done(function () {
+                filehub_exit_new_folder_html_ajax();
+                file_reinitialization();
+                $('.form-submit-btn').prop('disabled', false);
+                toastr.success("Files table is refreshed", null, {'positionClass': 'toast-bottom-right'});
+            });
+        },
+        error: function (xhr, status, error) {
+            $('#includes_files_table_html').html(backup_html).promise().done(function () {
+                filehub_exit_new_folder_html_ajax();
+                file_reinitialization();
+                $('.form-submit-btn').prop('disabled', false);
+                internet_connectivity_swal();
+            });
+            console.log(xhr.responseText);
             //$('body').html(xhr.responseText);
         }
     });
@@ -105,6 +143,21 @@ function filehub_add_new_folder_html_ajax() {
         success: function (response) {
             $('#includes_files_table_header_html').html(response).promise().done(function () {
                 $('#filehub_folder_name').focus();
+
+                $('#filehub_group_file_new_folder_form').validate({
+                    errorPlacement: function (error, element) {
+                        error.appendTo($('#filehub_group_file_new_folder_form_error'));
+                    }
+                });
+
+                $('#filehub_group_file_new_folder_form').on('submit', function(e) {
+                    e.preventDefault();
+                    var form = $(this);
+                    if (form.valid()) {
+                        filehub_group_file_new_folder_submit(form);
+                    }
+                    return false;
+                });
             });
         },
         error: function (xhr, status, error) {
@@ -134,6 +187,52 @@ function filehub_exit_new_folder_html_ajax() {
         }
     });
     return false;
+}
+
+function filehub_group_file_new_folder_submit(form) {
+    var serialized = $(form).serialize();
+    $('.form-submit-btn').prop('disabled', true);
+    $.ajax({
+        type: 'POST',
+        url: '/file/add_new_folder_submit_ajax',
+        dataType: 'json',
+        data: serialized,
+        beforeSend: function () {
+        },
+        success: function (response) {
+            if (response.status == 'success') {
+                if (response.toastr) {
+                    toastr.success(response.toastr, null, {'positionClass': 'toast-bottom-right'});
+                }
+                filehub_refresh_files_table_and_header();
+            }
+            else if (response.error) {
+                swalError(response.error);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log(xhr.responseText);
+            internet_connectivity_swal();
+            $('.form-submit-btn').prop('disabled', false);
+            //$('body').html(xhr.responseText);
+        }
+    });
+    return false;
+}
+
+function swalError(error_msg) {
+    setTimeout(function () {
+        swal({
+            html: true,
+            title: 'Oops...',
+            text: error_msg,
+            type: 'error',
+            allowOutsideClick: true,
+            showCancelButton: true,
+            showConfirmButton: false,
+            cancelButtonText: 'OK',
+        });
+    }, 200);
 }
 
 function internet_connectivity_swal() {

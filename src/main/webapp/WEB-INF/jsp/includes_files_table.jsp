@@ -1,5 +1,6 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="filehub.demo.FileModel" %>
+<%@ page import="filehub.demo.CommonModel" %>
 <%
     String current_path = (String) session.getAttribute("current_path");
     if (!FileModel.isInRootDIR(session, current_path)) {
@@ -41,7 +42,7 @@
                         if (tempFolderInfo != null && tempFolderInfo.size() > 0) {
                             String temp_folder_id = tempFolderInfo.get(1);
                             String temp_folder_name = tempFolderInfo.get(2);
-                            String uploaded_on = FileModel.timeStampToFormalDate(tempFolderInfo.get(8));
+                            String uploaded_on = CommonModel.timeStampToFormalDate(tempFolderInfo.get(8));
                             String uploaded_by = FileModel.getFullName(tempFolderInfo.get(9));
                             String notes = tempFolderInfo.get(6).replaceAll("(\r\n|\n)", "<br />");
                             String notes_by = FileModel.getFullName(tempFolderInfo.get(7));

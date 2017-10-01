@@ -6,8 +6,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -25,7 +27,7 @@ public class FileController {
 
     @RequestMapping(value = "file/view/{id}")
     public String file_browser(@PathVariable("id") int group_id, HttpServletRequest request, HttpSession session, Model model) {
-        if (request.getSession() == null || session.getAttribute("user_id") == null) {
+        if (!CommonModel.isLoggedIn(request, session)) {
             return "not_logged_in";
         }
         int user_id = (int) session.getAttribute("user_id");
@@ -38,6 +40,8 @@ public class FileController {
             ArrayList<String> folder_directory = FileModel.getDirectory(current_path);
             request.getSession().setAttribute("current_path", current_path);
             model.addAttribute("folder_directory", folder_directory);
+            String group_name = FileModel.getGroupName(Integer.toString(group_id));
+            model.addAttribute("group_name", group_name);
             // in group
             return "file_browser";
         } else {
@@ -79,5 +83,37 @@ public class FileController {
     @RequestMapping(value = {"file/add_new_folder_html_ajax"})
     public String add_new_folder_html_ajax(HttpSession session, Model model) {
         return "includes_files_table_header_edit";
+    }
+
+    @RequestMapping(value = {"file/add_new_folder_submit_ajax"})
+    @ResponseBody
+    public String add_new_folder_submit_ajax(HttpServletRequest request, HttpSession session, Model model) {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("folder_name") != null) {
+            int user_id = (int) session.getAttribute("user_id");
+            int group_id = (int) session.getAttribute("group_id");
+            String folder_name = request.getParameter("folder_name").trim();
+            if (!CommonModel.isLettersNumbersUnderscoreOnlyString(folder_name)) {
+                resultArray.put("status", "failed");
+                resultArray.put("error", "The specified folder: <b>" + folder_name + "</b> can only contain letters, numbers, and underscores (no space).");
+                return gson.toJson(resultArray);
+            }
+            else if (FileModel.isFolderAlreadyExist(session, folder_name)) {
+                resultArray.put("status", "failed");
+                resultArray.put("error", "The specified folder: <b>" + folder_name + "</b> already exist.");
+                return gson.toJson(resultArray);
+            } else if (FileModel.isAllowedAddNewFolder(user_id, group_id)) {
+                boolean newFolderCheck = FileModel.createNewFolder(session, folder_name);
+                if (newFolderCheck) {
+                    resultArray.put("status", "success");
+                    resultArray.put("toastr", "New Folder Created");
+                    return gson.toJson(resultArray);
+                }
+            }
+        }
+        resultArray.put("status", "failed");
+        resultArray.put("error", "Unable to create folder. You may need higher access.");
+        return gson.toJson(resultArray);
     }
 }

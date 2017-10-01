@@ -8,5 +8,11 @@
     </form>
 </div>
 <div class="col-xs-12">
-    <button class="btn btn-default btn-sm pull-right" type="button">Clear</button>
+    <div class="row">
+        <div class="col-xs-6">
+        </div>
+        <div class="col-xs-6">
+            <button class="btn btn-default btn-sm pull-right form-submit-btn" type="button">Clear</button>
+        </div>
+    </div>
 </div>
