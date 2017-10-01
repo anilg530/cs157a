@@ -2,6 +2,7 @@ package filehub.demo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,6 +10,10 @@ import java.util.Date;
 import java.util.UUID;
 
 public class CommonModel {
+    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    static final String DB_URL = "jdbc:mysql://p3plcpnl0569.prod.phx3.secureserver.net:3306/cs157a";
+    static final String USER = "cs157a_main";
+    static final String PASS = "cs157a_db";
 
     public static Boolean isLettersNumbersUnderscoreOnlyString(String string) {
         String regex = "^[a-zA-Z0-9_]*$";
@@ -54,5 +59,55 @@ public class CommonModel {
 
     public static String timestampInSQLFormat() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+    }
+
+    public static String getFullName(String user_id) {
+        String returnString = "";
+        if (user_id == null || user_id.isEmpty()) {
+            return returnString;
+        }
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT first_name,last_name FROM user_profile " +
+                    "WHERE (user_id='" + user_id + "' AND status='Active')";
+            ResultSet sqlResult = stmt.executeQuery(myQuery);
+            if (sqlResult != null && sqlResult.next()) {
+                String first_name = sqlResult.getString(1);
+                String last_name = sqlResult.getString(2);
+                if (first_name != null && !first_name.isEmpty()) {
+                    returnString = returnString + first_name;
+                }
+                if (last_name != null && !last_name.isEmpty()) {
+                    returnString = returnString + " " + last_name;
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnString;
     }
 }

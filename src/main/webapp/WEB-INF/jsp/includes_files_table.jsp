@@ -40,12 +40,12 @@
                     for (String folder : folder_directory) {
                         ArrayList<String> tempFolderInfo = FileModel.getFolderInfo(session, folder);
                         if (tempFolderInfo != null && tempFolderInfo.size() > 0) {
-                            String temp_folder_id = tempFolderInfo.get(1);
+                            String temp_folder_id = tempFolderInfo.get(0);
                             String temp_folder_name = tempFolderInfo.get(2);
-                            String uploaded_on = CommonModel.timeStampToFormalDate(tempFolderInfo.get(8));
-                            String uploaded_by = FileModel.getFullName(tempFolderInfo.get(9));
-                            String notes = tempFolderInfo.get(6).replaceAll("(\r\n|\n)", "<br />");
-                            String notes_by = FileModel.getFullName(tempFolderInfo.get(7));
+                            String uploaded_on = CommonModel.timeStampToFormalDate(tempFolderInfo.get(9));
+                            String uploaded_by = CommonModel.getFullName(tempFolderInfo.get(10));
+                            String notes = tempFolderInfo.get(7).replaceAll("(\r\n|\n)", "<br />");
+                            String notes_by = CommonModel.getFullName(tempFolderInfo.get(8));
             %>
             <tr>
                 <td class="vertical-align-middle">
