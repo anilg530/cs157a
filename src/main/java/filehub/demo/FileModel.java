@@ -4,8 +4,10 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 public class FileModel {
 
@@ -360,5 +362,59 @@ public class FileModel {
             returnBoolean = true;
         }
         return returnBoolean;
+    }
+
+    public static boolean deleteFolder(HttpSession session, String id) {
+        ArrayList<String> folderInfo = getFileInfoByID(id);
+        String file_path = folderInfo.get(3);
+        String today_date = CommonModel.todayDateInYMD();
+        String archive_path = "archived/" + today_date + "/" + CommonModel.generateUUID() + "/" + file_path;
+        return true;
+    }
+
+    public static ArrayList<String> getFileInfoByID(String id) {
+        ArrayList<String> returnArray = new ArrayList<>();
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT * FROM file_data " +
+                    "WHERE (id='" + id + "')";
+            ResultSet sqlResult = stmt.executeQuery(myQuery);
+            if (sqlResult != null && sqlResult.next()) {
+                for (int i = 1; i < 11; i++) {
+                    String columnValue = sqlResult.getString(i);
+                    if (columnValue == null) {
+                        columnValue = "";
+                    }
+                    returnArray.add(columnValue);
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnArray;
     }
 }

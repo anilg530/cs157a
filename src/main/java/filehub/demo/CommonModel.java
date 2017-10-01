@@ -1,13 +1,12 @@
 package filehub.demo;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 public class CommonModel {
 
@@ -39,5 +38,21 @@ public class CommonModel {
             returnBoolean = true;
         }
         return returnBoolean;
+    }
+
+    public static String generateUUID() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public static String todayDateInYMD() {
+        return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+    }
+
+    public static String todayDateInMDY() {
+        return new SimpleDateFormat("MM-dd-yyy").format(new Date());
+    }
+
+    public static String timestampInSQLFormat() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 }

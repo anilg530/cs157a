@@ -1,3 +1,5 @@
+var processing = false;
+var notEditing = true;
 $(document).ready(function () {
     file_reinitialization();
 });
@@ -86,7 +88,6 @@ function filehub_refresh_files_table() {
             $('#includes_files_table_html').html(response).promise().done(function () {
                 file_reinitialization();
                 $('.form-submit-btn').prop('disabled', false);
-                toastr.success("Files table is refreshed", null, {'positionClass': 'toast-bottom-right'});
             });
         },
         error: function (xhr, status, error) {
@@ -116,7 +117,6 @@ function filehub_refresh_files_table_and_header() {
                 filehub_exit_new_folder_html_ajax();
                 file_reinitialization();
                 $('.form-submit-btn').prop('disabled', false);
-                toastr.success("Files table is refreshed", null, {'positionClass': 'toast-bottom-right'});
             });
         },
         error: function (xhr, status, error) {
@@ -150,7 +150,7 @@ function filehub_add_new_folder_html_ajax() {
                     }
                 });
 
-                $('#filehub_group_file_new_folder_form').on('submit', function(e) {
+                $('#filehub_group_file_new_folder_form').on('submit', function (e) {
                     e.preventDefault();
                     var form = $(this);
                     if (form.valid()) {
@@ -220,6 +220,63 @@ function filehub_group_file_new_folder_submit(form) {
     return false;
 }
 
+function filehub_group_file_delete_folder_submit(object) {
+    $(object).blur();
+    if (notEditing && !processing && filehub_group_file_upload_get_queue_size() <= 0) {
+        $(object).blur();
+        $(object).tooltip('hide');
+        var id = $(object).attr('data-attr');
+        var formData = {};
+        formData['id'] = id;
+        var file_name = $(object).attr('data-attr2');
+        setTimeout(function () {
+            swal({
+                    html: true,
+                    title: 'Delete this folder?',
+                    text: 'Are you sure you want to delete: <b>' + file_name + '</b>?',
+                    type: 'warning',
+                    allowOutsideClick: true,
+                    showCancelButton: true,
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: 'Delete',
+                    cancelButtonText: 'Cancel',
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                },
+                function (is_confirm) {
+                    if (is_confirm) {
+                        $('.form-submit-btn').prop('disabled', true);
+                        $.ajax({
+                            type: 'POST',
+                            url: '/file/delete_folder_submit_ajax',
+                            dataType: 'json',
+                            data: formData,
+                            beforeSend: function () {
+                            },
+                            success: function (response) {
+                                if (response.status == 'success') {
+                                    if (response.toastr) {
+                                        toastr.warning(response.toastr, null, {'positionClass': 'toast-bottom-right'});
+                                    }
+                                    filehub_refresh_files_table();
+                                }
+                                else if (response.error) {
+                                    swalError(response.error);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.log(xhr.responseText);
+                                internet_connectivity_swal();
+                                $('.form-submit-btn').prop('disabled', false);
+                                //$('body').html(xhr.responseText);
+                            }
+                        });
+                    }
+                });
+        }, 200);
+    }
+}
+
 function swalError(error_msg) {
     setTimeout(function () {
         swal({
@@ -248,4 +305,9 @@ function internet_connectivity_swal() {
             cancelButtonText: 'OK',
         });
     }, 200);
+}
+
+function filehub_group_file_upload_get_queue_size() {
+    var myDropzone = Dropzone.forElement('#dropzone_file_upload');
+    return myDropzone.getUploadingFiles().length;
 }

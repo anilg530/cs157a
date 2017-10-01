@@ -6,10 +6,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -114,6 +112,29 @@ public class FileController {
         }
         resultArray.put("status", "failed");
         resultArray.put("error", "Unable to create folder. You may need higher access.");
+        return gson.toJson(resultArray);
+    }
+
+    @RequestMapping(value = {"file/delete_folder_submit_ajax"})
+    @ResponseBody
+    public String delete_folder_submit_ajax(HttpServletRequest request, HttpSession session, Model model) {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("id") != null) {
+            int user_id = (int) session.getAttribute("user_id");
+            int group_id = (int) session.getAttribute("group_id");
+            String id = request.getParameter("id").trim();
+            if (FileModel.isAllowedDeleteFolder(user_id, group_id)) {
+                boolean folderDeletedCheck = FileModel.deleteFolder(session, id);
+                if (folderDeletedCheck) {
+                    resultArray.put("status", "success");
+                    resultArray.put("toastr", "Folder Deleted");
+                    return gson.toJson(resultArray);
+                }
+            }
+        }
+        resultArray.put("status", "failed");
+        resultArray.put("error", "Unable to delete folder. You may need higher access.");
         return gson.toJson(resultArray);
     }
 }

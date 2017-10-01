@@ -68,7 +68,7 @@
                        onclick="group_file_upload_folder_rename(this);" data-toggle="tooltip"
                        data-original-title="Rename"><i class="fa fa-pencil"></i></a>
                     <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(temp_folder_id); %>"
-                       data-attr2="<% out.print(temp_folder_name); %>" onclick="group_file_upload_folder_delete(this);"
+                       data-attr2="<% out.print(temp_folder_name); %>" onclick="filehub_group_file_delete_folder_submit(this);"
                        data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash-o"></i></a>
                 </td>
             </tr>
