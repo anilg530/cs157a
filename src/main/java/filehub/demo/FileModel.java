@@ -382,4 +382,8 @@ public class FileModel {
         Path file_path = Paths.get(path);
         return file_path.getParent().toString();
     }
+
+    public static void renameFolder(String id, String new_folder_name) {
+        
+    }
 }
