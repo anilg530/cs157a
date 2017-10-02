@@ -384,6 +384,6 @@ public class FileModel {
     }
 
     public static void renameFolder(String id, String new_folder_name) {
-        
+        System.out.println("hi");
     }
 }
