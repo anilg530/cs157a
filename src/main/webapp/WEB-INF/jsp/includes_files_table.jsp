@@ -12,7 +12,7 @@
             <h4>Folder: <% out.print(folder_name); %></h4>
         </div>
         <div class="col-xs-6">
-            <button class="btn btn-default btn-sm pull-right" type="button"><i class="fa fa-arrow-left"></i> Previous
+            <button class="btn btn-default btn-sm pull-right" type="button" onclick="filehub_group_file_previous_folder();"><i class="fa fa-arrow-left"></i> Previous
                 Folder
             </button>
         </div>
@@ -53,7 +53,7 @@
                           class="text-nowrap" data-attr="<% out.print(temp_folder_id); %>">
                     <a href="javascript:;" class="icon-black"
                        data-attr="<% out.print(temp_folder_id); %>"
-                       onclick="group_file_upload_folder_open(this);"
+                       onclick="filehub_group_file_open_folder(this);"
                        data-toggle="tooltip"
                        data-original-title="Open"><i
                             class="fa fa-folder-o"></i>&nbsp;<% out.print(temp_folder_name); %></a>

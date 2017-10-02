@@ -50,6 +50,48 @@ public class FileModel {
         return returnArray;
     }
 
+    public static String getFilePathByID(String id) {
+        String returnString = "";
+
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT file_path FROM file_data " +
+                    "WHERE (id='" + id + "' AND file_status='Active')";
+            ResultSet sqlResult = stmt.executeQuery(myQuery);
+            if (sqlResult != null && sqlResult.next()) {
+                returnString = sqlResult.getString(1);
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return returnString;
+    }
+
     public static ArrayList<String> getFolderInfo(HttpSession session, String folder_name) {
         ArrayList<String> returnArray = new ArrayList<>();
         String current_path = (String) session.getAttribute("current_path");
@@ -166,10 +208,10 @@ public class FileModel {
         boolean sqlInsertSuccess = false;
         boolean mkdirSuccess = false;
         String group_id = Integer.toString((int) session.getAttribute("group_id"));
-        String current_path = (String) session.getAttribute("current_path");
-        String folder_path = current_path + "/" + new_folder_name;
-        String file_path = folder_path;
         String file_name = new_folder_name;
+        String current_path = (String) session.getAttribute("current_path");
+        String folder_path = current_path;
+        String file_path = current_path + "/" + new_folder_name;
         String file_status = "Active";
         String type = "Folder";
         String uploaded_by = Integer.toString((int) session.getAttribute("user_id"));
@@ -232,7 +274,7 @@ public class FileModel {
     public static boolean deleteFolder(HttpSession session, String id) {
         boolean returnBoolean = false;
         ArrayList<String> folderInfo = getFileInfoByID(id);
-        String folder_path = folderInfo.get(3);
+        String folder_path = folderInfo.get(4);
         String today_date = CommonModel.todayDateInYMD();
         String archive_path = "archived/" + today_date + "/" + CommonModel.generateUUID() + "/" + folder_path;
         File archive_path_check = new File(archive_path);
@@ -334,5 +376,10 @@ public class FileModel {
             }
         }
         return returnArray;
+    }
+
+    public static String getPreviousFolderPath(String path) {
+        Path file_path = Paths.get(path);
+        return file_path.getParent().toString();
     }
 }

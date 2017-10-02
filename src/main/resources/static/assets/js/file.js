@@ -75,14 +75,81 @@ function ajaxTest() {
     return false;
 }
 
+function filehub_group_file_open_folder(object) {
+    $(object).blur();
+    if (notEditing && !processing && filehub_group_file_upload_get_queue_size() <= 0) {
+        var backup_html = $('#includes_files_table_html').html();
+        $(object).blur();
+        $(object).tooltip('hide');
+        var id = $(object).attr('data-attr');
+        var formData = {};
+        formData['id'] = id;
+        $('.form-submit-btn').prop('disabled', true);
+        $.ajax({
+            type: 'POST',
+            url: '/file/open_folder_ajax',
+            dataType: 'html',
+            data: formData,
+            beforeSend: function () {
+                $('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>');
+            },
+            success: function (response) {
+                $('#includes_files_table_html').html(response).promise().done(function () {
+                    file_reinitialization();
+                    $('.form-submit-btn').prop('disabled', false);
+                });
+            },
+            error: function (xhr, status, error) {
+                $('#includes_files_table_html').html(backup_html).promise().done(function () {
+                    file_reinitialization();
+                    $('.form-submit-btn').prop('disabled', false);
+                    swalError('Unable to open folder. There may be internet connectivity issues or you may have enough access privilege.');
+                });
+                console.log(xhr.responseText);
+                //$('body').html(xhr.responseText);
+            }
+        });
+    }
+}
+
+function filehub_group_file_previous_folder() {
+    if (notEditing && !processing && filehub_group_file_upload_get_queue_size() <= 0) {
+        var backup_html = $('#includes_files_table_html').html();
+        $('.form-submit-btn').prop('disabled', true);
+        $.ajax({
+            type: 'POST',
+            url: '/file/previous_folder_ajax',
+            dataType: 'html',
+            beforeSend: function () {
+                $('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>');
+            },
+            success: function (response) {
+                $('#includes_files_table_html').html(response).promise().done(function () {
+                    file_reinitialization();
+                    $('.form-submit-btn').prop('disabled', false);
+                });
+            },
+            error: function (xhr, status, error) {
+                $('#includes_files_table_html').html(backup_html).promise().done(function () {
+                    file_reinitialization();
+                    $('.form-submit-btn').prop('disabled', false);
+                    swalError('Unable to go to previous folder. There may be internet connectivity issues or you may have enough access privilege.');
+                });
+                console.log(xhr.responseText);
+                //$('body').html(xhr.responseText);
+            }
+        });
+    }
+}
+
 function filehub_refresh_files_table() {
-    var backup_html = $('#client_info_html').html();
+    var backup_html = $('#includes_files_table_html').html();
     $.ajax({
         type: 'GET',
         url: '/file/refresh_files_table',
         dataType: 'html',
         beforeSend: function () {
-            $('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>')
+            $('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>');
         },
         success: function (response) {
             $('#includes_files_table_html').html(response).promise().done(function () {
@@ -104,7 +171,7 @@ function filehub_refresh_files_table() {
 }
 
 function filehub_refresh_files_table_and_header() {
-    var backup_html = $('#client_info_html').html();
+    var backup_html = $('#includes_files_table_html').html();
     $.ajax({
         type: 'GET',
         url: '/file/refresh_files_table',

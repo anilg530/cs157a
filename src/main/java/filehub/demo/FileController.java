@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -73,6 +74,44 @@ public class FileController {
         return "includes_files_table";
     }
 
+    @RequestMapping(value = "file/open_folder_ajax")
+    public String open_folder_ajax(HttpServletRequest request, HttpSession session, Model model) {
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("id") != null) {
+            int user_id = (int) session.getAttribute("user_id");
+            int group_id = (int) session.getAttribute("group_id");
+            String id = request.getParameter("id").trim();
+            boolean isInGroup = CommonModel.isInGroup(user_id, group_id);
+            if (isInGroup) {
+                String current_path = FileModel.getFilePathByID(id);
+                request.getSession().setAttribute("current_path", current_path);
+                ArrayList<String> folder_directory = FileModel.getDirectory(current_path);
+                model.addAttribute("folder_directory", folder_directory);
+                return "includes_files_table";
+            }
+        }
+        return null;
+    }
+
+    @RequestMapping(value = "file/previous_folder_ajax")
+    public String previous_folder_ajax(HttpServletRequest request, HttpSession session, Model model) {
+        if (CommonModel.isLoggedIn(request, session)) {
+            int user_id = (int) session.getAttribute("user_id");
+            int group_id = (int) session.getAttribute("group_id");
+            boolean isInGroup = CommonModel.isInGroup(user_id, group_id);
+            if (isInGroup) {
+                String current_path = (String) session.getAttribute("current_path");
+                if (!FileModel.isInRootDIR(session, current_path)) {
+                    String previous_path = FileModel.getPreviousFolderPath(current_path);
+                    request.getSession().setAttribute("current_path", previous_path);
+                    ArrayList<String> folder_directory = FileModel.getDirectory(previous_path);
+                    model.addAttribute("folder_directory", folder_directory);
+                    return "includes_files_table";
+                }
+            }
+        }
+        return null;
+    }
+
     @RequestMapping(value = {"file/exit_new_folder_html_ajax"})
     public String exit_new_folder_html_ajax(HttpSession session, Model model) {
         return "includes_files_table_header";
@@ -96,8 +135,7 @@ public class FileController {
                 resultArray.put("status", "failed");
                 resultArray.put("error", "The specified folder: <b>" + folder_name + "</b> can only contain letters, numbers, and underscores (no space).");
                 return gson.toJson(resultArray);
-            }
-            else if (FileModel.isFolderAlreadyExist(session, folder_name)) {
+            } else if (FileModel.isFolderAlreadyExist(session, folder_name)) {
                 resultArray.put("status", "failed");
                 resultArray.put("error", "The specified folder: <b>" + folder_name + "</b> already exist.");
                 return gson.toJson(resultArray);
