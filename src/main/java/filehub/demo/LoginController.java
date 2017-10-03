@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 @Controller
@@ -42,6 +43,38 @@ public class LoginController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @RequestMapping(value={"/login_test"})
+    public void login_test(HttpServletResponse response, HttpSession session) {
+        ArrayList<String> tempArray = new ArrayList<>();
+        tempArray.add("mfdafa");
+        tempArray.add("password2");
+        tempArray.add("user1");
+        tempArray.add("tim");
+        tempArray.add("530141312");
+        UserDatabase.insertUser(tempArray);
+    }
+
+    @RequestMapping(value={"/sign-up"})
+    public void sign_up(HttpServletRequest request) {
+        ArrayList<String> userSignInfo = new ArrayList<>();
+        String username = request.getParameter( "username");
+        String password = request.getParameter("password");
+        String firstname = request.getParameter("First name");
+        String lastname = request.getParameter("Last name");
+        String cellphone = request.getParameter("Phone");
+        String email = request.getParameter("Email");
+
+        userSignInfo.add(username);
+        userSignInfo.add(password);
+        userSignInfo.add(firstname);
+        userSignInfo.add(lastname);
+        userSignInfo.add(cellphone);
+        userSignInfo.add(email);
+
+        UserDatabase.insertUser1(userSignInfo);
+
     }
 
 }
