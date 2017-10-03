@@ -74,7 +74,7 @@ public class LoginController {
         userSignInfo.add(email);
 
         UserDatabase.insertUser1(userSignInfo);
-
+      //  return "create_account_page";
     }
 
 }
