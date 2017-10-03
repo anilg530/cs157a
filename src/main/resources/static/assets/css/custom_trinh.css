@@ -85,6 +85,42 @@ html, body {
     padding-right: 15px;
 }
 
+.custom_pointer_hover_style {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.custom_pointer_hover_style:hover {
+    cursor: pointer;
+    color: #557491 !important;
+    text-decoration: none !important;
+}
+
+.custom_pointer_hover_gray_style {
+    font-style: italic;
+    color: #cccccc;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.custom_pointer_hover_gray_style:hover {
+    cursor: pointer;
+    color: #557491 !important;
+    text-decoration: none !important;
+}
+
+.custom_dynamic_text_area {
+    resize: none;
+    overflow: hidden;
+    width: 100%;
+}
+
 .flex-new-folder-row {
     display: flex;
     flex-flow: row;

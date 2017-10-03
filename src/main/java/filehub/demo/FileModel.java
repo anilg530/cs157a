@@ -15,11 +15,6 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class FileModel {
 
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://p3plcpnl0569.prod.phx3.secureserver.net:3306/cs157a";
-    static final String USER = "cs157a_main";
-    static final String PASS = "cs157a_db";
-
     public static boolean isInRootDIR(HttpSession session, String currentPath) {
         boolean returnBoolean = false;
         if (session.getAttribute("root_dir") != null && session.getAttribute("root_dir").equals(currentPath)) {
@@ -56,9 +51,9 @@ public class FileModel {
         Connection conn = null;
         Statement stmt = null;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -101,9 +96,9 @@ public class FileModel {
         Connection conn = null;
         Statement stmt = null;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -139,7 +134,6 @@ public class FileModel {
                 se.printStackTrace();
             }
         }
-
         return returnArray;
     }
 
@@ -157,6 +151,16 @@ public class FileModel {
         return returnBoolean;
     }
 
+    public static boolean isAllowedRenameFolder(int user_id, int group_id) {
+        boolean returnBoolean = true;
+        return returnBoolean;
+    }
+
+    public static boolean isAllowedEditNotes(int user_id, int group_id) {
+        boolean returnBoolean = true;
+        return returnBoolean;
+    }
+
     public static boolean isFolderAlreadyExist(HttpSession session, String new_folder_name) {
         boolean returnBoolean = true;
         int group_id = (int) session.getAttribute("group_id");
@@ -165,9 +169,9 @@ public class FileModel {
         Connection conn = null;
         Statement stmt = null;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -229,9 +233,9 @@ public class FileModel {
         Connection conn = null;
         Statement stmt = null;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -279,6 +283,7 @@ public class FileModel {
         String archive_path = "archived/" + today_date + "/" + CommonModel.generateUUID() + "/" + folder_path;
         File archive_path_check = new File(archive_path);
         String modified_by = Integer.toString((int) session.getAttribute("user_id"));
+        String group_id = Integer.toString((int) session.getAttribute("group_id"));
 
         if (!archive_path_check.exists()) {
             try {
@@ -294,17 +299,23 @@ public class FileModel {
                 Connection conn = null;
                 Statement stmt = null;
                 try {
-                    Class.forName(JDBC_DRIVER).newInstance();
+                    Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-                    conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                    conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
                     stmt = conn.createStatement();
                     String myQuery;
                     myQuery = "UPDATE file_data SET file_status = 'Deleted',modified_by=" + modified_by + " " +
-                            "WHERE (folder_path='" + folder_path + "' AND file_status='Active')";
+                            "WHERE (id='" + id + "')";
                     int affected_rows = stmt.executeUpdate(myQuery);
                     if (affected_rows > 0) {
                         returnBoolean = true;
+                        stmt = conn.createStatement();
+                        String myQuery2;
+                        myQuery2 = "UPDATE file_data SET file_status = 'Deleted',modified_by=" + modified_by + " " +
+                                "WHERE (group_id='" + group_id + "' AND file_status='Active')" +
+                                "AND folder_path LIKE '" + folder_path + "%'";
+                        stmt.executeUpdate(myQuery2);
                     }
                 } catch (SQLException se) {
                     se.printStackTrace();
@@ -337,9 +348,9 @@ public class FileModel {
         Connection conn = null;
         Statement stmt = null;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -383,7 +394,271 @@ public class FileModel {
         return file_path.getParent().toString();
     }
 
-    public static void renameFolder(String id, String new_folder_name) {
-        System.out.println("hi");
+    public static boolean renameFolder(HttpSession session, String id, String new_folder_name) {
+        boolean returnBoolean = false;
+        ArrayList<String> fileInfo = FileModel.getFileInfoByID(id);
+        String old_name = fileInfo.get(4);
+        String new_name = fileInfo.get(3) + "/" + new_folder_name;
+        String modified_by = Integer.toString((int) session.getAttribute("user_id"));
+        File new_path_check = new File(new_name);
+
+        if (!new_path_check.exists()) {
+            try {
+                new_path_check.mkdirs();
+            } catch (SecurityException se) {
+                se.printStackTrace();
+            }
+        }
+
+        try {
+            Path path_temp = Files.move(Paths.get(old_name), Paths.get(new_name), REPLACE_EXISTING);
+            if (path_temp != null) {
+                ArrayList<ArrayList<String>> getSubfilesAndFoldersWithNewPath = FileModel.getSubfilesAndFoldersWithNewPath(old_name, new_name);
+
+                Connection conn = null;
+                Statement stmt = null;
+                try {
+                    Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+                    conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+                    stmt = conn.createStatement();
+                    String myQuery;
+                    myQuery = "UPDATE file_data SET file_path = '" + new_name + "',file_name='" + new_folder_name + "',modified_by=" + modified_by + " " +
+                            "WHERE (id='" + id + "')";
+                    int affected_rows = stmt.executeUpdate(myQuery);
+                    if (affected_rows > 0) {
+                        returnBoolean = true;
+                        for (ArrayList<String> a : getSubfilesAndFoldersWithNewPath) {
+                            String temp_id = a.get(0);
+                            String temp_folder_path = a.get(1);
+                            String temp_file_path = a.get(2);
+                            stmt = conn.createStatement();
+                            String myQuery2;
+                            myQuery2 = "UPDATE file_data SET folder_path = '" + temp_folder_path + "',file_path='" + temp_file_path + "' " +
+                                    "WHERE (id='" + temp_id + "')";
+                            stmt.executeUpdate(myQuery2);
+                        }
+                    }
+
+                } catch (SQLException se) {
+                    se.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        if (stmt != null) {
+                            stmt.close();
+                        }
+                        conn.close();
+                    } catch (SQLException se2) {
+                    }
+                    try {
+                        if (conn != null)
+                            conn.close();
+                    } catch (SQLException se) {
+                        se.printStackTrace();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return returnBoolean;
+    }
+
+    public static ArrayList<String> getAllFilesAndFolderInFolder(String path) {
+        ArrayList<String> returnArray = new ArrayList<>();
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT * FROM file_data " +
+                    "WHERE (folder_path='" + path + "' AND file_status='Active')";
+            ResultSet sqlResult = stmt.executeQuery(myQuery);
+            if (sqlResult != null && sqlResult.next()) {
+                for (int i = 1; i < 12; i++) {
+                    String columnValue = sqlResult.getString(i);
+                    if (columnValue == null) {
+                        columnValue = "";
+                    }
+                    returnArray.add(columnValue);
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnArray;
+    }
+
+    public static boolean isFolderNameTheSame(String id, String new_folder_name) {
+        boolean returnBoolean = false;
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT file_name FROM file_data WHERE (id='" + id + "')";
+            ResultSet sqlResult = stmt.executeQuery(myQuery);
+            if (sqlResult != null && sqlResult.next()) {
+                String current_folder_name = sqlResult.getString(1);
+                if (new_folder_name.equals(current_folder_name)) {
+                    returnBoolean = true;
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnBoolean;
+    }
+
+    public static ArrayList<ArrayList<String>> getSubfilesAndFoldersWithNewPath(String folder_path, String new_path) {
+        ArrayList<ArrayList<String>> returnArray = new ArrayList<>();
+        ArrayList<ArrayList<String>> preformattedArray = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT id,folder_path,file_path FROM file_data " +
+                    "WHERE (file_status='Active')" +
+                    "AND folder_path LIKE '" + folder_path + "%'";
+            ResultSet sqlResult = stmt.executeQuery(myQuery);
+            while (sqlResult != null && sqlResult.next()) {
+                ArrayList<String> tempArray = new ArrayList<>();
+                for (int i = 1; i < 4; i++) {
+                    String columnValue = sqlResult.getString(i);
+                    if (columnValue == null) {
+                        columnValue = "";
+                    }
+                    tempArray.add(columnValue);
+                }
+                preformattedArray.add(tempArray);
+            }
+            sqlResult.close();
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        for (ArrayList<String> e : preformattedArray) {
+            String id = e.get(0);
+            String temp_folder_path = e.get(1).replaceAll(folder_path, new_path);
+            String temp_file_path = e.get(2).replaceAll(folder_path, new_path);
+            ArrayList<String> tempArray = new ArrayList<>();
+            tempArray.add(id);
+            tempArray.add(temp_folder_path);
+            tempArray.add(temp_file_path);
+            returnArray.add(tempArray);
+        }
+
+        return returnArray;
+    }
+
+    public static boolean editNotes(HttpSession session, String id, String notes) {
+        boolean returnBoolean = false;
+        String notes_by = Integer.toString((int) session.getAttribute("user_id"));
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "UPDATE file_data SET notes = ?,notes_by = ? " +
+                    "WHERE (id= ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, notes);
+            pstmt.setString(2, notes_by);
+            pstmt.setString(3, id);
+            int affected_rows = pstmt.executeUpdate();
+            if (affected_rows > 0) {
+                returnBoolean = true;
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnBoolean;
     }
 }

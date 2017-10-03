@@ -12,7 +12,8 @@
             <h4>Folder: <% out.print(folder_name); %></h4>
         </div>
         <div class="col-xs-6">
-            <button class="btn btn-default btn-sm pull-right" type="button" onclick="filehub_group_file_previous_folder();"><i class="fa fa-arrow-left"></i> Previous
+            <button class="btn btn-default btn-sm pull-right form-submit-btn" type="button"
+                    onclick="filehub_group_file_previous_folder();"><i class="fa fa-arrow-left"></i> Previous
                 Folder
             </button>
         </div>
@@ -45,11 +46,12 @@
                             String uploaded_on = CommonModel.timeStampToFormalDate(tempFolderInfo.get(9));
                             String uploaded_by = CommonModel.getFullName(tempFolderInfo.get(10));
                             String notes = tempFolderInfo.get(7).replaceAll("(\r\n|\n)", "<br />");
+                            //String notes = tempFolderInfo.get(7);
                             String notes_by = CommonModel.getFullName(tempFolderInfo.get(8));
             %>
             <tr>
                 <td class="vertical-align-middle">
-                    <span id="user_file_upload_folder_rename_span_<% out.print(temp_folder_id); %>"
+                    <span id="filehub_folder_rename_span_<% out.print(temp_folder_id); %>"
                           class="text-nowrap" data-attr="<% out.print(temp_folder_id); %>">
                     <a href="javascript:;" class="icon-black"
                        data-attr="<% out.print(temp_folder_id); %>"
@@ -61,14 +63,28 @@
                 </td>
                 <td class="vertical-align-middle"><% out.print(uploaded_by); %></td>
                 <td class="vertical-align-middle"><% out.print(uploaded_on); %></td>
-                <td class="vertical-align-middle"><% out.print(notes); %></td>
+                <td class="vertical-align-middle">
+                    <span
+                            class="filehub_group_file_notes_span <% if (notes.trim() == "") { out.print("custom_pointer_hover_gray_style"); } else { out.print("custom_pointer_hover_style"); } %>"
+                            data-attr="<% out.print(temp_folder_id); %>"
+                            isEmpty="<% if (notes.trim() == "") { out.print("true"); } else { out.print("false"); } %>"
+                            data-toggle="tooltip"
+                            data-original-title="edit"
+                            onclick="filehub_group_file_edit_file_folder_notes(this);"><%
+                        if (notes.trim() == "") {
+                            out.print("add folder notes");
+                        } else {
+                            out.print(notes);
+                        }%></span>
+                </td>
                 <td class="vertical-align-middle"><% out.print(notes_by); %></td>
                 <td class="vertical-align-middle">
                     <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(temp_folder_id); %>"
-                       onclick="group_file_upload_folder_rename(this);" data-toggle="tooltip"
+                       onclick="filehub_group_file_upload_folder_rename(this);" data-toggle="tooltip"
                        data-original-title="Rename"><i class="fa fa-pencil"></i></a>
                     <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(temp_folder_id); %>"
-                       data-attr2="<% out.print(temp_folder_name); %>" onclick="filehub_group_file_delete_folder_submit(this);"
+                       data-attr2="<% out.print(temp_folder_name); %>"
+                       onclick="filehub_group_file_delete_folder_submit(this);"
                        data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash-o"></i></a>
                 </td>
             </tr>

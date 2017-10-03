@@ -66,6 +66,20 @@ public class FileController {
         return gson.toJson(resultArray);
     }
 
+    @RequestMapping(value = {"file/test"})
+    public String test(HttpServletRequest request, HttpSession session, Model model) {
+        String path = "group_files/1/bobcat";
+        String new_path = "group_files/1/jordanboy";
+        ArrayList<ArrayList<String>> temp = FileModel.getSubfilesAndFoldersWithNewPath(path, new_path);
+        for (ArrayList<String> e : temp) {
+            for (String s : e) {
+                System.out.println(s);
+            }
+            System.out.println("-------------");
+        }
+        return "";
+    }
+
     @RequestMapping(value = {"file/refresh_files_table"})
     public String refresh_files_table(HttpSession session, Model model) {
         String current_path = (String) session.getAttribute("current_path");
@@ -131,7 +145,7 @@ public class FileController {
             int user_id = (int) session.getAttribute("user_id");
             int group_id = (int) session.getAttribute("group_id");
             String folder_name = request.getParameter("folder_name").trim();
-            if (!CommonModel.isLettersNumbersUnderscoreOnlyString(folder_name)) {
+            if (!CommonModel.isLettersNumbersUnderscoreSpaceOnlyString(folder_name)) {
                 resultArray.put("status", "failed");
                 resultArray.put("error", "The specified folder: <b>" + folder_name + "</b> can only contain letters, numbers, and underscores (no space).");
                 return gson.toJson(resultArray);
@@ -173,6 +187,75 @@ public class FileController {
         }
         resultArray.put("status", "failed");
         resultArray.put("error", "Unable to delete folder. You may need higher access.");
+        return gson.toJson(resultArray);
+    }
+
+    @RequestMapping(value = {"file/rename_folder_submit_ajax"})
+    @ResponseBody
+    public String rename_folder_submit_ajax(HttpServletRequest request, HttpSession session, Model model) {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("id") != null
+                && request.getParameter("folder_name") != null) {
+            int user_id = (int) session.getAttribute("user_id");
+            int group_id = (int) session.getAttribute("group_id");
+            String id = request.getParameter("id").trim();
+            String folder_name = request.getParameter("folder_name").trim();
+            if (folder_name == null || folder_name == "") {
+                resultArray.put("status", "failed");
+                resultArray.put("error", "Folder name cannot be blank.");
+                return gson.toJson(resultArray);
+            }
+            if (!CommonModel.isLettersNumbersUnderscoreSpaceOnlyString(folder_name)) {
+                resultArray.put("status", "failed");
+                resultArray.put("error", "The specified folder: <b>" + folder_name + "</b> can only contain letters, numbers, and underscores (no space).");
+                return gson.toJson(resultArray);
+            }
+            if (FileModel.isAllowedRenameFolder(user_id, group_id)) {
+                if (FileModel.isFolderNameTheSame(id, folder_name)) {
+                    resultArray.put("status", "success");
+                    return gson.toJson(resultArray);
+                } else if (FileModel.isFolderAlreadyExist(session, folder_name)) {
+                    resultArray.put("status", "fail");
+                    resultArray.put("error", "The folder name: <b>" + folder_name + "</b> is already taken.");
+                    return gson.toJson(resultArray);
+                } else {
+                    boolean folderRenameCheck = FileModel.renameFolder(session, id, folder_name);
+                    if (folderRenameCheck) {
+                        resultArray.put("status", "success");
+                        resultArray.put("toastr", "Folder Renamed Successfully");
+                        return gson.toJson(resultArray);
+                    }
+                }
+            }
+        }
+        resultArray.put("status", "failed");
+        resultArray.put("swal_error", "Unable to rename folder. You may need higher access.");
+        return gson.toJson(resultArray);
+    }
+
+    @RequestMapping(value = {"file/edit_notes_submit_ajax"})
+    @ResponseBody
+    public String edit_notes_submit_ajax(HttpServletRequest request, HttpSession session, Model model) {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("id") != null
+                && request.getParameter("notes") != null) {
+            int user_id = (int) session.getAttribute("user_id");
+            int group_id = (int) session.getAttribute("group_id");
+            String id = request.getParameter("id").trim();
+            String notes = request.getParameter("notes").trim();
+            if (FileModel.isAllowedEditNotes(user_id, group_id)) {
+                boolean notesEditCheck = FileModel.editNotes(session, id, notes);
+                if (notesEditCheck) {
+                    resultArray.put("status", "success");
+                    resultArray.put("toastr", "Notes Updated Successfully");
+                    return gson.toJson(resultArray);
+                }
+            }
+        }
+        resultArray.put("status", "failed");
+        resultArray.put("swal_error", "Unable to edit notes. You may need higher access.");
         return gson.toJson(resultArray);
     }
 }

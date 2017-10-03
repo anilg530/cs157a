@@ -37,6 +37,11 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <hr>
+                        </div>
+                    </div>
                     <div id="includes_files_table_html">
                         <jsp:include page="includes_files_table.jsp"/>
                     </div>
