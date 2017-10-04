@@ -5,49 +5,49 @@ $(document).ready(function () {
 });
 
 function file_reinitialization() {
-    Dropzone.options.dropzoneFileUpload = {
-        init: function () {
-            this.on('addedfile', function (file) {
-
-            });
-            this.on('complete', function (file) {
-
-            });
-            this.on('queuecomplete', function (file) {
-                filehub_refresh_files_table();
-            });
-            this.on('success', function (file, response) {
-                var jsonResponse = jQuery.parseJSON(response);
-                if (jsonResponse.status == 'success') {
-                    //this.removeFile(file);
-                }
-                else {
-                    if (jsonResponse.error) {
-                        this.defaultOptions.error(file, jsonResponse.error);
-                    }
-                    else {
-                        this.defaultOptions.error(file, 'Unknown error during upload.');
-                    }
-                }
-            });
-        },
-        url: '/file/group_files_upload/',
-        paramName: 'fileToUpload',
-        parallelUploads: 1,
-        maxFilesize: 2,
-        addRemoveLinks: true,
-        dictRemoveFile: 'Clear',
-        acceptedFiles: 'image/jpeg,image/png,image/gif,application/pdf,.jpeg,.jpg,.png,.gif,.csv,.xls,.xlsx,.doc,.docx,.pdf,.txt',
-        accept: function (file, done) {
-            group_file_upload_file_exist_check(file, done);
-        }
-    };
-
     $('[data-toggle="tooltip"]').tooltip({container: 'body'});
 
     processing = false;
     notEditing = true;
 }
+
+Dropzone.options.dropzoneFileUpload = {
+    init: function () {
+        this.on('addedfile', function (file) {
+
+        });
+        this.on('complete', function (file) {
+
+        });
+        this.on('queuecomplete', function (file) {
+            filehub_refresh_files_table();
+        });
+        this.on('success', function (file, response) {
+            if (response.status == 'success') {
+                //this.removeFile(file);
+            }
+            else {
+                if (response.error) {
+                    this.defaultOptions.error(file, response.error);
+                }
+                else {
+                    this.defaultOptions.error(file, 'Unknown error during upload.');
+                }
+            }
+        });
+    },
+    url: '/file/group_files_upload/',
+    paramName: 'fileToUpload',
+    parallelUploads: 1,
+    maxFilesize: 2,
+    addRemoveLinks: true,
+    dictRemoveFile: 'Clear',
+    acceptedFiles: 'image/jpeg,image/png,image/gif,application/pdf,.jpeg,.jpg,.png,.gif,.csv,.xls,.xlsx,.doc,.docx,.pdf,.txt',
+    accept: function (file, done) {
+        //group_file_upload_file_exist_check(file, done);
+        done();
+    }
+};
 
 function ajaxTest() {
     $.ajax({
@@ -539,7 +539,7 @@ function filehub_group_file_edit_file_folder_notes(object) {
         autosize($(new_textarea_element));
         new_textarea_element.focus();
 
-        $('.group_file_edit_notes_input_box').on('blur',function () {
+        $('.group_file_edit_notes_input_box').on('blur', function () {
             var notes = $(new_textarea_element).val();
             filehub_group_file_edit_file_folder_notes_submit(new_textarea_element, id, notes);
         });

@@ -1,16 +1,27 @@
 package filehub.demo;
 
 import com.google.gson.Gson;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.*;
+import java.util.*;
 
 @Controller
 public class FileController {
@@ -256,6 +267,28 @@ public class FileController {
         }
         resultArray.put("status", "failed");
         resultArray.put("swal_error", "Unable to edit notes. You may need higher access.");
+        return gson.toJson(resultArray);
+    }
+
+    @RequestMapping(value = {"file/group_files_upload"})
+    @ResponseBody
+    public String group_files_upload(@RequestParam("fileToUpload") MultipartFile file, HttpSession session, Model model) throws IOException {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+
+        // Save file on system
+        if (!file.getOriginalFilename().isEmpty()) {
+            BufferedOutputStream outputStream = new BufferedOutputStream(
+                    new FileOutputStream(new File("/SingleFileUpload", file.getOriginalFilename())));
+            outputStream.write(file.getBytes());
+            outputStream.flush();
+            outputStream.close();
+
+            resultArray.put("status", "success");
+        } else {
+            resultArray.put("status", "failed");
+            resultArray.put("error", "Unable to upload file");
+        }
         return gson.toJson(resultArray);
     }
 }
