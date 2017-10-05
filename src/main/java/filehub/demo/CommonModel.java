@@ -18,7 +18,7 @@ public class CommonModel {
 //    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 //    static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/cs157a?useSSL=false";
 //    static final String USER = "root";
-//    static final String PASS = "slashss1";
+//    static final String PASS = "1234";
 
     public static Boolean isLettersNumbersUnderscoreOnlyString(String string) {
         String regex = "^[a-zA-Z0-9_]*$";
