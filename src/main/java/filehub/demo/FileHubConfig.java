@@ -14,7 +14,7 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = { "filehub.demo" })
-public class FileConfig extends WebMvcConfigurerAdapter {
+public class FileHubConfig extends WebMvcConfigurerAdapter {
 
     @Bean
     public InternalResourceViewResolver resolver() {

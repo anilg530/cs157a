@@ -10,15 +10,15 @@ import java.util.Date;
 import java.util.UUID;
 
 public class CommonModel {
-//    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-//    static final String DB_URL = "jdbc:mysql://p3plcpnl0569.prod.phx3.secureserver.net:3306/cs157a";
-//    static final String USER = "cs157a_main";
-//    static final String PASS = "cs157a_db";
-
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/cs157a?useSSL=false";
-    static final String USER = "root";
-    static final String PASS = "slashss1";
+    static final String DB_URL = "jdbc:mysql://p3plcpnl0569.prod.phx3.secureserver.net:3306/cs157a";
+    static final String USER = "cs157a_main";
+    static final String PASS = "cs157a_db";
+
+//    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+//    static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/cs157a?useSSL=false";
+//    static final String USER = "root";
+//    static final String PASS = "slashss1";
 
     public static Boolean isLettersNumbersUnderscoreOnlyString(String string) {
         String regex = "^[a-zA-Z0-9_]*$";
