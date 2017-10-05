@@ -44,8 +44,7 @@ Dropzone.options.dropzoneFileUpload = {
     dictRemoveFile: 'Clear',
     acceptedFiles: 'image/jpeg,image/png,image/gif,application/pdf,.jpeg,.jpg,.png,.gif,.csv,.xls,.xlsx,.doc,.docx,.pdf,.txt',
     accept: function (file, done) {
-        //group_file_upload_file_exist_check(file, done);
-        done();
+        group_file_upload_file_exist_check(file, done);
     }
 };
 
@@ -613,4 +612,77 @@ function filehub_group_file_edit_file_folder_notes_submit(new_textarea_element, 
             //$('body').html(xhr.responseText);
         }
     });
+}
+
+function group_file_upload_file_exist_check(file, done) {
+    if (!processing) {
+        processing = true;
+        $('.form-submit-btn').prop('disabled', true);
+        var file_name = file.name;
+        $.ajax({
+            type: 'POST',
+            url: '/file/file_exist_check',
+            dataType: 'json',
+            data: {file_name: file_name},
+            beforeSend: function () {
+            },
+            success: function (response) {
+                if (response.status == 'success') {
+                    done();
+                    processing = false;
+                }
+                else {
+                    if (response.file_exist) {
+                        setTimeout(function () {
+                            swal({
+                                    html: true,
+                                    title: 'Overwrite?',
+                                    text: response.swal_error,
+                                    type: 'warning',
+                                    allowOutsideClick: true,
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#DD6B55',
+                                    confirmButtonText: 'Overwrite',
+                                    cancelButtonText: 'Cancel',
+                                    closeOnConfirm: true,
+                                    closeOnCancel: true
+                                },
+                                function (is_confirm) {
+                                    if (is_confirm) {
+                                        done();
+                                    }
+                                    else {
+                                        done(response.error);
+                                    }
+                                    processing = false;
+                                });
+                        }, 200);
+                    }
+                    else {
+                        if (response.error) {
+                            done(response.error);
+                        }
+                        processing = false;
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+                done('Internet connectivity issues. Please try again.');
+                processing = false;
+            }
+        });
+        return false;
+    }
+    else {
+        setTimeout(function () {
+            group_file_upload_file_exist_check(file, done);
+        }, 1500);
+    }
+}
+
+function filehub_clear_all_files(object) {
+    var myDropzone = Dropzone.forElement('#dropzone_file_upload');
+    myDropzone.removeAllFiles();
+    $(object).blur();
 }

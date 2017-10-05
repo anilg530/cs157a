@@ -156,3 +156,9 @@ html, body {
         margin-bottom: 5px;
     }
 }
+
+@media screen and (max-width: 767px) {
+    .no-wrap-xs > .table > tbody > tr > td {
+        white-space: normal;
+    }
+}

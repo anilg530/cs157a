@@ -1,13 +1,6 @@
 package filehub.demo;
 
 import com.google.gson.Gson;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,12 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.*;
 import java.util.*;
 
 @Controller
@@ -47,9 +36,11 @@ public class FileController {
             String current_path = "group_files/" + Integer.toString(group_id);
             request.getSession().setAttribute("group_id", group_id);
             request.getSession().setAttribute("root_dir", current_path);
-            ArrayList<String> folder_directory = FileModel.getDirectory(current_path);
             request.getSession().setAttribute("current_path", current_path);
+            ArrayList<String> folder_directory = FileModel.getDirectory(current_path);
+            ArrayList<ArrayList<String>> file_list = FileModel.getFileList(session);
             model.addAttribute("folder_directory", folder_directory);
+            model.addAttribute("file_list", file_list);
             String group_name = CommonModel.getGroupName(Integer.toString(group_id));
             model.addAttribute("group_name", group_name);
             // in group
@@ -95,7 +86,9 @@ public class FileController {
     public String refresh_files_table(HttpSession session, Model model) {
         String current_path = (String) session.getAttribute("current_path");
         ArrayList<String> folder_directory = FileModel.getDirectory(current_path);
+        ArrayList<ArrayList<String>> file_list = FileModel.getFileList(session);
         model.addAttribute("folder_directory", folder_directory);
+        model.addAttribute("file_list", file_list);
         return "includes_files_table";
     }
 
@@ -110,7 +103,9 @@ public class FileController {
                 String current_path = FileModel.getFilePathByID(id);
                 request.getSession().setAttribute("current_path", current_path);
                 ArrayList<String> folder_directory = FileModel.getDirectory(current_path);
+                ArrayList<ArrayList<String>> file_list = FileModel.getFileList(session);
                 model.addAttribute("folder_directory", folder_directory);
+                model.addAttribute("file_list", file_list);
                 return "includes_files_table";
             }
         }
@@ -129,7 +124,9 @@ public class FileController {
                     String previous_path = FileModel.getPreviousFolderPath(current_path);
                     request.getSession().setAttribute("current_path", previous_path);
                     ArrayList<String> folder_directory = FileModel.getDirectory(previous_path);
+                    ArrayList<ArrayList<String>> file_list = FileModel.getFileList(session);
                     model.addAttribute("folder_directory", folder_directory);
+                    model.addAttribute("file_list", file_list);
                     return "includes_files_table";
                 }
             }
@@ -165,8 +162,7 @@ public class FileController {
                 resultArray.put("error", "The specified folder: <b>" + folder_name + "</b> already exist.");
                 return gson.toJson(resultArray);
             } else if (FileModel.isAllowedAddNewFolder(user_id, group_id)) {
-                boolean newFolderCheck = FileModel.createNewFolder(session, folder_name);
-                if (newFolderCheck) {
+                if (FileModel.createNewFolder(session, folder_name)) {
                     resultArray.put("status", "success");
                     resultArray.put("toastr", "New Folder Created");
                     return gson.toJson(resultArray);
@@ -188,8 +184,7 @@ public class FileController {
             int group_id = (int) session.getAttribute("group_id");
             String id = request.getParameter("id").trim();
             if (FileModel.isAllowedDeleteFolder(user_id, group_id)) {
-                boolean folderDeletedCheck = FileModel.deleteFolder(session, id);
-                if (folderDeletedCheck) {
+                if (FileModel.deleteFolder(session, id)) {
                     resultArray.put("status", "success");
                     resultArray.put("toastr", "Folder Deleted");
                     return gson.toJson(resultArray);
@@ -231,8 +226,7 @@ public class FileController {
                     resultArray.put("error", "The folder name: <b>" + folder_name + "</b> is already taken.");
                     return gson.toJson(resultArray);
                 } else {
-                    boolean folderRenameCheck = FileModel.renameFolder(session, id, folder_name);
-                    if (folderRenameCheck) {
+                    if (FileModel.renameFolder(session, id, folder_name)) {
                         resultArray.put("status", "success");
                         resultArray.put("toastr", "Folder Renamed Successfully");
                         return gson.toJson(resultArray);
@@ -257,8 +251,7 @@ public class FileController {
             String id = request.getParameter("id").trim();
             String notes = request.getParameter("notes").trim();
             if (FileModel.isAllowedEditNotes(user_id, group_id)) {
-                boolean notesEditCheck = FileModel.editNotes(session, id, notes);
-                if (notesEditCheck) {
+                if (FileModel.editNotes(session, id, notes)) {
                     resultArray.put("status", "success");
                     resultArray.put("toastr", "Notes Updated Successfully");
                     return gson.toJson(resultArray);
@@ -270,21 +263,44 @@ public class FileController {
         return gson.toJson(resultArray);
     }
 
-    @RequestMapping(value = {"file/group_files_upload"})
+    @RequestMapping(value = {"file/file_exist_check"})
     @ResponseBody
-    public String group_files_upload(@RequestParam("fileToUpload") MultipartFile file, HttpSession session, Model model) throws IOException {
+    public String file_exist_check(HttpServletRequest request, HttpSession session, Model model) {
         HashMap<String, String> resultArray = new HashMap<>();
         Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("file_name") != null) {
+            int user_id = (int) session.getAttribute("user_id");
+            int group_id = (int) session.getAttribute("group_id");
+            String file_name = request.getParameter("file_name").trim();
+            if (FileModel.isAllowedUploadFiles(user_id, group_id)) {
+                if (FileModel.isFileAlreadyExist(session, file_name)) {
+                    resultArray.put("status", "failed");
+                    resultArray.put("file_exist", "true");
+                    resultArray.put("swal_error", "The selected file <b>" + file_name + "</b> already exist.<br>Replace it?");
+                    resultArray.put("error", "File (" + file_name + ") already exist.");
+                    return gson.toJson(resultArray);
+                } else {
+                    resultArray.put("status", "success");
+                    return gson.toJson(resultArray);
+                }
+            }
+        }
+        resultArray.put("status", "failed");
+        resultArray.put("error", "Unable to upload files. You may need higher access.");
+        return gson.toJson(resultArray);
+    }
 
-        // Save file on system
-        if (!file.getOriginalFilename().isEmpty()) {
-            BufferedOutputStream outputStream = new BufferedOutputStream(
-                    new FileOutputStream(new File("/SingleFileUpload", file.getOriginalFilename())));
-            outputStream.write(file.getBytes());
-            outputStream.flush();
-            outputStream.close();
-
-            resultArray.put("status", "success");
+    @RequestMapping(value = {"file/group_files_upload"})
+    @ResponseBody
+    public String group_files_upload(@RequestParam("fileToUpload") MultipartFile file, HttpServletRequest request, HttpSession session) {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && !file.getOriginalFilename().isEmpty()) {
+            int user_id = (int) session.getAttribute("user_id");
+            int group_id = (int) session.getAttribute("group_id");
+            if (FileModel.isAllowedUploadFiles(user_id, group_id) && FileModel.addNewFile(session, file)) {
+                resultArray.put("status", "success");
+            }
         } else {
             resultArray.put("status", "failed");
             resultArray.put("error", "Unable to upload file");

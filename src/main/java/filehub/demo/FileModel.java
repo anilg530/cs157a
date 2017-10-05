@@ -1,9 +1,10 @@
 package filehub.demo;
 
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -137,6 +138,58 @@ public class FileModel {
         return returnArray;
     }
 
+    public static ArrayList<ArrayList<String>> getFileList(HttpSession session) {
+        ArrayList<ArrayList<String>> returnArray = new ArrayList<>();
+        String current_path = (String) session.getAttribute("current_path");
+        String group_id = Integer.toString((int) session.getAttribute("group_id"));
+        //System.out.println(new_path);
+
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT * FROM file_data " +
+                    "WHERE (group_id='"+group_id+"' AND folder_path='" + current_path + "' AND file_status='Active' AND type='File')";
+            ResultSet sqlResult = stmt.executeQuery(myQuery);
+            while (sqlResult != null && sqlResult.next()) {
+                ArrayList<String> temp_array = new ArrayList<>();
+                for (int i = 1; i < 12; i++) {
+                    String columnValue = sqlResult.getString(i);
+                    if (columnValue == null) {
+                        columnValue = "";
+                    }
+                    temp_array.add(columnValue);
+                }
+                returnArray.add(temp_array);
+            }
+            sqlResult.close();
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnArray;
+    }
+
     public static String getTopLevelFolder(String currentPath) {
         return new File("group_files/" + currentPath).getName();
     }
@@ -161,22 +214,31 @@ public class FileModel {
         return returnBoolean;
     }
 
+    public static boolean isAllowedUploadFiles(int user_id, int group_id) {
+        boolean returnBoolean = true;
+        return returnBoolean;
+    }
+
     public static boolean isFolderAlreadyExist(HttpSession session, String new_folder_name) {
         boolean returnBoolean = true;
         int group_id = (int) session.getAttribute("group_id");
         String current_path = (String) session.getAttribute("current_path");
         String new_path = current_path + "/" + new_folder_name;
         Connection conn = null;
-        Statement stmt = null;
+
+        PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            stmt = conn.createStatement();
             String myQuery;
-            myQuery = "SELECT id FROM file_data WHERE (group_id='" + group_id + "' AND file_path='" + new_path + "' AND file_status='Active')";
-            ResultSet sqlResult = stmt.executeQuery(myQuery);
+            myQuery = "SELECT id FROM file_data WHERE (group_id = ? AND file_path = ? AND file_status = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, Integer.toString(group_id));
+            pstmt.setString(2, new_path);
+            pstmt.setString(3, "Active");
+            ResultSet sqlResult = pstmt.executeQuery();
             if (sqlResult != null) {
                 if (sqlResult.isBeforeFirst()) {
                     returnBoolean = true;
@@ -191,8 +253,57 @@ public class FileModel {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnBoolean;
+    }
+
+    public static boolean isFileAlreadyExist(HttpSession session, String new_file_name) {
+        boolean returnBoolean = true;
+        int group_id = (int) session.getAttribute("group_id");
+        String current_path = (String) session.getAttribute("current_path");
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT id FROM file_data WHERE (group_id = ? AND folder_path = ? AND file_name = ? AND file_status = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, Integer.toString(group_id));
+            pstmt.setString(2, current_path);
+            pstmt.setString(3, new_file_name);
+            pstmt.setString(4, "Active");
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    returnBoolean = true;
+                } else {
+                    returnBoolean = false;
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
                 }
                 conn.close();
             } catch (SQLException se2) {
@@ -631,7 +742,7 @@ public class FileModel {
 
             String myQuery;
             myQuery = "UPDATE file_data SET notes = ?,notes_by = ? " +
-                    "WHERE (id= ?)";
+                    "WHERE (id = ?)";
             pstmt = conn.prepareStatement(myQuery);
             pstmt.setString(1, notes);
             pstmt.setString(2, notes_by);
@@ -657,6 +768,107 @@ public class FileModel {
                     conn.close();
             } catch (SQLException se) {
                 se.printStackTrace();
+            }
+        }
+        return returnBoolean;
+    }
+
+    public static boolean addNewFile(HttpSession session, MultipartFile file) {
+        boolean returnBoolean = false;
+        boolean fileUploadSuccess = false;
+        String group_id = Integer.toString((int) session.getAttribute("group_id"));
+        String uploaded_by = Integer.toString((int) session.getAttribute("user_id"));
+        String file_name = file.getOriginalFilename();
+        String ext = "";
+        if (FilenameUtils.getExtension(file_name) != null && !FilenameUtils.getExtension(file_name).isEmpty()) {
+            ext = FilenameUtils.getExtension(file_name);
+        }
+        String file_uuid = CommonModel.generateUUID();
+        if (!ext.isEmpty()) {
+            file_uuid = file_uuid + "." + ext;
+        }
+        String current_path = (String) session.getAttribute("current_path");
+        String file_path = current_path + "/" + file_uuid;
+        File dir_temp = new File(current_path);
+        if (!dir_temp.exists()) {
+            try {
+                dir_temp.mkdirs();
+            } catch (SecurityException se) {
+                se.printStackTrace();
+            }
+        }
+        File temp_new_file = new File(current_path, file_uuid);
+        try {
+            temp_new_file.createNewFile();
+            BufferedOutputStream outputStream = null;
+            outputStream = new BufferedOutputStream(new FileOutputStream(temp_new_file));
+            outputStream.write(file.getBytes());
+            outputStream.flush();
+            outputStream.close();
+            fileUploadSuccess = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (fileUploadSuccess) {
+            Connection conn = null;
+            PreparedStatement pstmt = null;
+            try {
+                Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+                conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+                String myQuery;
+                myQuery = "UPDATE file_data SET file_status = ? , modified_by = ? " +
+                        "WHERE (group_id = ? AND folder_path = ? AND file_name = ? AND type = ? AND file_status = ?)";
+                pstmt = conn.prepareStatement(myQuery);
+                pstmt.setString(1, "Overwritten");
+                pstmt.setString(2, uploaded_by);
+                pstmt.setString(3, group_id);
+                pstmt.setString(4, current_path);
+                pstmt.setString(5, file_name);
+                pstmt.setString(6, "File");
+                pstmt.setString(7, "Active");
+                pstmt.executeUpdate();
+
+                String myQuery2;
+                myQuery2 = "INSERT INTO file_data(group_id,file_name,folder_Path,file_path,file_status,type,uploaded_by)" +
+                        "VALUES (? ,? , ?, ?, ?, ?, ?)";
+                pstmt = conn.prepareStatement(myQuery2, Statement.RETURN_GENERATED_KEYS);
+                pstmt.setString(1, group_id);
+                pstmt.setString(2, file_name);
+                pstmt.setString(3, current_path);
+                pstmt.setString(4, file_path);
+                pstmt.setString(5, "Active");
+                pstmt.setString(6, "File");
+                pstmt.setString(7, uploaded_by);
+                pstmt.executeUpdate();
+                ResultSet sqlResult = pstmt.getGeneratedKeys();
+                if (sqlResult != null) {
+                    if (sqlResult.next()) {
+                        //int insert_id = sqlResult.getInt(1);
+                        returnBoolean = true;
+                    }
+                    sqlResult.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (pstmt != null) {
+                        pstmt.close();
+                    }
+                    conn.close();
+                } catch (SQLException se2) {
+                }
+                try {
+                    if (conn != null)
+                        conn.close();
+                } catch (SQLException se) {
+                    se.printStackTrace();
+                }
             }
         }
         return returnBoolean;

@@ -12,7 +12,7 @@
         <div class="col-xs-6">
         </div>
         <div class="col-xs-6">
-            <button class="btn btn-default btn-sm pull-right form-submit-btn" type="button">Clear</button>
+            <button class="btn btn-default btn-sm pull-right form-submit-btn" type="button" onclick="filehub_clear_all_files(this);">Clear</button>
         </div>
     </div>
 </div>

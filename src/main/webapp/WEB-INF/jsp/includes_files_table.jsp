@@ -21,7 +21,7 @@
 </div>
 <% } %>
 <div class="col-xs-12">
-    <div class="table-responsive">
+    <div class="table-responsive no-wrap-xs">
         <table class="table table-striped">
             <thead>
             <tr>
@@ -93,6 +93,69 @@
             <%
                     }
                 } %>
+            <%
+                ArrayList<ArrayList<String>> file_list = (ArrayList<ArrayList<String>>) request.getAttribute("file_list");
+                if (file_list != null && file_list.size() > 0) {
+                    for (ArrayList<String> file_array : file_list) {
+                        if (file_array != null && file_array.size() > 0) {
+                            String temp_file_id = file_array.get(0);
+                            String temp_file_name = file_array.get(2);
+                            String uploaded_on = CommonModel.timeStampToFormalDate(file_array.get(9));
+                            String uploaded_by = CommonModel.getFullName(file_array.get(10));
+                            String notes = file_array.get(7).replaceAll("(\r\n|\n)", "<br />");
+                            //String notes = tempFolderInfo.get(7);
+                            String notes_by = CommonModel.getFullName(file_array.get(8));
+            %>
+            <tr>
+                <td class="vertical-align-middle">
+                    <span id="filehub_file_rename_span_<% out.print(temp_file_id); %>"
+                          class="text-nowrap" data-attr="<% out.print(temp_file_id); %>">
+                    <a href="javascript:;" class="icon-black"
+                       data-attr="<% out.print(temp_file_id); %>"
+                       onclick="_filehub_group_file_open_folder(this);"
+                       data-toggle="tooltip"
+                       data-original-title="Open"><i
+                            class="fa fa-file"></i>&nbsp;<% out.print(temp_file_name); %></a>
+                </span>
+                </td>
+                <td class="vertical-align-middle"><% out.print(uploaded_by); %></td>
+                <td class="vertical-align-middle"><% out.print(uploaded_on); %></td>
+                <td class="vertical-align-middle">
+                    <span
+                            class="filehub_group_file_notes_span <% if (notes.trim() == "") { out.print("custom_pointer_hover_gray_style"); } else { out.print("custom_pointer_hover_style"); } %>"
+                            data-attr="<% out.print(temp_file_id); %>"
+                            isEmpty="<% if (notes.trim() == "") { out.print("true"); } else { out.print("false"); } %>"
+                            data-toggle="tooltip"
+                            data-original-title="edit"
+                            onclick="filehub_group_file_edit_file_folder_notes(this);"><%
+                        if (notes.trim() == "") {
+                            out.print("add file notes");
+                        } else {
+                            out.print(notes);
+                        }%></span>
+                </td>
+                <td class="vertical-align-middle"><% out.print(notes_by); %></td>
+                <td class="vertical-align-middle">
+                    <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(temp_file_id); %>"
+                       onclick="_filehub_group_file_upload_folder_rename(this);" data-toggle="tooltip"
+                       data-original-title="Rename"><i class="fa fa-pencil"></i></a>
+                    <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(temp_file_id); %>"
+                       data-attr2="<% out.print(temp_file_name); %>"
+                       onclick="_filehub_group_file_delete_folder_submit(this);"
+                       data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash-o"></i></a>
+                </td>
+            </tr>
+            <% }
+            %>
+            <%
+                    }
+                } %>
+            <% if ((folder_directory == null || folder_directory.size() <= 0) && (file_list == null || file_list.size() <= 0)) { %>
+            <tr>
+                <td colspan="6">No files or folders created yet</td>
+            </tr>
+            <% } else { System.out.println("folder_directory: "+folder_directory.size());
+                System.out.println("file_list: "+file_list.size());} %>
             </tbody>
         </table>
     </div>
