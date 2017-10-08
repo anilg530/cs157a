@@ -13,9 +13,10 @@ import java.util.UUID;
 public class GroupController {
 
     @RequestMapping("group")
-    public String main(Model model) {
+    public String main(HttpSession session, Model model) {
         System.out.println("hi there"+ UUID.randomUUID());
         model.addAttribute("page_name", "Group Page 01");
+        System.out.println("group count "+ GroupModel.countGroup((int) session.getAttribute("user_id")));
         return "group_page";
     }
     @RequestMapping("group/create_group")
@@ -25,7 +26,7 @@ public class GroupController {
     }
 
     @RequestMapping("group/create_group/add")
-    public String createGroupTest(HttpServletRequest request, HttpSession session, Model model) {
+    public String addGroup(HttpServletRequest request, HttpSession session, Model model) {
         model.addAttribute("page_name", "Create Group");
         String groupname = request.getParameter("group_name");
         String groupPassword = request.getParameter("group_password");
@@ -40,11 +41,12 @@ public class GroupController {
     }
 
     @RequestMapping("group/all")
-    public String listGroups(Model model) {
+    public String listGroups(HttpServletRequest request, HttpSession session, Model model) {
         ArrayList<Groups> allGroup = GroupModel.getAllGroup();
         for (Groups e : allGroup) {
             System.out.println(e);
         }
+        System.out.println("group count "+ GroupModel.countGroup((int) session.getAttribute("user_id")));
         model.addAttribute("page_name", "View all group");
 
         return "group_page";

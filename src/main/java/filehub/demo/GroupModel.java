@@ -1,5 +1,7 @@
 package filehub.demo;
 
+import com.sun.istack.internal.Nullable;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -112,7 +114,7 @@ public class GroupModel {
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
             stmt = conn.createStatement();
 
-            String myQuery = "SELECT EXISTS (SELECT * FROM  groups WHERE group_name="+"'"+groupName+"')";
+            String myQuery = "SELECT EXISTS (SELECT * FROM  groups WHERE group_name=" + "'" + groupName + "')";
 
             ResultSet re = stmt.executeQuery(myQuery);
 
@@ -146,6 +148,54 @@ public class GroupModel {
         }
 
         return found;
+    }
+
+    public static int countGroup(int userId){
+        Connection conn = null;
+        Statement stmt = null;
+        int count = 0;
+
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = conn.createStatement();
+
+            String myQuery = "SELECT count(*)  FROM  groups WHERE group_owner="  + userId;
+
+            ResultSet re = stmt.executeQuery(myQuery);
+
+            while(re.next()){
+                count = re.getInt(1);
+            }
+            System.out.println("userid" + userId+ ": " + count + "groups");
+            stmt.close();
+            conn.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return count;
+
+
     }
     public static void testSQLConnectionWorking() {
         Connection connection = null;
