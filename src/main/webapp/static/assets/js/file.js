@@ -1,5 +1,6 @@
 var processing = false;
 var notEditing = true;
+var processingRename = false;
 $(document).ready(function () {
     file_reinitialization();
 });
@@ -39,7 +40,7 @@ Dropzone.options.dropzoneFileUpload = {
     url: '/file/group_files_upload/',
     paramName: 'fileToUpload',
     parallelUploads: 1,
-    maxFilesize: 2,
+    maxFilesize: 25,
     addRemoveLinks: true,
     dictRemoveFile: 'Clear',
     acceptedFiles: 'image/jpeg,image/png,image/gif,application/pdf,.jpeg,.jpg,.png,.gif,.csv,.xls,.xlsx,.doc,.docx,.pdf,.txt',
@@ -363,6 +364,63 @@ function filehub_group_file_delete_folder_submit(object) {
     }
 }
 
+function filehub_group_file_delete_file_submit(object) {
+    $(object).blur();
+    if (notEditing && !processing && filehub_group_file_upload_get_queue_size() <= 0) {
+        $(object).blur();
+        $(object).tooltip('hide');
+        var id = $(object).attr('data-attr');
+        var formData = {};
+        formData['id'] = id;
+        var file_name = $(object).attr('data-attr2');
+        setTimeout(function () {
+            swal({
+                    html: true,
+                    title: 'Delete this file?',
+                    text: 'Are you sure you want to delete: <b>' + file_name + '</b>?',
+                    type: 'warning',
+                    allowOutsideClick: true,
+                    showCancelButton: true,
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: 'Delete',
+                    cancelButtonText: 'Cancel',
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                },
+                function (is_confirm) {
+                    if (is_confirm) {
+                        $('.form-submit-btn').prop('disabled', true);
+                        $.ajax({
+                            type: 'POST',
+                            url: '/file/delete_file_submit_ajax',
+                            dataType: 'json',
+                            data: formData,
+                            beforeSend: function () {
+                            },
+                            success: function (response) {
+                                if (response.status == 'success') {
+                                    if (response.toastr) {
+                                        toastr.warning(response.toastr, null, {'positionClass': 'toast-bottom-right'});
+                                    }
+                                    filehub_refresh_files_table();
+                                }
+                                else if (response.error) {
+                                    swalError(response.error);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.log(xhr.responseText);
+                                internet_connectivity_swal();
+                                $('.form-submit-btn').prop('disabled', false);
+                                //$('body').html(xhr.responseText);
+                            }
+                        });
+                    }
+                });
+        }, 200);
+    }
+}
+
 function swalError(error_msg) {
     setTimeout(function () {
         swal({
@@ -402,6 +460,7 @@ function filehub_group_file_upload_folder_rename(object) {
     $(object).blur();
     if (notEditing && !processing && filehub_group_file_upload_get_queue_size() <= 0) {
         notEditing = false;
+        processingRename = false;
         $(object).blur();
         $(object).tooltip('hide');
 
@@ -423,16 +482,22 @@ function filehub_group_file_upload_folder_rename(object) {
         new_input.focus();
 
         $('.filehub_rename_input_box').on('blur', function () {
-            var new_name = $.trim(new_input.val());
-            filehub_group_file_upload_folder_rename_submit(new_name, id, old_name, new_input);
+            if (!processingRename) {
+                var new_name = $.trim(new_input.val());
+                filehub_group_file_upload_folder_rename_submit(new_name, id, old_name, new_input);
+            }
         });
 
         $('.filehub_rename_input_box').on('keydown', function (event) {
             var x = event.which;
             if (x === 13) {
                 event.preventDefault();
+                processingRename = true;
                 var new_name = $.trim(new_input.val());
                 filehub_group_file_upload_folder_rename_submit(new_name, id, old_name, new_input);
+            }
+            else if (x === 27) {
+                filehub_refresh_files_table();
             }
         });
     }
@@ -476,6 +541,7 @@ function filehub_group_file_upload_folder_rename_submit(folder_name, folder_id, 
                                     input_object.val(old_name);
                                     setTimeout(function () {
                                         input_object.focus();
+                                        processingRename = false;
                                     }, 200);
                                 }
                             });
@@ -685,4 +751,124 @@ function filehub_clear_all_files(object) {
     var myDropzone = Dropzone.forElement('#dropzone_file_upload');
     myDropzone.removeAllFiles();
     $(object).blur();
+}
+
+function filehub_group_file_upload_file_rename(object) {
+    $(object).blur();
+    if (notEditing && !processing && filehub_group_file_upload_get_queue_size() <= 0) {
+        notEditing = false;
+        processingRename = false;
+        $(object).blur();
+        $(object).tooltip('hide');
+
+        $('.form-submit-btn').prop('disabled', true);
+        var dropzoneFileUpload = Dropzone.forElement('#dropzone_file_upload');
+        dropzoneFileUpload.removeEventListeners();
+
+        var id = $(object).attr('data-attr');
+
+        var rename_span = $("#filehub_file_rename_span_" + id);
+        var file_name_with_ext = $.trim(rename_span.text());
+        var ext = file_name_with_ext.split('.').pop();
+        var old_name = file_name_with_ext.replace(/\.[^/.]+$/, '');
+        var new_input = $('<input>', {
+            val: old_name,
+            type: 'text',
+            class: 'form-control filehub_rename_input_box'
+        });
+
+        $(rename_span).replaceWith(new_input);
+        new_input.focus();
+
+        $('.filehub_rename_input_box').on('blur', function () {
+            if (!processingRename) {
+                var new_name = $.trim(new_input.val() + "." + ext);
+                filehub_group_file_upload_file_rename_submit(new_name, id, old_name, new_input);
+            }
+        });
+
+        $('.filehub_rename_input_box').on('keydown', function (event) {
+            var x = event.which;
+            if (x === 13) {
+                event.preventDefault();
+                processingRename = true;
+                var new_name = $.trim(new_input.val() + "." + ext);
+                filehub_group_file_upload_file_rename_submit(new_name, id, old_name, new_input);
+            }
+            else if (x === 27) {
+                filehub_refresh_files_table();
+            }
+        });
+    }
+}
+
+function filehub_group_file_upload_file_rename_submit(file_name, file_id, old_name, input_object) {
+    var formData = {};
+    formData['id'] = file_id;
+    formData['file_name'] = file_name;
+    $.ajax({
+        type: 'POST',
+        url: '/file/rename_file_submit_ajax',
+        dataType: 'json',
+        data: formData,
+        beforeSend: function () {
+        },
+        success: function (response) {
+            if (response.status == 'success') {
+                if (response.toastr) {
+                    toastr.success(response.toastr, null, {'positionClass': 'toast-bottom-right'});
+                }
+                var dropzoneFileUpload = Dropzone.forElement('#dropzone_file_upload');
+                dropzoneFileUpload.setupEventListeners();
+                filehub_refresh_files_table();
+            }
+            else {
+                if (response.error) {
+                    setTimeout(function () {
+                        swal({
+                                html: true,
+                                title: 'Oops...',
+                                text: response.error,
+                                type: 'error',
+                                allowOutsideClick: true,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                cancelButtonText: 'OK',
+                            },
+                            function (is_confirm) {
+                                if (!is_confirm) {
+                                    input_object.val(old_name);
+                                    setTimeout(function () {
+                                        input_object.focus();
+                                        processingRename = false;
+                                    }, 200);
+                                }
+                            });
+                    }, 200);
+                }
+                if (response.swal_error) {
+                    var dropzoneFileUpload = Dropzone.forElement('#dropzone_file_upload');
+                    dropzoneFileUpload.setupEventListeners();
+                    filehub_refresh_files_table();
+                    setTimeout(function () {
+                        swal({
+                            html: true,
+                            title: 'Oops...',
+                            text: response.swal_error,
+                            type: 'error',
+                            allowOutsideClick: true,
+                            showCancelButton: true,
+                            showConfirmButton: false,
+                            cancelButtonText: 'OK',
+                        });
+                    }, 200);
+                }
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log(xhr.responseText);
+            internet_connectivity_swal();
+            //$('body').html(xhr.responseText);
+        }
+    });
 }

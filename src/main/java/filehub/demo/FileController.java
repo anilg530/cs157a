@@ -3,13 +3,12 @@ package filehub.demo;
 import com.google.gson.Gson;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.util.*;
 
 @Controller
@@ -70,15 +69,7 @@ public class FileController {
 
     @RequestMapping(value = {"file/test"})
     public String test(HttpServletRequest request, HttpSession session, Model model) {
-        String path = "group_files/1/bobcat";
-        String new_path = "group_files/1/jordanboy";
-        ArrayList<ArrayList<String>> temp = FileModel.getSubfilesAndFoldersWithNewPath(path, new_path);
-        for (ArrayList<String> e : temp) {
-            for (String s : e) {
-                System.out.println(s);
-            }
-            System.out.println("-------------");
-        }
+        System.out.println(CommonModel.generateRandomCode());
         return "";
     }
 
@@ -236,6 +227,59 @@ public class FileController {
         }
         resultArray.put("status", "failed");
         resultArray.put("swal_error", "Unable to rename folder. You may need higher access.");
+        return gson.toJson(resultArray);
+    }
+
+    @RequestMapping(value = {"file/delete_file_submit_ajax"})
+    @ResponseBody
+    public String delete_file_submit_ajax(HttpServletRequest request, HttpSession session, Model model) {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("id") != null) {
+            int user_id = (int) session.getAttribute("user_id");
+            int group_id = (int) session.getAttribute("group_id");
+            String id = request.getParameter("id").trim();
+            if (FileModel.isAllowedDeleteFile(user_id, group_id)) {
+                if (FileModel.deleteFile(session, id)) {
+                    resultArray.put("status", "success");
+                    resultArray.put("toastr", "File Deleted");
+                    return gson.toJson(resultArray);
+                }
+            }
+        }
+        resultArray.put("status", "failed");
+        resultArray.put("error", "Unable to delete folder. You may need higher access.");
+        return gson.toJson(resultArray);
+    }
+
+    @RequestMapping(value = {"file/rename_file_submit_ajax"})
+    @ResponseBody
+    public String rename_file_submit_ajax(HttpServletRequest request, HttpSession session, Model model) {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("file_name") != null && request.getParameter("id") != null) {
+            int user_id = (int) session.getAttribute("user_id");
+            int group_id = (int) session.getAttribute("group_id");
+            String file_name = request.getParameter("file_name").trim();
+            String id = request.getParameter("id").trim();
+            if (FileModel.isAllowedRenameFile(user_id, group_id)) {
+                if (FileModel.isFilenameTheSame(id, file_name)) {
+                    resultArray.put("status", "success");
+                    return gson.toJson(resultArray);
+                } else if (FileModel.isFileAlreadyExistRename(session, id, file_name)) {
+                    resultArray.put("status", "failed");
+                    resultArray.put("error", "Another file already have the same name: <b>" + file_name + "</b>.");
+                    return gson.toJson(resultArray);
+                } else {
+                    FileModel.renameFile(session, id, file_name);
+                    resultArray.put("status", "success");
+                    resultArray.put("toastr", "File Renamed Successfully");
+                    return gson.toJson(resultArray);
+                }
+            }
+        }
+        resultArray.put("status", "failed");
+        resultArray.put("swal_error", "Unable to rename file. You may need higher access.");
         return gson.toJson(resultArray);
     }
 

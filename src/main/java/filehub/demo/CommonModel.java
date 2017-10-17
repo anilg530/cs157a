@@ -2,11 +2,13 @@ package filehub.demo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 import java.util.UUID;
 
 public class CommonModel {
@@ -85,8 +87,8 @@ public class CommonModel {
 
             stmt = conn.createStatement();
             String myQuery;
-            myQuery = "SELECT first_name,last_name FROM user_profile " +
-                    "WHERE (user_id='" + user_id + "' AND status='Active')";
+            myQuery = "SELECT first_name,last_name FROM user " +
+                    "WHERE (id='" + user_id + "' AND login_status='Active')";
             ResultSet sqlResult = stmt.executeQuery(myQuery);
             if (sqlResult != null && sqlResult.next()) {
                 String first_name = sqlResult.getString(1);
@@ -203,6 +205,81 @@ public class CommonModel {
             } catch (SQLException se) {
                 se.printStackTrace();
             }
+        }
+        return returnString;
+    }
+
+    public static boolean isCodeAlreadyOnDB(String code) {
+        boolean returnBoolean = false;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT url_code FROM file_url WHERE (url_code = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, code);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    returnBoolean = true;
+                }
+                sqlResult.close();
+            }
+            if (!returnBoolean) {
+                String myQuery2;
+                myQuery2 = "SELECT id FROM group_invites WHERE (id = ?)";
+                pstmt = conn.prepareStatement(myQuery2);
+                pstmt.setString(1, code);
+                ResultSet sqlResult2 = pstmt.executeQuery();
+                if (sqlResult2 != null) {
+                    if (sqlResult2.isBeforeFirst()) {
+                        returnBoolean = true;
+                    }
+                    sqlResult2.close();
+                }
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnBoolean;
+    }
+
+    public static String getCode() {
+        String returnString = "";
+        Random r = new Random();
+
+        String characters = "123456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+        for (int i = 0; i < 10; i++) {
+            returnString = returnString + characters.charAt(r.nextInt(characters.length()));
+        }
+        return returnString;
+    }
+
+    public static String generateRandomCode() {
+        String returnString = getCode();
+        while (isCodeAlreadyOnDB(returnString)) {
+            returnString = getCode();
         }
         return returnString;
     }
