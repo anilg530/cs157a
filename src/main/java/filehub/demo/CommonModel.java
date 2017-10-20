@@ -32,6 +32,11 @@ public class CommonModel {
         return string.matches(regex);
     }
 
+    public static Boolean isValidFileName(String string) {
+        String regex = "^[a-zA-Z0-9_.)('\\[\\] ]*$";
+        return string.matches(regex);
+    }
+
     public static Boolean isValidEmailString(String string) {
         String regex = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
         return string.matches(regex);
