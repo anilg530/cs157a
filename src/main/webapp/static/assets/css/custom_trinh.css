@@ -121,6 +121,11 @@ html, body {
     width: 100%;
 }
 
+.cursor-hand {
+    cursor: pointer;
+    cursor: hand;
+}
+
 .flex-new-folder-row {
     display: flex;
     flex-flow: row;

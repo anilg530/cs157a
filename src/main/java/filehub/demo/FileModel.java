@@ -231,6 +231,16 @@ public class FileModel {
         return returnBoolean;
     }
 
+    public static boolean isAllowedRemoveFileURL(int user_id, int group_id) {
+        boolean returnBoolean = true;
+        return returnBoolean;
+    }
+
+    public static boolean isAllowedShareFile(int user_id, int group_id) {
+        boolean returnBoolean = true;
+        return returnBoolean;
+    }
+
     public static boolean isFilenameTheSame(String id, String new_file_name) {
         boolean returnBoolean = false;
         if (new_file_name.equals(getFileName(id))) {
@@ -648,6 +658,16 @@ public class FileModel {
     public static String getFileName(String id) {
         ArrayList<String> fileInfo = FileModel.getFileInfoByID(id);
         return fileInfo.get(2);
+    }
+
+    public static String getGroupIDByFileID(String id) {
+        ArrayList<String> fileInfo = FileModel.getFileInfoByID(id);
+        return fileInfo.get(1);
+    }
+
+    public static String getFilePathByFileID(String id) {
+        ArrayList<String> fileInfo = FileModel.getFileInfoByID(id);
+        return fileInfo.get(4);
     }
 
     public static String getPreviousFolderPath(String path) {
@@ -1196,6 +1216,267 @@ public class FileModel {
             if (sqlResult != null) {
                 if (sqlResult.next()) {
                 }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+    }
+
+    public static boolean isFileURLExist(String file_id) {
+        boolean returnBoolean = false;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT url_code FROM file_url WHERE (file_id = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, file_id);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    returnBoolean = true;
+                } else {
+                    returnBoolean = false;
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnBoolean;
+    }
+
+    public static String getFileURLcode(String file_id) {
+        String returnString = "";
+
+        if (isFileURLExist(file_id)) {
+            Connection conn = null;
+            Statement stmt = null;
+            try {
+                Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+                conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+                stmt = conn.createStatement();
+                String myQuery;
+                myQuery = "SELECT * FROM file_url " +
+                        "WHERE (file_id='" + file_id + "')";
+                ResultSet sqlResult = stmt.executeQuery(myQuery);
+                if (sqlResult != null && sqlResult.next()) {
+                    returnString = sqlResult.getString(1);
+                    sqlResult.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                    conn.close();
+                } catch (SQLException se2) {
+                }
+                try {
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (SQLException se) {
+                    se.printStackTrace();
+                }
+            }
+        } else {
+            // file url doesn't exist. create one
+            returnString = CommonModel.generateRandomCode();
+
+            Connection conn = null;
+
+            PreparedStatement pstmt = null;
+            try {
+                Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+                conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+                String myQuery;
+                myQuery = "INSERT INTO file_url(url_code,file_id) values(?, ?) ";
+                pstmt = conn.prepareStatement(myQuery, Statement.RETURN_GENERATED_KEYS);
+                pstmt.setString(1, returnString);
+                pstmt.setString(2, file_id);
+                pstmt.executeUpdate();
+                ResultSet sqlResult = pstmt.getGeneratedKeys();
+                if (sqlResult != null) {
+                    if (sqlResult.next()) {
+                    }
+                    sqlResult.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (pstmt != null) {
+                        pstmt.close();
+                    }
+                    conn.close();
+                } catch (SQLException se2) {
+                }
+                try {
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (SQLException se) {
+                    se.printStackTrace();
+                }
+            }
+        }
+        return returnString;
+    }
+
+    public static boolean isValidFileURL(String file_url) {
+        boolean returnBoolean = false;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT url_code FROM file_url WHERE (url_code = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, file_url);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    returnBoolean = true;
+                } else {
+                    returnBoolean = false;
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnBoolean;
+    }
+
+    public static int getFileIDByFileURL(String file_url) {
+        Connection conn = null;
+
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT file_id FROM file_url WHERE (url_code = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, file_url);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    sqlResult.next();
+                    return sqlResult.getInt(1);
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    public static void removeFileURL(String file_id) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "DELETE FROM file_url WHERE (file_id= ?)";
+            pstmt = conn.prepareStatement(myQuery, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, file_id);
+            pstmt.executeUpdate();
+            ResultSet sqlResult = pstmt.getGeneratedKeys();
+            if (sqlResult != null) {
                 sqlResult.close();
             }
         } catch (SQLException se) {
