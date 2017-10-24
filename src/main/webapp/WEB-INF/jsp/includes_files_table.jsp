@@ -1,7 +1,6 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="filehub.demo.FileModel" %>
 <%@ page import="filehub.demo.CommonModel" %>
-<%@ page import="java.io.File" %>
 <%
     String current_path = (String) session.getAttribute("current_path");
     if (!FileModel.isInRootDIR(session, current_path)) {

@@ -26,32 +26,17 @@
         <div class="col-xs-12">
             <div class="row">
                 <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8">
-                    <div class="col-xs-12">
-                        <div class="row">
-                            <div class="col-xs-6">
-                                <h4>Group: ${group_name}</h4>
-                            </div>
-                            <div class="col-xs-6">
-                                <div id="includes_files_table_header_html">
-                                    <jsp:include page="includes_files_table_header.jsp"/>
-                                </div>
-                            </div>
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#received_html">Received</a></li>
+                        <li><a data-toggle="tab" href="#sent_html">Sent</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="received_html" class="tab-pane fade in active">
+                            <jsp:include page="includes_messaging_receive.jsp"/>
                         </div>
-                    </div>
-                    <div class="col-xs-12">
-                        <div class="row">
-                            <hr>
+                        <div id="sent_html" class="tab-pane fade">
+                            <jsp:include page="includes_messaging_sent.jsp"/>
                         </div>
-                    </div>
-                    <div id="includes_files_table_html">
-                        <jsp:include page="includes_files_table.jsp"/>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8">
-                    <div id="includes_drag_drop_file_html">
-                        <jsp:include page="includes_drag_drop_file.jsp"/>
                     </div>
                 </div>
             </div>
