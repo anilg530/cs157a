@@ -70,13 +70,8 @@ public class FileController {
 
     @RequestMapping(value = {"file/test"})
     public String test(HttpServletRequest request, HttpSession session, Model model) {
-        ArrayList<ArrayList<String>> temp = MessagingModel.getGroupMembersForMessaging("1");
-        System.out.println("---");
-        for (ArrayList<String> e : temp) {
-            System.out.println(e.get(0));
-            System.out.println(e.get(1));
-            System.out.println(e.get(2));
-        }
+        String test = MessagingModel.getJSONUserSuggestionSearchByEmailFormalName(null, "");
+        System.out.println(test);
         return "";
     }
 

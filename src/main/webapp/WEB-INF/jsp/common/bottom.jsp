@@ -16,4 +16,5 @@
 <script src="/assets/third_party/autosize-4.0.0/autosize.min.js"></script>
 <script src="/assets/third_party/jquery.steps-1.1.0/jquery.steps.min.js"></script>
 <script src="/assets/third_party/easy-pie-chart-2.1.7/jquery.easypiechart.min.js"></script>
+<script src="/assets/third_party/jquery-autocomplete-1.4.3/jquery.autocomplete.js"></script>
 <script src="/assets/js/default_test.js"></script>

@@ -82,6 +82,21 @@
         }, 200);
         </c:otherwise>
         </c:choose>
+
+        $('#send_to_email').devbridgeAutocomplete({
+            serviceUrl: '/messaging/send_message_autocomplete_suggestions',
+            deferRequestBy: 200,
+            onSelect: function (suggestion) {
+                //alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
+                $('#send_to_email').val(suggestion.data);
+                setTimeout(function () {
+                    $('#send_message_textarea').focus();
+                }, 200);
+            },
+            formatResult: function (suggestion, currentValue) {
+                return suggestion.value + " (" + suggestion.data + ")";
+            }
+        });
     });
 
     function filehub_modal_cancel() {

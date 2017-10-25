@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class MessagingController {
@@ -81,6 +83,14 @@ public class MessagingController {
             int user_id = (int) session.getAttribute("user_id");
             String user_id_string = Integer.toString(user_id);
             String send_to_id = CommonModel.getUserIDByEmail(send_to_email);
+            if (user_id_string.equals(send_to_id)) {
+                HashMap<String, String> error_array = new HashMap<>();
+                error_array.put("send_to_email", "You cannot send a message to yourself.");
+                String error_array_gson = gson.toJson(error_array);
+                resultArray.put("status", "fail");
+                resultArray.put("error", error_array_gson);
+                return gson.toJson(resultArray);
+            }
             MessagingModel.insertNewMessage(user_id_string, send_to_id, message);
             resultArray.put("status", "success");
             resultArray.put("toastr", "Message Sent");
@@ -107,5 +117,25 @@ public class MessagingController {
         } else {
             return null;
         }
+    }
+
+    @RequestMapping(value = {"messaging/send_message_autocomplete_suggestions"})
+    @ResponseBody
+    public String send_message_autocomplete_suggestions(HttpServletRequest request, HttpSession session) {
+//        Map<String, String[]> temp = request.getParameterMap();
+//        for (Map.Entry<String, String[]> entry : temp.entrySet()) {
+//            String key = entry.getKey();
+//            String value[] = entry.getValue();
+//            System.out.println("key: " + key);
+//            for (int i = 0; i < value.length; i++) {
+//                System.out.println(value[i]);
+//            }
+//        }
+        if (CommonModel.isLoggedIn(request, session) && request.getParameter("query") != null) {
+            int user_id = (int) session.getAttribute("user_id");
+            String user_id_string = Integer.toString(user_id);
+            return MessagingModel.getJSONUserSuggestionSearchByEmailFormalName(user_id_string, request.getParameter("query"));
+        }
+        return MessagingModel.getJSONUserSuggestionSearchByEmailFormalName(null, "");
     }
 }
