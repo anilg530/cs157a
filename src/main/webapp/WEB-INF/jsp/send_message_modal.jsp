@@ -85,7 +85,7 @@
 
         $('#send_to_email').devbridgeAutocomplete({
             serviceUrl: '/messaging/send_message_autocomplete_suggestions',
-            deferRequestBy: 200,
+            deferRequestBy: 400,
             onSelect: function (suggestion) {
                 //alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
                 $('#send_to_email').val(suggestion.data);
@@ -94,7 +94,9 @@
                 }, 200);
             },
             formatResult: function (suggestion, currentValue) {
-                return suggestion.value + " (" + suggestion.data + ")";
+                var suggestion_string = suggestion.value + " (" + suggestion.data + ")";
+                var currentValue = new RegExp("(" + currentValue + ")","gi");
+                return suggestion_string.replace(currentValue, "<strong>$1</strong>");
             }
         });
     });
