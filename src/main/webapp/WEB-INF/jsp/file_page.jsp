@@ -18,9 +18,16 @@
 </head>
 <body>
 
-<jsp:include page="common/navigation.jsp"/>
-
-<a href="/file/view/1">Browse Files</a>
+<div id="mySidenav" class="sidenav">
+    <jsp:include page="common/messaging_sidebar.jsp"/>
+</div>
+<div id="root_html">
+    <jsp:include page="common/navigation.jsp"/>
+    <a href="/file/view/1">Browse Files</a>
+    <br>
+    <br>
+    <button type="button" onclick="refresh_messaging_sidebar();">Refresh Messaging Sidebar</button>
+</div>
 
 <jsp:include page="common/bottom.jsp"/>
 <script src="/assets/js/file.js"></script>

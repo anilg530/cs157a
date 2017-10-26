@@ -8,6 +8,11 @@ $(document).ready(function () {
 function file_reinitialization() {
     $('[data-toggle="tooltip"]').tooltip({container: 'body'});
 
+    $('[data-toggle="tooltip"]').on('click', function () {
+        $(this).blur();
+        $(this).tooltip('hide');
+    });
+
     processing = false;
     notEditing = true;
 }
@@ -43,7 +48,7 @@ Dropzone.options.dropzoneFileUpload = {
     maxFilesize: 25,
     addRemoveLinks: true,
     dictRemoveFile: 'Clear',
-    acceptedFiles: 'image/jpeg,image/png,image/gif,application/pdf,.jpeg,.jpg,.png,.gif,.csv,.xls,.xlsx,.doc,.docx,.pdf,.txt',
+    acceptedFiles: 'image/jpeg,image/png,image/gif,application/pdf,.jpeg,.jpg,.png,.gif,.csv,.xls,.xlsx,.doc,.docx,.pdf,.txt,.psd',
     accept: function (file, done) {
         group_file_upload_file_exist_check(file, done);
     }
@@ -79,10 +84,8 @@ function ajaxTest() {
 }
 
 function filehub_group_file_open_folder(object) {
-    $(object).blur();
     if (notEditing && !processing && filehub_group_file_upload_get_queue_size() <= 0) {
         var backup_html = $('#includes_files_table_html').html();
-        $(object).blur();
         $(object).tooltip('hide');
         var id = $(object).attr('data-attr');
         var formData = {};
@@ -308,9 +311,7 @@ function filehub_group_file_new_folder_submit(form) {
 }
 
 function filehub_group_file_delete_folder_submit(object) {
-    $(object).blur();
     if (notEditing && !processing && filehub_group_file_upload_get_queue_size() <= 0) {
-        $(object).blur();
         $(object).tooltip('hide');
         var id = $(object).attr('data-attr');
         var formData = {};
@@ -365,9 +366,7 @@ function filehub_group_file_delete_folder_submit(object) {
 }
 
 function filehub_group_file_delete_file_submit(object) {
-    $(object).blur();
     if (notEditing && !processing && filehub_group_file_upload_get_queue_size() <= 0) {
-        $(object).blur();
         $(object).tooltip('hide');
         var id = $(object).attr('data-attr');
         var formData = {};
@@ -457,11 +456,9 @@ function filehub_group_file_upload_get_queue_size() {
 }
 
 function filehub_group_file_upload_folder_rename(object) {
-    $(object).blur();
     if (notEditing && !processing && filehub_group_file_upload_get_queue_size() <= 0) {
         notEditing = false;
         processingRename = false;
-        $(object).blur();
         $(object).tooltip('hide');
 
         $('.form-submit-btn').prop('disabled', true);
@@ -582,7 +579,6 @@ function filehub_group_file_edit_file_folder_notes(object) {
         var dropzoneFileUpload = Dropzone.forElement('#dropzone_file_upload');
         dropzoneFileUpload.removeEventListeners();
 
-        $(object).blur();
         $(object).tooltip('hide');
         if ($(object).attr('isEmpty') == 'true') {
             var notes_text = '';
@@ -754,11 +750,9 @@ function filehub_clear_all_files(object) {
 }
 
 function filehub_group_file_upload_file_rename(object) {
-    $(object).blur();
     if (notEditing && !processing && filehub_group_file_upload_get_queue_size() <= 0) {
         notEditing = false;
         processingRename = false;
-        $(object).blur();
         $(object).tooltip('hide');
 
         $('.form-submit-btn').prop('disabled', true);
@@ -863,6 +857,86 @@ function filehub_group_file_upload_file_rename_submit(file_name, file_id, old_na
                         });
                     }, 200);
                 }
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log(xhr.responseText);
+            internet_connectivity_swal();
+            //$('body').html(xhr.responseText);
+        }
+    });
+}
+
+function filehub_group_share_file(object) {
+    var file_id = $(object).attr('data-attr');
+    var formData = {};
+    formData['file_id'] = file_id;
+    $.ajax({
+        type: 'POST',
+        url: '/file/group_share_file',
+        dataType: 'html',
+        data: formData,
+        beforeSend: function () {
+            //$('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>');
+        },
+        success: function (response) {
+            $('#ajax_modal_body_sm').html(response).promise().done(function () {
+            });
+            $('#ajax_modal_sm').modal('show');
+        },
+        error: function (xhr, status, error) {
+            internet_connectivity_swal();
+            console.log(xhr.responseText);
+            //$('body').html(xhr.responseText);
+        }
+    });
+    return false;
+}
+
+function copyToClipboard(object) {
+    var element_id = $(object).attr('id');
+    var aux = document.createElement("div");
+    aux.setAttribute("contentEditable", true);
+    aux.innerHTML = document.getElementById(element_id).innerHTML;
+    aux.setAttribute("onfocus", "document.execCommand('selectAll',false,null)");
+    document.body.appendChild(aux);
+    aux.focus();
+    document.execCommand("copy");
+    document.body.removeChild(aux);
+    toastr.success("Copied", null, {'positionClass': 'toast-bottom-right'});
+}
+
+function filehub_remove_file_url(object) {
+    var file_id = $(object).attr('data-attr');
+    var formData = {};
+    formData['file_id'] = file_id;
+    $.ajax({
+        type: 'POST',
+        url: '/file/remove_file_url',
+        dataType: 'json',
+        data: formData,
+        beforeSend: function () {
+        },
+        success: function (response) {
+            if (response.status == 'success') {
+                if (response.toastr) {
+                    toastr.warning(response.toastr, null, {'positionClass': 'toast-bottom-right'});
+                }
+                $('#ajax_modal_sm').modal('hide');
+            }
+            else if (response.error) {
+                setTimeout(function () {
+                    swal({
+                        html: true,
+                        title: 'Oops...',
+                        text: response.error,
+                        type: 'error',
+                        allowOutsideClick: true,
+                        showCancelButton: true,
+                        showConfirmButton: false,
+                        cancelButtonText: 'OK',
+                    });
+                }, 200);
             }
         },
         error: function (xhr, status, error) {

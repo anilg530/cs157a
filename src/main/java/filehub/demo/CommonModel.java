@@ -1,5 +1,8 @@
 package filehub.demo;
 
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
@@ -7,6 +10,7 @@ import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
@@ -29,6 +33,11 @@ public class CommonModel {
 
     public static Boolean isLettersNumbersUnderscoreSpaceOnlyString(String string) {
         String regex = "^[a-zA-Z0-9_. ]*$";
+        return string.matches(regex);
+    }
+
+    public static Boolean isValidFileName(String string) {
+        String regex = "^[a-zA-Z0-9_.)('\\[\\] ]*$";
         return string.matches(regex);
     }
 
@@ -265,7 +274,7 @@ public class CommonModel {
         return returnBoolean;
     }
 
-    public static String getCode() {
+    private static String getCode() {
         String returnString = "";
         Random r = new Random();
 
@@ -282,5 +291,235 @@ public class CommonModel {
             returnString = getCode();
         }
         return returnString;
+    }
+
+    public static String getEmailByUserID(String user_id) {
+        Connection conn = null;
+
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT username FROM user WHERE (id = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, user_id);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    sqlResult.next();
+                    return sqlResult.getString(1);
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public static String getUserIDByEmail(String email) {
+        Connection conn = null;
+
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT id FROM user WHERE (username = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, email);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    sqlResult.next();
+                    return sqlResult.getString(1);
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public static boolean isEmailExist(String email) {
+        Connection conn = null;
+
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT id FROM user WHERE (username = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, email);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    return true;
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public static String getAllGroupIDMembershipCommaSeparated(String user_id) {
+        String returnString = "";
+        Connection conn = null;
+
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT DISTINCT group_members.group_id FROM group_members" +
+                    " JOIN groups ON (groups.id=group_members.group_id) WHERE (group_members.user_id = ? AND groups.group_status = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, user_id);
+            pstmt.setString(2, "Active");
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    ArrayList<String> temp = new ArrayList<>();
+                    while (sqlResult.next()) {
+                        temp.add(sqlResult.getString(1));
+                    }
+                    String idList = temp.toString();
+                    returnString = idList.substring(1, idList.length() - 1).replace(", ", ",");
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnString;
+    }
+
+    public static boolean isMaster(String user_id, String group_id) {
+        boolean returnBoolean = false;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT user_permission FROM group_members WHERE (user_id = ? AND group_id = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, user_id);
+            pstmt.setString(2, group_id);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    sqlResult.next();
+                    String user_permission = sqlResult.getString(1);
+                    if (user_permission.equals("5")) {
+                        returnBoolean = true;
+                    }
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnBoolean;
     }
 }

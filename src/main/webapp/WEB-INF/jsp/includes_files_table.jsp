@@ -1,7 +1,6 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="filehub.demo.FileModel" %>
 <%@ page import="filehub.demo.CommonModel" %>
-<%@ page import="java.io.File" %>
 <%
     String current_path = (String) session.getAttribute("current_path");
     if (!FileModel.isInRootDIR(session, current_path)) {
@@ -81,6 +80,9 @@
                 <td class="vertical-align-middle"><% out.print(notes_by); %></td>
                 <td class="vertical-align-middle">
                     <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(temp_folder_id); %>"
+                       onclick="filehub_group_file_open_folder(this);" data-toggle="tooltip"
+                       data-original-title="Open"><i class="fa fa-search"></i></a>
+                    <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(temp_folder_id); %>"
                        onclick="filehub_group_file_upload_folder_rename(this);" data-toggle="tooltip"
                        data-original-title="Rename"><i class="fa fa-pencil"></i></a>
                     <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(temp_folder_id); %>"
@@ -113,11 +115,9 @@
                 <td class="vertical-align-middle">
                     <span id="filehub_file_rename_span_<% out.print(temp_file_id); %>"
                           class="text-nowrap" data-attr="<% out.print(temp_file_id); %>">
-                    <a href="javascript:;" class="icon-black"
-                       data-attr="<% out.print(temp_file_id); %>"
-                       onclick="_filehub_group_file_open_folder(this);"
+                    <a href="/file/open/<% out.print(temp_file_id); %>" class="icon-black"
                        data-toggle="tooltip"
-                       data-original-title="Open"><i
+                       data-original-title="Open" target="_blank"><i
                             class="fa <% out.print(fa_icon); %>"></i>&nbsp;<% out.print(temp_file_name); %></a>
                 </span>
                 </td>
@@ -139,6 +139,11 @@
                 </td>
                 <td class="vertical-align-middle"><% out.print(notes_by); %></td>
                 <td class="vertical-align-middle">
+                    <a class="btn no-padding" href="/file/open/<% out.print(temp_file_id); %>" data-toggle="tooltip"
+                       data-original-title="Open" target="_blank"><i class="fa fa-search"></i></a>
+                    <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(temp_file_id); %>"
+                       onclick="filehub_group_share_file(this);" data-toggle="tooltip"
+                       data-original-title="Share"><i class="fa fa-link"></i></a>
                     <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(temp_file_id); %>"
                        onclick="filehub_group_file_upload_file_rename(this);" data-toggle="tooltip"
                        data-original-title="Rename"><i class="fa fa-pencil"></i></a>
