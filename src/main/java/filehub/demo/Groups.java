@@ -7,6 +7,7 @@ public class Groups {
     private String group_password;
     private String group_status;
     private String created_on;
+    private int user_permission;
 
 
     public Groups(int id, String group_name, int group_owner, String group_password, String group_status, String created_on) {
@@ -18,12 +19,23 @@ public class Groups {
         this.created_on = created_on;
     }
 
+    public Groups(int id, int user_permission,  String group_name, int group_owner,  String created_on) {
+        this.id = id;
+        this.group_name = group_name;
+        this.group_owner = group_owner;
+        this.user_permission = user_permission;
+        this.created_on = created_on;
+    }
+
     @Override
     public String toString() {
         return "Group[id:"+id+",group name:"+group_name+",group owner:"+group_owner+
                 ",group password:"+group_password+",group status:"+group_status+",created on:"+created_on+"]";
     }
 
+    public int getUser_permission(){
+        return this.user_permission;
+    }
     public int getId() {
         return id;
     }

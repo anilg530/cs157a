@@ -27,7 +27,7 @@
             <div class="col-xs-offset-1 col-xs-10 col-sm-offset-4 col-sm-4 col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-3">
                 <p>Enter the following information to create your group:</p>
                 <hr>
-                <form action="/group/create_group" method="post" accept-charset="utf-8">
+                <form action="/group/create_group/add" method="post" accept-charset="utf-8">
                     <div class="form-group">
                         <label class="control-label">Group Name</label>
                         <input type="text" class="form-control" name="group_name" value="" placeholder="group name"

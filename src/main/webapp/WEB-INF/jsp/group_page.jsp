@@ -2,6 +2,7 @@
 <%@ taglib prefix="x" uri="http://java.sun.com/jsp/jstl/xml" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ page import="filehub.demo.CommonModel" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,16 +18,51 @@
     <jsp:include page="common/top.jsp"/>
 </head>
 <body>
-
-<jsp:include page="common/navigation.jsp"/>
-
-
-<div class="row">
-    <div class="col-sm-offset-1 col-xs-10">
-        <a class="btn btn-default" href="/group/create_group">Create a Group</a>
+<div id="mySidenav" class="sidenav">
+    <jsp:include page="common/messaging_sidebar.jsp"/>
+</div>
+<div id="root_html">
+    <jsp:include page="common/navigation.jsp"/>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <% if (session.getAttribute("username") != null) {
+                                String fullName = CommonModel.getFullName(Integer.toString((int) session.getAttribute("user_id")));%>
+                                <h4><%out.print(fullName);%>'s Group</h4>
+                                <% } %>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="row">
+                                    <div class="col-sm-offset-1 col-xs-10">
+                                        <a class="btn btn-default" href="/group/create_group">Create a Group</a>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <hr>
+                        </div>
+                    </div>
+                    <div id="includes_files_table_html">
+                        <jsp:include page="includes_group_table.jsp"/>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <jsp:include page="common/bottom.jsp"/>
+<script src="/assets/js/file.js"></script>
 </body>
 </html>
+
+
+
