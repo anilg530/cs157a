@@ -76,7 +76,6 @@ public class FileModel {
                 if (stmt != null) {
                     stmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -127,7 +126,6 @@ public class FileModel {
                 if (stmt != null) {
                     stmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -179,7 +177,6 @@ public class FileModel {
                 if (stmt != null) {
                     stmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -286,7 +283,6 @@ public class FileModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -336,7 +332,6 @@ public class FileModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -387,7 +382,6 @@ public class FileModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -453,7 +447,6 @@ public class FileModel {
                 if (stmt != null) {
                     stmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -523,7 +516,6 @@ public class FileModel {
                         if (stmt != null) {
                             stmt.close();
                         }
-                        conn.close();
                     } catch (SQLException se2) {
                     }
                     try {
@@ -590,7 +582,6 @@ public class FileModel {
                         if (stmt != null) {
                             stmt.close();
                         }
-                        conn.close();
                     } catch (SQLException se2) {
                     }
                     try {
@@ -641,7 +632,6 @@ public class FileModel {
                 if (stmt != null) {
                     stmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -733,7 +723,6 @@ public class FileModel {
                         if (stmt != null) {
                             stmt.close();
                         }
-                        conn.close();
                     } catch (SQLException se2) {
                     }
                     try {
@@ -784,7 +773,6 @@ public class FileModel {
                 if (stmt != null) {
                     stmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -832,7 +820,6 @@ public class FileModel {
                 if (stmt != null) {
                     stmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -875,7 +862,6 @@ public class FileModel {
                 if (stmt != null) {
                     stmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -927,7 +913,6 @@ public class FileModel {
                 if (stmt != null) {
                     stmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -984,7 +969,6 @@ public class FileModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -1086,7 +1070,6 @@ public class FileModel {
                     if (pstmt != null) {
                         pstmt.close();
                     }
-                    conn.close();
                 } catch (SQLException se2) {
                 }
                 try {
@@ -1227,7 +1210,6 @@ public class FileModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -1271,7 +1253,6 @@ public class FileModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -1314,7 +1295,6 @@ public class FileModel {
                     if (stmt != null) {
                         stmt.close();
                     }
-                    conn.close();
                 } catch (SQLException se2) {
                 }
                 try {
@@ -1358,7 +1338,6 @@ public class FileModel {
                     if (pstmt != null) {
                         pstmt.close();
                     }
-                    conn.close();
                 } catch (SQLException se2) {
                 }
                 try {
@@ -1404,7 +1383,6 @@ public class FileModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -1448,7 +1426,6 @@ public class FileModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -1488,7 +1465,6 @@ public class FileModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
