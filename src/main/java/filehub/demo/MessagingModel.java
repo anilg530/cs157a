@@ -183,7 +183,6 @@ public class MessagingModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -237,7 +236,6 @@ public class MessagingModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -292,7 +290,6 @@ public class MessagingModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -354,7 +351,6 @@ public class MessagingModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {

@@ -119,7 +119,6 @@ public class CommonModel {
                 if (stmt != null) {
                     stmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -162,7 +161,6 @@ public class CommonModel {
                 if (stmt != null) {
                     stmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -205,7 +203,6 @@ public class CommonModel {
                 if (stmt != null) {
                     stmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -294,6 +291,7 @@ public class CommonModel {
     }
 
     public static String getEmailByUserID(String user_id) {
+        String returnString = null;
         Connection conn = null;
 
         PreparedStatement pstmt = null;
@@ -310,7 +308,7 @@ public class CommonModel {
             if (sqlResult != null) {
                 if (sqlResult.isBeforeFirst()) {
                     sqlResult.next();
-                    return sqlResult.getString(1);
+                    returnString = sqlResult.getString(1);
                 }
                 sqlResult.close();
             }
@@ -323,7 +321,6 @@ public class CommonModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -334,10 +331,11 @@ public class CommonModel {
                 se.printStackTrace();
             }
         }
-        return null;
+        return returnString;
     }
 
     public static String getUserIDByEmail(String email) {
+        String returnString = null;
         Connection conn = null;
 
         PreparedStatement pstmt = null;
@@ -354,7 +352,7 @@ public class CommonModel {
             if (sqlResult != null) {
                 if (sqlResult.isBeforeFirst()) {
                     sqlResult.next();
-                    return sqlResult.getString(1);
+                    returnString = sqlResult.getString(1);
                 }
                 sqlResult.close();
             }
@@ -378,10 +376,11 @@ public class CommonModel {
                 se.printStackTrace();
             }
         }
-        return null;
+        return returnString;
     }
 
     public static boolean isEmailExist(String email) {
+        boolean returnBoolean = false;
         Connection conn = null;
 
         PreparedStatement pstmt = null;
@@ -397,7 +396,7 @@ public class CommonModel {
             ResultSet sqlResult = pstmt.executeQuery();
             if (sqlResult != null) {
                 if (sqlResult.isBeforeFirst()) {
-                    return true;
+                    returnBoolean = true;
                 }
                 sqlResult.close();
             }
@@ -421,7 +420,7 @@ public class CommonModel {
                 se.printStackTrace();
             }
         }
-        return false;
+        return returnBoolean;
     }
 
     public static String getAllGroupIDMembershipCommaSeparated(String user_id) {
@@ -508,7 +507,6 @@ public class CommonModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
