@@ -461,7 +461,6 @@ public class CommonModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {

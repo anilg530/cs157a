@@ -307,4 +307,8 @@ public class GroupModel {
             }
         }
     }
+
+    public static void test() {
+        System.out.print("hi");
+    }
 }

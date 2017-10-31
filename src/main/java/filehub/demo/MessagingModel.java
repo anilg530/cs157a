@@ -53,7 +53,6 @@ public class MessagingModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -113,6 +112,7 @@ public class MessagingModel {
     }
 
     public static int getNewMessageCount(String user_id) {
+        int returnInt = 0;
         Connection conn = null;
 
         PreparedStatement pstmt = null;
@@ -130,7 +130,7 @@ public class MessagingModel {
             if (sqlResult != null) {
                 if (sqlResult.isBeforeFirst()) {
                     sqlResult.next();
-                    return sqlResult.getInt(1);
+                    returnInt = sqlResult.getInt(1);
                 }
                 sqlResult.close();
             }
@@ -143,7 +143,6 @@ public class MessagingModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -154,7 +153,7 @@ public class MessagingModel {
                 se.printStackTrace();
             }
         }
-        return 0;
+        return returnInt;
     }
 
     public static void markAllMessagesAsRead(String user_id) {

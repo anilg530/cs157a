@@ -13,6 +13,7 @@
                 <th></th>
             </tr>
             </thead>
+            <tbody>
             <% ArrayList<ArrayList<String>> received_messages_array = MessagingModel.getAllReceivedMessages(Integer.toString((int) session.getAttribute("user_id")));
                 if (!received_messages_array.isEmpty()) {
                     for (ArrayList<String> single_message : received_messages_array) {
@@ -38,7 +39,6 @@
             </tr>
             <% } %>
             <% } %>
-            <tbody>
             </tbody>
         </table>
     </div>
