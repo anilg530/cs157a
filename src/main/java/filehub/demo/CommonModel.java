@@ -16,6 +16,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public class CommonModel {
+    // trinh
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://p3plcpnl0569.prod.phx3.secureserver.net:3306/cs157a";
     static final String USER = "cs157a_main";
