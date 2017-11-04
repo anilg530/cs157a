@@ -15,9 +15,9 @@ public class GroupController {
 
     @RequestMapping("group")
     public String main(HttpSession session, Model model) {
-        System.out.println("hi there"+ UUID.randomUUID());
+        //System.out.println("hi there"+ UUID.randomUUID());
         model.addAttribute("page_name", "Group Page 01");
-        System.out.println("group count "+ GroupModel.countGroup((int) session.getAttribute("user_id")));
+        //System.out.println("group count "+ GroupModel.countGroup((int) session.getAttribute("user_id")));
         return "group_page";
     }
     @RequestMapping("group/create_group")
@@ -33,8 +33,8 @@ public class GroupController {
         String groupPassword = request.getParameter("group_password");
         if(request.getMethod().equals("POST")){
             int userID = (int) session.getAttribute("user_id");
-            System.out.println("group name: " + groupname);
-            System.out.println("group pass: " + groupPassword);
+            //System.out.println("group name: " + groupname);
+            //System.out.println("group pass: " + groupPassword);
             GroupModel.insertGroup(groupname, userID, groupPassword);
 
         }
