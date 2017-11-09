@@ -1,0 +1,293 @@
+html, body {
+    height: 100%;
+}
+
+label.error {
+    color: #a94442;
+    margin-top: 5px;
+    padding-left: 15px;
+}
+
+.badge-success {
+    background-color: #5cb85c;
+}
+
+.vertical-center-container {
+    width: 100vw;
+}
+
+.vertical-center {
+    height: 100%;
+    width: 100%;
+
+    font: 0/0 a;
+}
+
+.vertical-center:before {
+    content: ' ';
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+}
+
+.vertical-center > .vertical-center-container {
+    max-width: 100%;
+    display: inline-block;
+    vertical-align: middle;
+    font: 16px/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.vertical-center-70 {
+    height: 70%;
+    width: 100%;
+
+    font: 0/0 a;
+}
+
+.vertical-center-70:before {
+    content: ' ';
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+}
+
+.vertical-center-70 > .vertical-center-container {
+    max-width: 100%;
+    display: inline-block;
+    vertical-align: middle;
+    font: 16px/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.dropzone .dz-preview .dz-error-message {
+    top: 150px !important;
+}
+
+.custom-dropzone {
+    min-height: 0px !important;
+    padding: 0px 0px 0px 0px !important;
+    border-style: dotted;
+    border-color: #3fa7cc;
+    border-width: 3px;
+    margin: 5px;
+}
+
+.no-padding {
+    padding: 0px;
+}
+
+.vertical-align-middle {
+    vertical-align: middle !important;
+}
+
+.sweet-alert button.cancel {
+    background-color: #3fa7cc;
+}
+
+.sweet-alert button.cancel:hover {
+    background-color: #0f8dcc;
+}
+
+.auto-width {
+    width: auto;
+}
+
+.padding-right-15 {
+    padding-right: 15px;
+}
+
+.custom_pointer_hover_style {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.custom_pointer_hover_style:hover {
+    cursor: pointer;
+    color: #557491 !important;
+    text-decoration: none !important;
+}
+
+.custom_pointer_hover_gray_style {
+    font-style: italic;
+    color: #cccccc;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.custom_pointer_hover_gray_style:hover {
+    cursor: pointer;
+    color: #557491 !important;
+    text-decoration: none !important;
+}
+
+.custom_dynamic_text_area {
+    resize: none;
+    overflow: hidden;
+    width: 100%;
+}
+
+.cursor-hand {
+    cursor: pointer;
+    cursor: hand;
+}
+
+.flex-new-folder-row {
+    display: flex;
+    flex-flow: row;
+}
+
+.flex-new-folder-row-reverse {
+    display: flex;
+    flex-flow: row-reverse;
+}
+
+.flex-new-folder-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-new-folder-column-reverse {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.flex-new-folder-child {
+    margin: 5px !important;
+}
+
+@media all and (max-width: 640px) {
+    .flex-new-folder-row {
+        flex-direction: column;
+        margin-bottom: 5px;
+    }
+
+    .flex-new-folder-row-reverse {
+        flex-direction: column-reverse;
+        margin-bottom: 5px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .no-wrap-xs > .table > tbody > tr > td {
+        white-space: normal;
+    }
+}
+
+/* The side navigation menu */
+.sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 0;
+    left: 0;
+    background-color: #111; /* Black*/
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 60px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+    white-space: nowrap;
+}
+
+/* The navigation menu links */
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+/* The navigation menu links */
+.sidenav h4 {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #e2e2e2;
+    display: block;
+    transition: 0.3s;
+}
+
+/* The navigation menu links */
+.sidenav sub-a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #909090;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidenav p {
+    padding: 0px 0px 0px 50px;
+    text-decoration: none;
+    font-size: 13px;
+    color: #737373;
+    display: block;
+    transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover, .offcanvas a:focus {
+    color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 28px;
+    margin-left: 50px;
+}
+
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+#root_html {
+    transition: margin-left .5s;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+    .sidenav {
+        padding-top: 15px;
+    }
+
+    .sidenav a {
+        font-size: 18px;
+    }
+}
+
+.autocomplete-suggestions {
+    border: 1px solid #999;
+    background: #FFF;
+    overflow: auto;
+}
+
+.autocomplete-suggestion {
+    padding: 2px 5px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.autocomplete-selected {
+    background: #F0F0F0;
+}
+
+.autocomplete-suggestions strong {
+    font-weight: normal;
+    color: #3399FF;
+}
+
+.autocomplete-group {
+    padding: 2px 5px;
+}
+
+.autocomplete-group strong {
+    display: block;
+    border-bottom: 1px solid #000;
+}

@@ -18,18 +18,19 @@
 </head>
 <body>
 
-<div id="mySidenav" class="sidenav">
-    <jsp:include page="common/messaging_sidebar.jsp"/>
-</div>
-<div id="root_html">
-    <jsp:include page="common/navigation.jsp"/>
-    <a href="/file/view/1">Browse Files</a>
-    <br>
-    <br>
-    <button type="button" onclick="refresh_messaging_sidebar();">Refresh Messaging Sidebar</button>
+<jsp:include page="common/navigation.jsp"/>
+
+
+<div class="vertical-center-70">
+    <div class="vertical-center-container">
+        <div class="row">
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-4 col-sm-4 col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-3">
+                <h4>You are not logged in. Please <a href="/">log in</a> to continue</h4>
+            </div>
+        </div>
+    </div>
 </div>
 
 <jsp:include page="common/bottom.jsp"/>
-<script src="/assets/js/file.js"></script>
 </body>
 </html>
