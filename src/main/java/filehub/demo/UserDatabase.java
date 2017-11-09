@@ -79,6 +79,11 @@ public class UserDatabase {
     }
 
 
+    public static boolean userExist(String username){
+
+    }
+
+
     public static void insertUser1(ArrayList<String> user_info){
 
         Connection conn = null;
@@ -101,6 +106,7 @@ public class UserDatabase {
 
             stmt = conn.createStatement();
             String myQuery;
+            if()
             myQuery = "INSERT INTO usertest (username, password,firstname,lastname,cellphone,email)" +
                     "VALUES ('"+ username +"','"+ password +"', '"+ firstname +"','"+lastname+"','"+cellphone+"','"+email+"');";
             stmt.executeUpdate(myQuery);
