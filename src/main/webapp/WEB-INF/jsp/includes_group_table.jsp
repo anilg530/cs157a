@@ -37,7 +37,7 @@
                         <% out.print(groupName); %>
                         </a>-->
                         <a href="javascript:;" class="icon-black"
-                           data-toggle="tooltip"
+                           data-toggle="tooltip" data-attr="<% out.print(groupName); %>" data-attr2="<% out.print(groupID); %>"
                            data-original-title="Open" target="_blank" onclick="group_password(this);">
                             <% out.print(groupName); %>
                         </a>
@@ -48,7 +48,7 @@
                     <td class="vertical-align-middle">
                         <% if(permission==4){ %>
                         <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(groupName); %>"
-                           data-attr2="<% out.print(groupName); %>"
+                           data-attr2="<% out.print(groupID); %>"
                            onclick="group_delete(this);" data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash-o"></i></a>
                         <a class="btn no-padding" href="/group/members/<% out.print(groupID); %>" data-toggle="tooltip"
                            data-original-title="Group Members"><i class="fa fa-user" aria-hidden="true"></i></a>

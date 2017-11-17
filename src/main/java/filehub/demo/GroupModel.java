@@ -308,5 +308,63 @@ public class GroupModel {
         }
     }
 
+    public static boolean isGroupPassCorrect(String groupName, String inputPassword){
+        boolean status = false;
+        Connection conn = null;
+        Statement stmt = null;
+        String temp = "";
+
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = conn.createStatement();
+
+            String myQuery = "SELECT group_password " +
+                             "FROM groups " +
+                             "WHERE group_name = '" + groupName.trim()+"';";
+            System.out.println(myQuery);
+            ResultSet re = stmt.executeQuery(myQuery);
+
+            while(re.next()){
+                temp = re.getString("group_password");
+            }
+            System.out.println("input pass= " + inputPassword+ " pass retrieved " + temp);
+            stmt.close();
+            conn.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        if(temp.equals("")){
+            status = false;
+        }else{
+            if(inputPassword.equals(temp)){
+                status = true;
+            }else {
+                status = false;
+            }
+        }
+        return status;
+    }
+
 
 }

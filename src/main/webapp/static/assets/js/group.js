@@ -39,14 +39,55 @@ function group_delete(object) {
 function group_password(object) {
     $(object).tooltip('hide');
     var groupName = $(object).attr('data-attr');
+    var groupId = $(object).attr('data-attr2');
     setTimeout( bootbox.prompt({
         size: "small",
         title: "Enter Password",
         callback: function(result){
+            confirmGroupPassword(result, groupName, groupId)
 
-            console.log(result);
         }
     }), 200);
+}
+
+function confirmGroupPassword(object, groupName, groupId){
+    console.log("pass " + object);
+    console.log("group name " + groupName);
+    console.log("group id " + groupId);
+    $.ajax({
+        url: '/group/confirmpass/'+groupName+'/'+object,
+        type: 'GET',
+        dataType: "text",
+        beforeSend: function () {
+
+        },
+        success: function (response) {
+            console.log("success")
+            console.log("response  = "+response.toString())
+            if(response.toString()=="true"){
+                successToast("Success", "group login successfull");
+                window.location='/file/view/'+groupId;
+            }else{
+                errorToast("Error", "Wrong Password!");
+            }
+        },
+        error: function (xhr, status, error) {
+
+        }
+    });
+
+    function successToast(title, content){
+        toastr.success(content, title, {
+            "timeOut": "2000",
+            "extendedTImeout": "0"
+        });
+    }
+    function errorToast(title, content){
+        toastr.error(content, title, {
+            "timeOut": "2000",
+            "extendedTImeout": "0"
+        });
+    }
 }
 
 
