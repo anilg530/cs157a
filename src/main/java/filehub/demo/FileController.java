@@ -259,6 +259,7 @@ public class FileController {
         }
         resultArray.put("status", "failed");
         resultArray.put("error", "Unable to delete folder. You may need higher access.");
+
         return gson.toJson(resultArray);
     }
 

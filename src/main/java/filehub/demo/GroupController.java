@@ -2,11 +2,19 @@ package filehub.demo;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -15,9 +23,9 @@ public class GroupController {
 
     @RequestMapping("group")
     public String main(HttpSession session, Model model) {
-        System.out.println("hi there"+ UUID.randomUUID());
+        //System.out.println("hi there"+ UUID.randomUUID());
         model.addAttribute("page_name", "Group Page 01");
-        System.out.println("group count "+ GroupModel.countGroup((int) session.getAttribute("user_id")));
+        //System.out.println("group count "+ GroupModel.countGroup((int) session.getAttribute("user_id")));
         return "group_page";
     }
     @RequestMapping("group/create_group")
@@ -33,8 +41,8 @@ public class GroupController {
         String groupPassword = request.getParameter("group_password");
         if(request.getMethod().equals("POST")){
             int userID = (int) session.getAttribute("user_id");
-            System.out.println("group name: " + groupname);
-            System.out.println("group pass: " + groupPassword);
+            //System.out.println("group name: " + groupname);
+            //System.out.println("group pass: " + groupPassword);
             GroupModel.insertGroup(groupname, userID, groupPassword);
 
         }
@@ -51,5 +59,11 @@ public class GroupController {
         model.addAttribute("page_name", "View all group");
 
         return "group_page";
+    }
+
+    @RequestMapping(value = "/group/confirmpass/{groupName}/{input}", method = RequestMethod.GET)
+    @ResponseBody
+    public boolean confirmGroupPass(@PathVariable("groupName") String groupName, @PathVariable("input") String input, HttpServletRequest request, HttpSession session, HttpServletResponse response) throws IOException {
+       return GroupModel.isGroupPassCorrect(groupName, input);
     }
 }

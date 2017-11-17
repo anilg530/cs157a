@@ -40,7 +40,7 @@ public class GroupModel {
                         String group_password = allGroup.getString("group_password");
                         String group_status = allGroup.getString("group_status");
                         String created_on = allGroup.getString("created_on");
-                        System.out.println(created_on);
+                        //System.out.println(created_on);
                         returnGroup.add(new Groups(id, group_name, group_owner, group_password, group_status, created_on));
                     }
                 } catch (SQLException e) {
@@ -74,7 +74,7 @@ public class GroupModel {
 
 
     /*
-    get all group
+    get all group of a user
      */
     public static ArrayList<Groups> getAllGroups(int user_id) {
         Connection conn = null;
@@ -103,7 +103,7 @@ public class GroupModel {
             where group_members.user_id=1
 	              and groups.`group_status`= 'Active';
              */
-            System.out.println(query);
+           // System.out.println(query);
             ResultSet rs  = stmt.executeQuery(query);
             while(rs.next()){
                 int userID = rs.getInt("group_id");
@@ -114,13 +114,13 @@ public class GroupModel {
                 groups.add(new Groups(userID, userPermission, groupName, groupOwner, createdOn));
             }
 
-            for(Groups g: groups){
+            /*for(Groups g: groups){
                 System.out.println("id "+ g.getId());
                 System.out.println("permission "+ g.getUser_permission());
                 System.out.println("group name "+ g.getGroup_name());
                 System.out.println("group owner "+ g.getGroup_owner());
                 System.out.println("created on "+ g.getCreated_on());
-            }
+            }*/
 
             conn.commit();
 
@@ -263,7 +263,7 @@ public class GroupModel {
             while(re.next()){
                 count = re.getInt(1);
             }
-            System.out.println("userid" + userId+ ": " + count + "groups");
+           // System.out.println("userid" + userId+ ": " + count + "groups");
             stmt.close();
             conn.close();
         }catch (SQLException e){
@@ -308,7 +308,63 @@ public class GroupModel {
         }
     }
 
-    public static void test() {
-        System.out.print("hi");
+    public static boolean isGroupPassCorrect(String groupName, String inputPassword){
+        boolean status = false;
+        Connection conn = null;
+        Statement stmt = null;
+        String temp = "";
+
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = conn.createStatement();
+
+            String myQuery = "SELECT group_password " +
+                             "FROM groups " +
+                             "WHERE group_name = '" + groupName.trim()+"';";
+            System.out.println(myQuery);
+            ResultSet re = stmt.executeQuery(myQuery);
+
+            while(re.next()){
+                temp = re.getString("group_password");
+            }
+            System.out.println("input pass= " + inputPassword+ " pass retrieved " + temp);
+            stmt.close();
+            conn.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        if(temp.equals("")){
+            status = false;
+        }else{
+            if(inputPassword.equals(temp)){
+                status = true;
+            }else {
+                status = false;
+            }
+        }
+        return status;
     }
+
+
 }
