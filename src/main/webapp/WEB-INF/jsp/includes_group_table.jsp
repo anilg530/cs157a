@@ -18,7 +18,8 @@
 
             <tbody>
             <%
-                ArrayList<Groups> groups = GroupModel.getAllGroups((int) session.getAttribute("user_id"));
+                int user_id = (int) session.getAttribute("user_id");
+                ArrayList<Groups> groups = GroupModel.getAllGroups(user_id);
                 if (groups != null && groups.size() > 0) {
                 for(Groups group: groups){
                     int groupID = group.getId();
@@ -46,10 +47,16 @@
                     <td class="vertical-align-middle"><% out.print(owner); %></td>
                     <td class="vertical-align-middle"><% out.print(createdOn); %></td>
                     <td class="vertical-align-middle">
-                        <% if(permission==4){ %>
+                        <% if(GroupModel.isOwner(permission)|| GroupModel.isAdvancedUser(permission)){ %>
                         <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(groupName); %>"
                            data-attr2="<% out.print(groupID); %>"
+                           onclick="" data-toggle="tooltip" data-original-title="Invite"><i class="fa fa-share" aria-hidden="true"></i></a>
+                        <% if(GroupModel.isOwner(permission)){ %>
+
+                        <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(groupName); %>"
+                           data-attr2="<% out.print(groupID); %>" data-attr3="<% out.print(user_id); %>"
                            onclick="group_delete(this);" data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash-o"></i></a>
+                        <%} %>
                         <a class="btn no-padding" href="/group/members/<% out.print(groupID); %>" data-toggle="tooltip"
                            data-original-title="Group Members"><i class="fa fa-user" aria-hidden="true"></i></a>
 
