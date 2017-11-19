@@ -11,6 +11,8 @@ public class GroupModel {
     static final String DB_URL = "jdbc:mysql://p3plcpnl0569.prod.phx3.secureserver.net:3306/cs157a";
     static final String USER = "cs157a_main";
     static final String PASS = "cs157a_db";
+    static final String ACTIVE = "Active";
+    static final String INACTIVE = "Inactive";
     static final int GUEST_PERMISSION = 1;
     static final int USER_PERMISSION = 2;
     static final int ADVANCED_USER_PERMISSION = 3;
@@ -366,5 +368,84 @@ public class GroupModel {
         return status;
     }
 
+
+    public static boolean deleteGroup(int ownerId, int groupId){
+        Connection conn = null;
+        Statement stmt = null;
+        boolean status = false;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = conn.createStatement();
+
+            String myQuery = "UPDATE groups SET group_status = '"+ INACTIVE+"' where groups.group_owner = "+ownerId+" and groups.id = "+groupId+";";
+            System.out.println(myQuery);
+            int re = stmt.executeUpdate(myQuery);
+            System.out.println("total lines updated " + re);
+            if(re ==1 ){
+                status = true;
+            }else {
+                status = false;
+            }
+            stmt.close();
+            conn.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+            status = false;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            status = false;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            status = false;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            status = false;
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return status;
+
+    }
+
+    public static boolean isOwner(int userPermission){
+        if(userPermission==4){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isAdvancedUser(int userPermission){
+        if(userPermission==3){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isUser(int userPermission){
+        if(userPermission==2){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isGuest(int userPermission){
+        if(userPermission==1){
+            return true;
+        }
+        return false;
+    }
 
 }
