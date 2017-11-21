@@ -317,6 +317,7 @@ function filehub_group_file_delete_folder_submit(object) {
         var formData = {};
         formData['id'] = id;
         var file_name = $(object).attr('data-attr2');
+
         setTimeout(function () {
             swal({
                     html: true,
