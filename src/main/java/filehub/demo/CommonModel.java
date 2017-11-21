@@ -563,4 +563,49 @@ public class CommonModel {
         }
         return returnBoolean;
     }
+
+    public static String getUserPermissionsString(String user_id, String group_id) {
+        String returnString = "";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT user_permissions_type.permission_formal FROM group_members JOIN user_permissions_type ON user_permissions_type.id=group_members.user_permission WHERE (group_members.user_id = ? AND group_members.group_id = ?)";
+            //System.out.println(myQuery);
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, user_id);
+            pstmt.setString(2, group_id);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    sqlResult.next();
+                    returnString = sqlResult.getString(1);
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnString;
+    }
 }

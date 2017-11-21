@@ -111,6 +111,49 @@ public class MessagingModel {
         }
     }
 
+    public static void insertNewIssue(String send_from, String message) {
+        Connection conn = null;
+
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "INSERT INTO user_issues(issues_by,issues_message) values(?, ?) ";
+            pstmt = conn.prepareStatement(myQuery, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, send_from);
+            pstmt.setString(2, message);
+            pstmt.executeUpdate();
+            ResultSet sqlResult = pstmt.getGeneratedKeys();
+            if (sqlResult != null) {
+                if (sqlResult.next()) {
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+    }
+
     public static int getNewMessageCount(String user_id) {
         int returnInt = 0;
         Connection conn = null;

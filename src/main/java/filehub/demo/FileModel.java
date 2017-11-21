@@ -487,7 +487,7 @@ public class FileModel {
             ResultSet sqlResult = stmt.getGeneratedKeys();
             if (sqlResult != null) {
                 if (sqlResult.next()) {
-                    insertFileUploadLogEntry(uploaded_by, "New folder created: " + new_folder_name);
+                    insertFileUploadLogEntry(uploaded_by, "New folder created: " + new_folder_name+ " (Group: "+CommonModel.getGroupName(group_id)+")");
                     sqlInsertSuccess = true;
                 }
                 sqlResult.close();
@@ -552,7 +552,7 @@ public class FileModel {
                             "WHERE (id='" + id + "')";
                     int affected_rows = stmt.executeUpdate(myQuery);
                     if (affected_rows > 0) {
-                        insertFileUploadLogEntry(modified_by, "Folder deleted: " + old_single_folder_name);
+                        insertFileUploadLogEntry(modified_by, "Folder deleted: " + old_single_folder_name+ " (Group: "+CommonModel.getGroupName(group_id)+")");
                         returnBoolean = true;
                         stmt = conn.createStatement();
                         String myQuery2;
@@ -589,6 +589,7 @@ public class FileModel {
 
     public static boolean deleteFile(HttpSession session, String id) {
         boolean returnBoolean = false;
+        String group_id = Integer.toString((int) session.getAttribute("group_id"));
         ArrayList<String> fileInfo = getFileInfoByID(id);
         String old_single_file_name = fileInfo.get(2);
         String old_path = fileInfo.get(4);
@@ -624,7 +625,7 @@ public class FileModel {
                             "WHERE (id='" + id + "')";
                     int affected_rows = stmt.executeUpdate(myQuery);
                     if (affected_rows > 0) {
-                        insertFileUploadLogEntry(modified_by, "File deleted: " + old_single_file_name);
+                        insertFileUploadLogEntry(modified_by, "File deleted: " + old_single_file_name+ " (Group: "+CommonModel.getGroupName(group_id)+")");
                         returnBoolean = true;
                     }
                 } catch (SQLException se) {
@@ -721,6 +722,7 @@ public class FileModel {
 
     public static boolean renameFolder(HttpSession session, String id, String new_folder_name) {
         boolean returnBoolean = false;
+        String group_id = Integer.toString((int) session.getAttribute("group_id"));
         ArrayList<String> fileInfo = FileModel.getFileInfoByID(id);
         String old_single_folder_name = fileInfo.get(2);
         String old_name = fileInfo.get(4);
@@ -754,7 +756,7 @@ public class FileModel {
                             "WHERE (id='" + id + "')";
                     int affected_rows = stmt.executeUpdate(myQuery);
                     if (affected_rows > 0) {
-                        insertFileUploadLogEntry(modified_by, "Folder renamed from " + old_single_folder_name + " to " + new_folder_name);
+                        insertFileUploadLogEntry(modified_by, "Folder renamed from " + old_single_folder_name + " to " + new_folder_name+ " (Group: "+CommonModel.getGroupName(group_id)+")");
                         returnBoolean = true;
                         for (ArrayList<String> a : getSubfilesAndFoldersWithNewPath) {
                             String temp_id = a.get(0);
@@ -797,6 +799,7 @@ public class FileModel {
 
     public static boolean renameFile(HttpSession session, String id, String new_file_name) {
         boolean returnBoolean = false;
+        String group_id = Integer.toString((int) session.getAttribute("group_id"));
         ArrayList<String> fileInfo = FileModel.getFileInfoByID(id);
         String old_single_file_name = fileInfo.get(2);
         String modified_by = Integer.toString((int) session.getAttribute("user_id"));
@@ -814,7 +817,7 @@ public class FileModel {
                     "WHERE (id='" + id + "')";
             int affected_rows = stmt.executeUpdate(myQuery);
             if (affected_rows > 0) {
-                insertFileUploadLogEntry(modified_by, "File renamed from " + old_single_file_name + " to " + new_file_name);
+                insertFileUploadLogEntry(modified_by, "File renamed from " + old_single_file_name + " to " + new_file_name+ " (Group: "+CommonModel.getGroupName(group_id)+")");
                 returnBoolean = true;
             }
 
@@ -994,6 +997,7 @@ public class FileModel {
 
     public static boolean editNotes(HttpSession session, String id, String notes) {
         boolean returnBoolean = false;
+        String group_id = Integer.toString((int) session.getAttribute("group_id"));
         String notes_by = Integer.toString((int) session.getAttribute("user_id"));
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -1011,7 +1015,7 @@ public class FileModel {
             pstmt.setString(3, id);
             int affected_rows = pstmt.executeUpdate();
             if (affected_rows > 0) {
-                insertFileUploadLogEntry(notes_by, "New notes added: " + notes);
+                insertFileUploadLogEntry(notes_by, "New notes added: " + notes+ " (Group: "+CommonModel.getGroupName(group_id)+")");
                 returnBoolean = true;
             }
         } catch (SQLException se) {
@@ -1109,7 +1113,7 @@ public class FileModel {
                 ResultSet sqlResult = pstmt.getGeneratedKeys();
                 if (sqlResult != null) {
                     if (sqlResult.next()) {
-                        insertFileUploadLogEntry(uploaded_by, "New file uploaded: " + file_name);
+                        insertFileUploadLogEntry(uploaded_by, "New file uploaded: " + file_name+ " (Group: "+CommonModel.getGroupName(group_id)+")");
                         //int insert_id = sqlResult.getInt(1);
                         returnBoolean = true;
                     }

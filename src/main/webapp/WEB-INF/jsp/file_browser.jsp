@@ -1,3 +1,4 @@
+<%@ page import="filehub.demo.CommonModel" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="x" uri="http://java.sun.com/jsp/jstl/xml" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -55,6 +56,21 @@
                     </div>
                 </div>
             </div>
+            <%
+                int temp_user_id = (int) session.getAttribute("user_id");
+                int temp_group_id = (int) session.getAttribute("group_id");
+                String temp_user_access = CommonModel.getUserPermissionsString(Integer.toString(temp_user_id), Integer.toString(temp_group_id));
+                if (!temp_user_access.isEmpty()) {
+            %>
+            <div class="row">
+                <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8">
+                    <div class="col-xs-12">
+                        <br>
+                        <small class="pull-right">Access Level: <% out.print(temp_user_access); %></small>
+                    </div>
+                </div>
+            </div>
+            <% } %>
         </div>
     </div>
 </div>
