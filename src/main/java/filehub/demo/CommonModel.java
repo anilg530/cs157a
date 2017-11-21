@@ -474,8 +474,8 @@ public class CommonModel {
         return returnString;
     }
 
-    public static boolean isMaster(String user_id, String group_id) {
-        boolean returnBoolean = false;
+    public static int getUserPermissions(String user_id, String group_id) {
+        int returnInt = -1;
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
@@ -492,8 +492,51 @@ public class CommonModel {
             if (sqlResult != null) {
                 if (sqlResult.isBeforeFirst()) {
                     sqlResult.next();
-                    String user_permission = sqlResult.getString(1);
-                    if (user_permission.equals("5")) {
+                    returnInt = sqlResult.getInt(1);
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnInt;
+    }
+
+    public static boolean isMaster(String user_id) {
+        boolean returnBoolean = false;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT role FROM user WHERE (id = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, user_id);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    sqlResult.next();
+                    String role = sqlResult.getString(1);
+                    if (role.equals("5")) {
                         returnBoolean = true;
                     }
                 }

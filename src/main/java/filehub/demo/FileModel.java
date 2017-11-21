@@ -194,48 +194,102 @@ public class FileModel {
     }
 
     public static boolean isAllowedAddNewFolder(int user_id, int group_id) {
-        boolean returnBoolean = true;
-        return returnBoolean;
+        if (CommonModel.isMaster(Integer.toString(user_id))) {
+            return true;
+        }
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        if (user_permission == 2 || user_permission == 3 || user_permission == 4) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean isAllowedDeleteFolder(int user_id, int group_id) {
-        boolean returnBoolean = true;
-        return returnBoolean;
+        if (CommonModel.isMaster(Integer.toString(user_id))) {
+            return true;
+        }
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        if (user_permission == 3 || user_permission == 4) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean isAllowedDeleteFile(int user_id, int group_id) {
-        boolean returnBoolean = true;
-        return returnBoolean;
+        if (CommonModel.isMaster(Integer.toString(user_id))) {
+            return true;
+        }
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        if (user_permission == 3 || user_permission == 4) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean isAllowedRenameFolder(int user_id, int group_id) {
-        boolean returnBoolean = true;
-        return returnBoolean;
+        if (CommonModel.isMaster(Integer.toString(user_id))) {
+            return true;
+        }
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        if (user_permission == 3 || user_permission == 4) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean isAllowedRenameFile(int user_id, int group_id) {
-        boolean returnBoolean = true;
-        return returnBoolean;
+        if (CommonModel.isMaster(Integer.toString(user_id))) {
+            return true;
+        }
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        if (user_permission == 3 || user_permission == 4) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean isAllowedEditNotes(int user_id, int group_id) {
-        boolean returnBoolean = true;
-        return returnBoolean;
+        if (CommonModel.isMaster(Integer.toString(user_id))) {
+            return true;
+        }
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        if (user_permission == 3 || user_permission == 4) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean isAllowedUploadFiles(int user_id, int group_id) {
-        boolean returnBoolean = true;
-        return returnBoolean;
+        if (CommonModel.isMaster(Integer.toString(user_id))) {
+            return true;
+        }
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        if (user_permission == 2 || user_permission == 3 || user_permission == 4) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean isAllowedRemoveFileURL(int user_id, int group_id) {
-        boolean returnBoolean = true;
-        return returnBoolean;
+        if (CommonModel.isMaster(Integer.toString(user_id))) {
+            return true;
+        }
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        if (user_permission == 3 || user_permission == 4) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean isAllowedShareFile(int user_id, int group_id) {
-        boolean returnBoolean = true;
-        return returnBoolean;
+        if (CommonModel.isMaster(Integer.toString(user_id))) {
+            return true;
+        }
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        if (user_permission == 3 || user_permission == 4) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean isFilenameTheSame(String id, String new_file_name) {

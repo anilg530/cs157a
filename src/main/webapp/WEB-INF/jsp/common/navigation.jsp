@@ -1,4 +1,5 @@
 <%@ page import="filehub.demo.MessagingModel" %>
+<%@ page import="filehub.demo.CommonModel" %>
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -12,9 +13,15 @@
         </div>
         <div id="menu-collapse" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li><a href="/group"><i class="fa fa-user"></i> Group Management</a></li>
                 <% if (session.getAttribute("username") != null) { %>
+                <li><a href="/group"><i class="fa fa-user"></i> Group Management</a></li>
                 <li><a href="#"><i class="fa fa-cog"></i> My Profile (${sessionScope.username})</a></li>
+                <li><a href="#"><i class="fa fa-question-circle-o"></i> Report An Issue</a></li>
+                <% int temp_user_id = (int) session.getAttribute("user_id");
+                    if (CommonModel.isMaster(Integer.toString(temp_user_id))) { %>
+                <li><a href="/admin/view_file_log"><i class="fa fa-file-archive-o"></i> Admin File Browser Log</a></li>
+                <li><a href="/admin/view_reports"><i class="fa fa-inbox"></i> Admin User Issues Reports</a></li>
+                <% } %>
                 <% } %>
             </ul>
 
