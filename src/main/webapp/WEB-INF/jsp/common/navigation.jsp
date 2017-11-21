@@ -13,7 +13,6 @@
         <div id="menu-collapse" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/group"><i class="fa fa-user"></i> Group Management</a></li>
-                <li><a href="/file"><i class="fa fa-file"></i> Group Files</a></li>
                 <% if (session.getAttribute("username") != null) { %>
                 <li><a href="#"><i class="fa fa-cog"></i> My Profile (${sessionScope.username})</a></li>
                 <% } %>

@@ -24,39 +24,36 @@
 <div id="root_html">
     <jsp:include page="common/navigation.jsp"/>
     <div class="row">
-        <div class="col-xs-12">
+        <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8">
             <div class="row">
-                <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8">
-                    <div class="col-xs-12">
-                        <div class="row">
-                            <div class="col-xs-6">
-                                <% if (session.getAttribute("username") != null) {
+                <div class="col-xs-12">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <% if (session.getAttribute("username") != null) {
                                 String fullName = CommonModel.getFullName(Integer.toString((int) session.getAttribute("user_id")));%>
-                                <h4><%out.print(fullName);%>'s Group</h4>
-                                <% } %>
-                            </div>
-                            <div class="col-xs-6">
-                                <div class="row">
-                                    <div class="col-sm-offset-1 col-xs-10">
-                                        <a class="btn btn-default" href="/group/create_group">Create a Group</a>
-                                    </div>
-                                </div>
-                                </div>
+                            <h4><%out.print(fullName);%>'s Group</h4>
+                            <% } %>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="btn-group pull-right">
+                                <a class="btn btn-default" href="/group/create_group">Create a Group</a>
+                                <a class="btn btn-default" href="#">Join a Group</a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-12">
-                        <div class="row">
-                            <hr>
-                        </div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="row">
+                        <hr>
                     </div>
-                    <div id="includes_files_table_html">
-                        <jsp:include page="includes_group_table.jsp"/>
-                    </div>
+                </div>
+                <div id="includes_files_table_html">
+                    <jsp:include page="includes_group_table.jsp"/>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <jsp:include page="common/bottom.jsp"/>

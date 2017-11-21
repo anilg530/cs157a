@@ -32,17 +32,16 @@
             <tr>
 
                     <td class="vertical-align-middle">
-                        <!--<a href="/file/view/<% out.print(groupID); %>" class="icon-black"
+                        <a href="/file/view/<% out.print(groupID); %>" class="icon-black"
                            data-toggle="tooltip"
-                           data-original-title="Open" target="_blank">
+                           data-original-title="Open">
                         <% out.print(groupName); %>
-                        </a>-->
-                        <a href="javascript:;" class="icon-black"
-                           data-toggle="tooltip" data-attr="<% out.print(groupName); %>" data-attr2="<% out.print(groupID); %>"
-                           data-original-title="Open" target="_blank" onclick="group_password(this);">
-                            <% out.print(groupName); %>
                         </a>
-
+                        <%--<a href="javascript:;" class="icon-black"--%>
+                           <%--data-toggle="tooltip" data-attr="<% out.print(groupName); %>" data-attr2="<% out.print(groupID); %>"--%>
+                           <%--data-original-title="Open" target="_blank" onclick="group_password(this);">--%>
+                            <%--<% out.print(groupName); %>--%>
+                        <%--</a>--%>
                     </td>
                     <td class="vertical-align-middle"><% out.print(owner); %></td>
                     <td class="vertical-align-middle"><% out.print(createdOn); %></td>
