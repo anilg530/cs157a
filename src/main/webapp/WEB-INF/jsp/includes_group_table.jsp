@@ -49,7 +49,7 @@
                         <% if(GroupModel.isOwner(permission)|| GroupModel.isAdvancedUser(permission)){ %>
                         <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(groupName); %>"
                            data-attr2="<% out.print(groupID); %>"
-                           onclick="" data-toggle="tooltip" data-original-title="Invite"><i class="fa fa-share" aria-hidden="true"></i></a>
+                           onclick="filehub_send_group_invite(this);" data-toggle="tooltip" data-original-title="Invite"><i class="fa fa-share" aria-hidden="true"></i></a>
                         <% if(GroupModel.isOwner(permission)){ %>
 
                         <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(groupName); %>"

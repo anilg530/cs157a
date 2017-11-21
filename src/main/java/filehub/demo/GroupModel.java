@@ -2,6 +2,7 @@ package filehub.demo;
 
 import com.sun.istack.internal.Nullable;
 
+import javax.servlet.http.HttpSession;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -446,6 +447,148 @@ public class GroupModel {
             return true;
         }
         return false;
+    }
+
+    public static String getGroupInviteCode(String from_user_id, String user_id, String group_id) {
+        String returnString = "";
+
+        if (isGroupInviteAlreadyExist(from_user_id, user_id, group_id)) {
+            Connection conn = null;
+            PreparedStatement pstmt = null;
+            try {
+                Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+                conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+                String myQuery;
+                myQuery = "SELECT id FROM group_invites WHERE (invite_status = ? AND user_id = ? AND invited_by_id = ? AND group_id = ?)";
+                pstmt = conn.prepareStatement(myQuery);
+                pstmt.setString(1, "Pending");
+                pstmt.setString(1, user_id);
+                pstmt.setString(1, from_user_id);
+                pstmt.setString(1, group_id);
+                ResultSet sqlResult = pstmt.executeQuery();
+                if (sqlResult != null) {
+                    if (sqlResult.isBeforeFirst()) {
+                        sqlResult.next();
+                        returnString = sqlResult.getString(1);
+                    }
+                    sqlResult.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (pstmt != null) {
+                        pstmt.close();
+                    }
+                } catch (SQLException se2) {
+                }
+                try {
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (SQLException se) {
+                    se.printStackTrace();
+                }
+            }
+        } else {
+            // Invite code doesn't exist. Create one
+            returnString = CommonModel.generateRandomCode();
+
+            Connection conn = null;
+
+            PreparedStatement pstmt = null;
+            try {
+                Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+                conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+                String myQuery;
+                myQuery = "INSERT INTO group_invites(id,invite_status,user_id,invited_by_id,group_id) values(?, ?, ?, ?, ?) ";
+                pstmt = conn.prepareStatement(myQuery, Statement.RETURN_GENERATED_KEYS);
+                pstmt.setString(1, returnString);
+                pstmt.setString(2, "Pending");
+                pstmt.setString(3, user_id);
+                pstmt.setString(4, from_user_id);
+                pstmt.setString(5, group_id);
+                pstmt.executeUpdate();
+                ResultSet sqlResult = pstmt.getGeneratedKeys();
+                if (sqlResult != null) {
+                    if (sqlResult.next()) {
+                    }
+                    sqlResult.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (pstmt != null) {
+                        pstmt.close();
+                    }
+                } catch (SQLException se2) {
+                }
+                try {
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (SQLException se) {
+                    se.printStackTrace();
+                }
+            }
+        }
+        return returnString;
+    }
+
+    public static boolean isGroupInviteAlreadyExist(String from_user_id, String user_id, String group_id) {
+        boolean returnBoolean = false;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT id FROM group_invites WHERE (invite_status = ? AND user_id = ? AND invited_by_id = ? AND group_id = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, "Pending");
+            pstmt.setString(1, user_id);
+            pstmt.setString(1, from_user_id);
+            pstmt.setString(1, group_id);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    returnBoolean = true;
+                } else {
+                    returnBoolean = false;
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnBoolean;
     }
 
 }

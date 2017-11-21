@@ -117,4 +117,23 @@ public class GroupController {
             return null;
         }
     }
+
+    @RequestMapping(value = {"group/send_group_invite"})
+    public String send_group_invite(HttpServletRequest request, HttpSession session, Model model) {
+        if (!CommonModel.isLoggedIn(request, session)) {
+            model.addAttribute("error_message", "You are not logged in");
+            return "file_url_modal_error";
+        }
+        else if (request.getMethod().equals("POST") && request.getParameter("group_id") != null && request.getParameter("group_name") != null) {
+            String group_id = request.getParameter("group_id");
+            model.addAttribute("group_id", group_id);
+            String group_name = request.getParameter("group_name");
+            model.addAttribute("group_name", group_name);
+            return "invite_to_group_modal";
+        }
+        else {
+            model.addAttribute("error_message", "Internal Error. Please Contact an Admin");
+            return "file_url_modal_error";
+        }
+    }
 }
