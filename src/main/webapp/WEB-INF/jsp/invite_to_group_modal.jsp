@@ -1,3 +1,5 @@
+<%@ page import="java.util.HashMap" %>
+<%@ page import="filehub.demo.CommonModel" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="x" uri="http://java.sun.com/jsp/jstl/xml" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -6,6 +8,7 @@
 <div class="row">
     <div class="col-xs-12">
         <p>Group Name: <strong>${group_name}</strong></p>
+        <br>
     </div>
     <form action="" id="filehub_send_group_invite_form" method="post" accept-charset="utf-8">
         <input type="hidden" name="group_id" value="${group_id}"/>
@@ -16,6 +19,23 @@
                        autocomplete="off"
                        autocorrect="off"
                        spellcheck="false" value="" required>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label>Access Level:</label>
+                <select name="invite_access_level" id="invite_access_level" class="selectpicker show-tick form-control"
+                        autocomplete="off" data-size="10" required>
+                    <%
+                        HashMap<String, String> getUserPermissionsType = CommonModel.getUserPermissionsType();
+                        for (HashMap.Entry<String, String> entry : getUserPermissionsType.entrySet()) {
+                            String user_permission_id = entry.getKey();
+                            String user_permission_formal = entry.getValue(); %>
+                    <option value="<% out.print(user_permission_id); %>"><%
+                        out.print(user_permission_formal); %></option>
+                    <% }
+                    %>
+                </select>
             </div>
         </div>
     </form>
@@ -67,6 +87,8 @@
                 return suggestion_string.replace(currentValue, "<strong>$1</strong>");
             }
         });
+
+        $('.selectpicker').selectpicker();
     });
 
     function filehub_modal_cancel() {

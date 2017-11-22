@@ -30,6 +30,7 @@ public class GroupController {
         //System.out.println("group count "+ GroupModel.countGroup((int) session.getAttribute("user_id")));
         return "group_page";
     }
+
     @RequestMapping("group/create_group")
     public String createGroup(Model model) {
         model.addAttribute("page_name", "Create Group");
@@ -41,7 +42,7 @@ public class GroupController {
         model.addAttribute("page_name", "Create Group");
         String groupname = request.getParameter("group_name");
         String groupPassword = request.getParameter("group_password");
-        if(request.getMethod().equals("POST")){
+        if (request.getMethod().equals("POST")) {
             int userID = (int) session.getAttribute("user_id");
             //System.out.println("group name: " + groupname);
             //System.out.println("group pass: " + groupPassword);
@@ -57,7 +58,7 @@ public class GroupController {
         for (Groups e : allGroup) {
             System.out.println(e);
         }
-        System.out.println("group count "+ GroupModel.countGroup((int) session.getAttribute("user_id")));
+        System.out.println("group count " + GroupModel.countGroup((int) session.getAttribute("user_id")));
         model.addAttribute("page_name", "View all group");
 
         return "group_page";
@@ -66,7 +67,7 @@ public class GroupController {
     @RequestMapping(value = "/group/confirmpass/{groupName}/{input}", method = RequestMethod.GET)
     @ResponseBody
     public boolean confirmGroupPass(@PathVariable("groupName") String groupName, @PathVariable("input") String input, HttpServletRequest request, HttpSession session, HttpServletResponse response) throws IOException {
-       return GroupModel.isGroupPassCorrect(groupName, input);
+        return GroupModel.isGroupPassCorrect(groupName, input);
     }
 
     @RequestMapping(value = {"/group/delete_group"}, method = RequestMethod.POST)
@@ -74,23 +75,23 @@ public class GroupController {
     public String delete_group(HttpServletRequest request, HttpSession session) {
         HashMap<String, String> resultArray = new HashMap<>();
         Gson gson = new Gson();
-        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("groupId") != null && request.getParameter("groupOwner") !=null) {
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("groupId") != null && request.getParameter("groupOwner") != null) {
             int groupOwner = Integer.valueOf(request.getParameter("groupOwner").trim());
             int groupId = Integer.valueOf(request.getParameter("groupId").trim());
 
-            System.out.println("group owner = "+ groupOwner);
-            System.out.println("group id = "+ groupId);
+            System.out.println("group owner = " + groupOwner);
+            System.out.println("group id = " + groupId);
 
-            if(GroupModel.deleteGroup(groupOwner, groupId)){
+            if (GroupModel.deleteGroup(groupOwner, groupId)) {
                 resultArray.put("status", "success");
                 resultArray.put("title", "Success");
                 resultArray.put("content", "Deleted Successfully!");
-            }else{
+            } else {
                 resultArray.put("status", "failed");
                 resultArray.put("title", "Failed");
                 resultArray.put("content", "Deleted failed!");
             }
-        }else {
+        } else {
             resultArray.put("status", "failed");
             resultArray.put("title", "Failed");
             resultArray.put("content", "Deleted failed!");
@@ -109,7 +110,7 @@ public class GroupController {
             model.addAttribute("user_id", (int) session.getAttribute("user_id"));
             model.addAttribute("groups", groups);
             System.out.println("/group/refresh_group_table");
-            for(Groups g: groups){
+            for (Groups g : groups) {
                 System.out.println("name " + g.getGroup_name());
             }
             return "includes_group_table";
@@ -123,17 +124,78 @@ public class GroupController {
         if (!CommonModel.isLoggedIn(request, session)) {
             model.addAttribute("error_message", "You are not logged in");
             return "file_url_modal_error";
-        }
-        else if (request.getMethod().equals("POST") && request.getParameter("group_id") != null && request.getParameter("group_name") != null) {
+        } else if (request.getMethod().equals("POST") && request.getParameter("group_id") != null && request.getParameter("group_name") != null) {
             String group_id = request.getParameter("group_id");
             model.addAttribute("group_id", group_id);
             String group_name = request.getParameter("group_name");
             model.addAttribute("group_name", group_name);
             return "invite_to_group_modal";
-        }
-        else {
+        } else {
             model.addAttribute("error_message", "Internal Error. Please Contact an Admin");
             return "file_url_modal_error";
+        }
+    }
+
+    @RequestMapping(value = {"group/send_group_invite_submit"})
+    @ResponseBody
+    public String send_group_invite_submit(HttpServletRequest request, HttpSession session) {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("group_id") != null && request.getParameter("send_to_email") != null && request.getParameter("invite_access_level") != null) {
+            String send_to_email = request.getParameter("send_to_email");
+            String send_to_id = CommonModel.getUserIDByEmail(send_to_email);
+            String group_id = request.getParameter("group_id");
+            String invite_access_level = request.getParameter("invite_access_level");
+            if (CommonModel.isInGroup(Integer.parseInt(send_to_id), Integer.parseInt(group_id))) {
+                HashMap<String, String> error_array = new HashMap<>();
+                error_array.put("send_to_email", "User is already in the group");
+                String error_array_gson = gson.toJson(error_array);
+                resultArray.put("status", "fail");
+                resultArray.put("error", error_array_gson);
+                return gson.toJson(resultArray);
+            } else {
+                int user_id = (int) session.getAttribute("user_id");
+                String getGroupInviteCode = GroupModel.getGroupInviteCode(Integer.toString(user_id), send_to_id, group_id, invite_access_level);
+                String user_full_name = CommonModel.getFullName(Integer.toString(user_id));
+                String group_name = CommonModel.getGroupName(group_id);
+                String message = user_full_name + " has invited you to join the group: <b>" + group_name + "</b><br>" + "Visit the following page to join:<br><a href=\"/group/invite_code/"+getGroupInviteCode+"\">Click Here</a>";
+                MessagingModel.insertNewMessage(Integer.toString(user_id), send_to_id, message);
+                resultArray.put("status", "success");
+                resultArray.put("toastr", "A group invite has been sent to the user.");
+                return gson.toJson(resultArray);
+            }
+        }
+        resultArray.put("status", "failed");
+        resultArray.put("swal_error", "Unable to send invite. Internal Error.");
+        return gson.toJson(resultArray);
+    }
+
+    @RequestMapping(value = "group/invite_code/{invite_code}")
+    public String file_browser(@PathVariable("invite_code") String invite_code, HttpServletRequest request, HttpSession session, Model model) {
+        model.addAttribute("page_name", "Group Invite Page");
+        if (!CommonModel.isLoggedIn(request, session)) {
+            return "not_logged_in";
+        }
+        int user_id = (int) session.getAttribute("user_id");
+        ArrayList<String> getCodeData = GroupModel.getCodeData(Integer.toString(user_id), invite_code);
+        if (getCodeData != null && !getCodeData.isEmpty()) {
+            String group_id = getCodeData.get(4);
+            if (CommonModel.isInGroup(user_id, Integer.parseInt(group_id))) {
+                model.addAttribute("error_message", "You have already joined this group");
+                return "generic_error_page";
+            }
+            else {
+                String invite_access_level = getCodeData.get(5);
+                GroupModel.addNewMemberByInviteCode(Integer.toString(user_id), group_id, invite_access_level);
+                GroupModel.removeAllInvitesByUserIDAndGroup(Integer.toString(user_id), group_id);
+                model.addAttribute("group_name", CommonModel.getGroupName(group_id));
+                model.addAttribute("group_id", group_id);
+                return "group_invite_success";
+            }
+        }
+        else {
+            model.addAttribute("error_message", "This URL is no longer valid.");
+            return "generic_error_page";
         }
     }
 }

@@ -268,7 +268,6 @@ function filehub_send_issue_submit() {
                     }, 200);
                 }
                 if (response.error) {
-                    $('#send_to_email').focus();
                     var error_array = jQuery.parseJSON(response.error);
                     form.validate().showErrors(error_array);
                 }

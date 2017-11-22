@@ -27,28 +27,7 @@
         <div class="col-xs-12">
             <div class="row">
                 <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
-                    <div class="col-xs-12">
-                        <div class="table-responsive">
-                            <table class="table table-striped mb-none">
-                                <thead>
-                                <tr>
-                                    <th>File Name</th>
-                                    <th>Uploaded By</th>
-                                    <th>Uploaded On</th>
-                                    <th>Notes</th>
-                                    <th>Notes By</th>
-                                    <th></th>
-                                </tr>
-                                </thead>
-
-                                <tbody>
-                                <tr>
-                                    <td colspan="6"><span>you are not in this group</span></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <p>${error_message}</p>
                 </div>
             </div>
         </div>

@@ -23,7 +23,7 @@
                         String sent_on = CommonModel.timeStampToFormalDate(single_message.get(3));
                         String send_from_full_name = single_message.get(4) + " " + single_message.get(5);
             %>
-            <tr class="cursor-hand" data-attr="<% out.print(send_from_user_id); %>" onclick="filehub_send_message(this);">
+            <tr>
                 <td class="vertical-align-middle">
                     <% out.print(received_message); %>
                 </td>
@@ -36,6 +36,10 @@
                 <td class="vertical-align-middle">
                     <% out.print(sent_on); %>
                 </td>
+                <td class="vertical-align-middle">
+                    <a href="javascript:;" data-attr="<% out.print(send_from_user_id); %>"
+                       onclick="filehub_send_message(this);" data-toggle="tooltip" data-original-title="Reply"><i class="fa fa-mail-reply"></i></a>
+                </td>
             </tr>
             <% } %>
             <% } %>
@@ -44,3 +48,14 @@
     </div>
 </div>
 <% MessagingModel.markAllMessagesAsRead(Integer.toString((int) session.getAttribute("user_id"))); %>
+
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip({container: 'body'});
+
+        $('[data-toggle="tooltip"]').on('click', function () {
+            $(this).blur();
+            $(this).tooltip('hide');
+        });
+    });
+</script>

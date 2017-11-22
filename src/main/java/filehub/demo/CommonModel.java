@@ -10,10 +10,8 @@ import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Date;
-import java.util.Random;
-import java.util.UUID;
 
 public class CommonModel {
     // trinh
@@ -607,5 +605,48 @@ public class CommonModel {
             }
         }
         return returnString;
+    }
+
+    public static HashMap<String, String> getUserPermissionsType() {
+        HashMap<String, String> returnMap = new HashMap<>();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT * FROM user_permissions_type WHERE id!='4'";
+            pstmt = conn.prepareStatement(myQuery, Statement.RETURN_GENERATED_KEYS);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                while (sqlResult.next()) {
+                    String user_type_id = sqlResult.getString(1);
+                    String user_type_formal = sqlResult.getString(2);
+                    returnMap.put(user_type_id,user_type_formal);
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnMap;
     }
 }
