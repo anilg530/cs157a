@@ -214,6 +214,7 @@ function filehub_send_group_invite_submit() {
     form.validate().settings.ignore = ':disabled,:hidden';
     if (form.valid()) {
         var serialized = $(form).serialize();
+
         $.ajax({
             type: 'POST',
             url: '/group/send_group_invite_submit',
@@ -254,5 +255,83 @@ function filehub_send_group_invite_submit() {
             }
         });
     }
+    return false;
+}
+
+function join_a_group_popup(object){
+    var formData = {};
+    var user_id = $(object).attr('data-attr');
+    if (user_id) {
+        formData['user_id'] = user_id;
+    }
+    $.ajax({
+        type: 'POST',
+        url: '/group/join_a_group',
+        dataType: 'html',
+        data: formData,
+        beforeSend: function () {
+            //$('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>');
+        },
+        success: function (response) {
+            $('#ajax_modal_body_sm').html(response).promise().done(function () {
+            });
+            $('#ajax_modal_sm').modal('show');
+        },
+        error: function (xhr, status, error) {
+            internet_connectivity_swal();
+            console.log(xhr.responseText);
+            //$('body').html(xhr.responseText);
+        }
+    });
+    return false;
+}
+
+function submit_join_group() {
+    console.log("submit_join_group");
+    var form = $('#join_group_form');
+    form.validate().settings.ignore = ':disabled,:hidden';
+    if (form.valid()) {
+        var serialized = $(form).serialize();
+        $.ajax({
+            type: 'POST',
+            url: '/group/join_a_group/join',
+            dataType: 'json',
+            data: serialized,
+            beforeSend: function () {
+            },
+            success: function (response) {
+
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+    }
+}
+
+function openMemberList(object) {
+    var group_id = $(object).attr('data-attr');
+    var formData = {};
+    formData['group_id'] = group_id;
+    console.log("group_id "+ group_id)
+    $.ajax({
+        type: 'POST',
+        url: '/group/open_member_list',
+        dataType: 'html',
+        data: formData,
+        beforeSend: function () {
+            //$('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>');
+        },
+        success: function (response) {
+            $('#ajax_modal_body_sm').html(response).promise().done(function () {
+            });
+            $('#ajax_modal_sm').modal('show');
+        },
+        error: function (xhr, status, error) {
+            internet_connectivity_swal();
+            console.log(xhr.responseText);
+            //$('body').html(xhr.responseText);
+        }
+    });
     return false;
 }

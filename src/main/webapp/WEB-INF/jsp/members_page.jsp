@@ -31,27 +31,22 @@
                         <div class="col-xs-6">
                             <% if (session.getAttribute("username") != null) {
                                 int user_id = (int) session.getAttribute("user_id");
-                                String fullName = CommonModel.getFullName(Integer.toString((int) session.getAttribute("user_id")));%>
-                            <h4><%out.print(fullName);%>'s Group</h4>
+                            %>
+                            <h4>Group: ${group_name}</h4>
 
                         </div>
-                        <div class="col-xs-6">
-                            <div class="btn-group pull-right">
-                                <a class="btn btn-default" href="/group/create_group">Create a Group</a>
-                                <a class="btn btn-default" data-attr="<% out.print(user_id); %>" href="javascript:;" onclick="join_a_group_popup(this)">Join a Group</a>
-                            </div>
-                        </div>
                     </div>
-                    <% } %>
+
                 </div>
                 <div class="col-xs-12">
                     <div class="row">
                         <hr>
                     </div>
                 </div>
-                <div id="includes_files_table_html">
-                    <jsp:include page="includes_group_table.jsp"/>
+                <div id="includes_member_table_html">
+                    <jsp:include page="includes_member_table.jsp"/>
                 </div>
+                <% } %>
             </div>
         </div>
     </div>

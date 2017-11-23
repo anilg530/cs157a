@@ -57,6 +57,7 @@
                            onclick="group_delete(this);" data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash-o"></i></a>
                         <%} %>
                         <a class="btn no-padding" href="/group/members/<% out.print(groupID); %>" data-toggle="tooltip"
+                           data-attr="<% out.print(groupID); %>"
                            data-original-title="Group Members"><i class="fa fa-user" aria-hidden="true"></i></a>
 
 

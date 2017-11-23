@@ -14,6 +14,8 @@ public class GroupModel {
     static final String PASS = "cs157a_db";
     static final String ACTIVE = "Active";
     static final String INACTIVE = "Inactive";
+    static final String ACCEPTED = "Accepted";
+    static final String PENDING = "Pending";
     static final int GUEST_PERMISSION = 1;
     static final int USER_PERMISSION = 2;
     static final int ADVANCED_USER_PERMISSION = 3;
@@ -726,5 +728,278 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
+    }
+
+    public static boolean isInvited(int user_id, int group_id){
+        boolean invited = false;
+        Connection conn = null;
+        Statement stmt = null;
+        int count = 0;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT count(*) as invites FROM group_invites " +
+                      "where user_id = "+user_id+
+                           " and group_id ="+group_id +";";
+            ResultSet re = stmt.executeQuery(myQuery);
+            while (re.next()){
+                count = re.getInt("invites");
+                System.out.println("invitation "+ count);
+                if(count > 0){
+                    invited = true;
+                }
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        System.out.println("invited? "+ invited);
+        return invited;
+    }
+
+
+
+    public static boolean isInvitationPending(int user_id, int group_id){
+        boolean invitedPending = false;
+        Connection conn = null;
+        Statement stmt = null;
+        int count = 0;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT count(*) as invites FROM group_invites " +
+                    "where user_id = "+user_id+
+                    " and group_id ="+group_id +
+                    " and invite_status='"+PENDING+"';";
+            ResultSet re = stmt.executeQuery(myQuery);
+            while (re.next()){
+                count = re.getInt("invites");
+                System.out.println("invitation pending "+ count);
+                if(count > 0){
+                    invitedPending = true;
+                }
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        System.out.println("invitedPending? "+ invitedPending);
+        return invitedPending;
+    }
+
+    public static boolean isInvitationAccepted(int user_id, int group_id){
+        boolean invitedAccepted = false;
+        Connection conn = null;
+        Statement stmt = null;
+        int count = 0;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT count(*) as invites FROM group_invites " +
+                    "where user_id = "+user_id+
+                    " and group_id ="+group_id +
+                    " and invite_status='"+ACCEPTED+"';";
+            ResultSet re = stmt.executeQuery(myQuery);
+            while (re.next()){
+                count = re.getInt("invites");
+                System.out.println("invitation accepted "+ count);
+                if(count > 0){
+                    invitedAccepted = true;
+                }
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        System.out.println("invitedAccepted? "+ invitedAccepted);
+        return invitedAccepted;
+    }
+
+    public static boolean isMember(int user_id, int group_id){
+        boolean member = false;
+        Connection conn = null;
+        Statement stmt = null;
+        int count = 0;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT count(*) as isMember FROM group_members " +
+                    "where user_id = "+user_id+
+                    " and group_id ="+group_id +";";
+            ResultSet re = stmt.executeQuery(myQuery);
+            while (re.next()){
+                count = re.getInt("isMember");
+                System.out.println("isMember "+ count);
+                if(count == 1){
+                    member = true;
+                }
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        System.out.println("member? "+ member);
+        return member;
+    }
+
+    public static ArrayList<GroupMember> getAllGroupMembers(int group_id){
+       ArrayList<GroupMember> members = new ArrayList<>();
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT concat(user.`first_name`, ' ',user.`last_name`) as member, `group_members`.`user_permission` " +
+                    "from group_members, `user` " +
+                    "where group_members.`user_id` = user.`id` " +
+                    "      and group_members.`group_id`="+group_id+";";
+            ResultSet re = stmt.executeQuery(myQuery);
+            while (re.next()){
+                String fullName = re.getString("member");
+                int userPermission = re.getInt("user_permission");
+                members.add(new GroupMember(fullName, userPermission));
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return members;
+    }
+
+    public static String getPermissionString(int user_permission){
+        String permission = "";
+        switch (user_permission){
+            case 1:
+                permission = "Guest";
+                break;
+            case 2:
+                permission = "User";
+                break;
+            case 3:
+                permission = "Advanced User";
+                break;
+            case 4:
+                permission = "Admin";
+                break;
+
+        }
+
+        return permission;
+    }
+
+
+    public static String getGroupName(int group_id){
+       String groupName = null;
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "select groups.`group_name` " +
+                    "from groups " +
+                    "where groups.`id`="+group_id+";";
+            ResultSet re = stmt.executeQuery(myQuery);
+            while (re.next()){
+                groupName = re.getString("group_name");
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return groupName;
     }
 }

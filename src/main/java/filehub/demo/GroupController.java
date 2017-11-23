@@ -25,9 +25,9 @@ public class GroupController {
 
     @RequestMapping("group")
     public String main(HttpSession session, Model model) {
-        //System.out.println("hi there"+ UUID.randomUUID());
+
         model.addAttribute("page_name", "Group Page 01");
-        //System.out.println("group count "+ GroupModel.countGroup((int) session.getAttribute("user_id")));
+
         return "group_page";
     }
 
@@ -197,5 +197,43 @@ public class GroupController {
             model.addAttribute("error_message", "This URL is no longer valid.");
             return "generic_error_page";
         }
+    }
+
+    @RequestMapping(value = {"/group/join_a_group"})
+    public String join_a_group(HttpServletRequest request, HttpSession session, Model model) {
+        model.addAttribute("page_name", "Join Group");
+        if (!CommonModel.isLoggedIn(request, session)) {
+            model.addAttribute("error_message", "You are not logged in");
+            return "file_url_modal_error";
+        } else {
+            int user_id = (int) session.getAttribute("user_id");
+            model.addAttribute("user_id", user_id);
+            return "join_a_group";
+        }
+    }
+
+    @RequestMapping("group/join_a_group/join")
+    public String joinGroup(HttpServletRequest request, HttpSession session, Model model) {
+        if (request.getMethod().equals("POST") && request.getParameter("group_name")!=null && request.getParameter("group_password")!=null) {
+            String groupname = request.getParameter("group_name");
+            String groupPassword = request.getParameter("group_password");
+            int userID = (int) session.getAttribute("user_id");
+            System.out.println("group name: " + groupname);
+            System.out.println("group pass: " + groupPassword);
+            System.out.println("user_id: " + userID);
+        }
+
+        return "join_a_group";
+    }
+
+    @RequestMapping(value = {"/group/members/{group_id}"})
+    public String open_member_list(@PathVariable("group_id") int group_id, HttpServletRequest request, HttpSession session, Model model) {
+        model.addAttribute("page_name", "Group Members");
+        String groupName = GroupModel.getGroupName(group_id);
+        model.addAttribute("group_name", groupName);
+        System.out.println("group id model "+ group_id);
+        request.getSession().setAttribute("group_id", group_id);
+        model.addAttribute("group_id", group_id);
+        return "members_page";
     }
 }
