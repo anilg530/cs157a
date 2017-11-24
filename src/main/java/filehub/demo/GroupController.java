@@ -25,9 +25,7 @@ public class GroupController {
 
     @RequestMapping("group")
     public String main(HttpSession session, Model model) {
-        //System.out.println("hi there"+ UUID.randomUUID());
         model.addAttribute("page_name", "Group Page 01");
-        //System.out.println("group count "+ GroupModel.countGroup((int) session.getAttribute("user_id")));
         return "group_page";
     }
 
@@ -197,5 +195,72 @@ public class GroupController {
             model.addAttribute("error_message", "This URL is no longer valid.");
             return "generic_error_page";
         }
+    }
+
+    @RequestMapping(value = {"/group/join_a_group"})
+    public String join_a_group(HttpServletRequest request, HttpSession session, Model model) {
+        model.addAttribute("page_name", "Join Group");
+        if (!CommonModel.isLoggedIn(request, session)) {
+            model.addAttribute("error_message", "You are not logged in");
+            return "file_url_modal_error";
+        } else {
+            int user_id = (int) session.getAttribute("user_id");
+            model.addAttribute("user_id", user_id);
+            return "join_a_group";
+        }
+    }
+
+    @RequestMapping("group/join_a_group/join")
+    public String joinGroup(HttpServletRequest request, HttpSession session, Model model) {
+        if (request.getMethod().equals("POST") && request.getParameter("group_name")!=null && request.getParameter("group_password")!=null) {
+            String groupname = request.getParameter("group_name");
+            String groupPassword = request.getParameter("group_password");
+            int userID = (int) session.getAttribute("user_id");
+        }
+
+        return "join_a_group";
+    }
+
+    @RequestMapping(value = {"/group/members/{group_id}"})
+    public String open_member_list(@PathVariable("group_id") int group_id, HttpServletRequest request, HttpSession session, Model model) {
+        model.addAttribute("page_name", "Group Members");
+        String groupName = GroupModel.getGroupName(group_id);
+        model.addAttribute("group_name", groupName);
+        request.getSession().setAttribute("group_id", group_id);
+        model.addAttribute("group_id", group_id);
+        return "members_page";
+    }
+
+    @RequestMapping(value = {"/group/permission/update"}, method = RequestMethod.POST)
+    @ResponseBody
+    public String UpdatePermission(HttpServletRequest request, HttpSession session) {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("userId") != null && request.getParameter("groupId") != null  && request.getParameter("userPermission") != null) {
+            int userPermission = Integer.valueOf(request.getParameter("userPermission").trim());
+            int groupId = Integer.valueOf(request.getParameter("groupId").trim());
+            int userId = Integer.valueOf(request.getParameter("userId").trim());
+
+            System.out.println("userPermission = " + userPermission);
+            System.out.println("group id = " + groupId);
+            System.out.println("userId id = " + userId);
+
+            if (GroupModel.updatePermission(userId, userPermission, groupId)) {
+                resultArray.put("status", "success");
+                resultArray.put("title", "Success");
+                resultArray.put("content", "Update Successfully!");
+            } else {
+                resultArray.put("status", "failed");
+                resultArray.put("title", "Failed");
+                resultArray.put("content", "Update failed!");
+            }
+        } else {
+            resultArray.put("status", "failed");
+            resultArray.put("title", "Failed");
+            resultArray.put("content", "Update failed!");
+        }
+
+        System.out.println(gson.toJson(resultArray).toString());
+        return gson.toJson(resultArray);
     }
 }

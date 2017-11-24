@@ -1,4 +1,4 @@
-<div id="ajax_modal_sm" class="modal fade" role="dialog">
+<div id="ajax_modal_sm"  class="modal fade" role="dialog">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">

@@ -214,6 +214,7 @@ function filehub_send_group_invite_submit() {
     form.validate().settings.ignore = ':disabled,:hidden';
     if (form.valid()) {
         var serialized = $(form).serialize();
+
         $.ajax({
             type: 'POST',
             url: '/group/send_group_invite_submit',
@@ -255,4 +256,132 @@ function filehub_send_group_invite_submit() {
         });
     }
     return false;
+}
+
+function join_a_group_popup(object){
+    var formData = {};
+    var user_id = $(object).attr('data-attr');
+    if (user_id) {
+        formData['user_id'] = user_id;
+    }
+    $.ajax({
+        type: 'POST',
+        url: '/group/join_a_group',
+        dataType: 'html',
+        data: formData,
+        beforeSend: function () {
+            //$('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>');
+        },
+        success: function (response) {
+            $('#ajax_modal_body_sm').html(response).promise().done(function () {
+            });
+            $('#ajax_modal_sm').modal('show');
+        },
+        error: function (xhr, status, error) {
+            internet_connectivity_swal();
+            console.log(xhr.responseText);
+            //$('body').html(xhr.responseText);
+        }
+    });
+    return false;
+}
+
+function submit_join_group() {
+    console.log("submit_join_group");
+    var form = $('#join_group_form');
+    form.validate().settings.ignore = ':disabled,:hidden';
+    if (form.valid()) {
+        var serialized = $(form).serialize();
+        $.ajax({
+            type: 'POST',
+            url: '/group/join_a_group/join',
+            dataType: 'json',
+            data: serialized,
+            beforeSend: function () {
+            },
+            success: function (response) {
+
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+    }
+}
+
+function dataOnchange(object) {
+    var permission =  object.options[object.selectedIndex].value;
+    var userId = $(object).attr('data-attr');
+    var fullName = $(object).attr('data-attr1');
+    var groupId = $(object).attr('data-attr2');
+    //alert("permission " + selectedValue + "user id "+ userId);
+    setTimeout(function () {
+        swal({
+                html: true,
+                title: 'Update user permission',
+                text: 'Update <b>' + fullName + '</b> to <b>' +  getPermissionString(permission) +'</b> permission.',
+                type: 'warning',
+                allowOutsideClick: true,
+                showCancelButton: true,
+                confirmButtonColor: '#dd2420',
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
+                closeOnConfirm: true,
+                closeOnCancel: true,
+
+            },
+            function (is_confirm) {
+                if (is_confirm) {
+                    updatePermision(userId, groupId, permission)
+                }
+            });
+    }, 200);
+
+}
+
+function updatePermision(userId, groupId, userPermission){
+    $.ajax({
+        type: 'POST',
+        url: '/group/permission/update',
+        dataType: 'json',
+        data: {
+            userId:userId,
+            groupId:groupId,
+            userPermission:userPermission
+        },
+        beforeSend: function () {
+        },
+        success: function (response) {
+            if(response.status == 'success'){
+                successToast(response.title, response.content);
+                window.location.reload();
+            }else{
+                errorToast(response.title, response.content);
+            }
+        },
+        error: function (xhr, status, error) {
+
+        }
+    });
+}
+function getPermissionString(code) {
+    code = Number(code);
+    var str = "";
+    switch (code){
+        case 1:
+            str = "Guest";
+            break;
+        case 2:
+            str = "User";
+            break;
+        case 3:
+            str = "Advanced User";
+            break;
+        case 4:
+            str = "Admin";
+            break;
+
+    }
+
+    return str;
 }
