@@ -25,9 +25,7 @@ public class GroupController {
 
     @RequestMapping("group")
     public String main(HttpSession session, Model model) {
-
         model.addAttribute("page_name", "Group Page 01");
-
         return "group_page";
     }
 
@@ -218,9 +216,6 @@ public class GroupController {
             String groupname = request.getParameter("group_name");
             String groupPassword = request.getParameter("group_password");
             int userID = (int) session.getAttribute("user_id");
-            System.out.println("group name: " + groupname);
-            System.out.println("group pass: " + groupPassword);
-            System.out.println("user_id: " + userID);
         }
 
         return "join_a_group";
@@ -231,9 +226,41 @@ public class GroupController {
         model.addAttribute("page_name", "Group Members");
         String groupName = GroupModel.getGroupName(group_id);
         model.addAttribute("group_name", groupName);
-        System.out.println("group id model "+ group_id);
         request.getSession().setAttribute("group_id", group_id);
         model.addAttribute("group_id", group_id);
         return "members_page";
+    }
+
+    @RequestMapping(value = {"/group/permission/update"}, method = RequestMethod.POST)
+    @ResponseBody
+    public String UpdatePermission(HttpServletRequest request, HttpSession session) {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("userId") != null && request.getParameter("groupId") != null  && request.getParameter("userPermission") != null) {
+            int userPermission = Integer.valueOf(request.getParameter("userPermission").trim());
+            int groupId = Integer.valueOf(request.getParameter("groupId").trim());
+            int userId = Integer.valueOf(request.getParameter("userId").trim());
+
+            System.out.println("userPermission = " + userPermission);
+            System.out.println("group id = " + groupId);
+            System.out.println("userId id = " + userId);
+
+            if (GroupModel.updatePermission(userId, userPermission, groupId)) {
+                resultArray.put("status", "success");
+                resultArray.put("title", "Success");
+                resultArray.put("content", "Update Successfully!");
+            } else {
+                resultArray.put("status", "failed");
+                resultArray.put("title", "Failed");
+                resultArray.put("content", "Update failed!");
+            }
+        } else {
+            resultArray.put("status", "failed");
+            resultArray.put("title", "Failed");
+            resultArray.put("content", "Update failed!");
+        }
+
+        System.out.println(gson.toJson(resultArray).toString());
+        return gson.toJson(resultArray);
     }
 }

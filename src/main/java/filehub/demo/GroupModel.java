@@ -1,8 +1,5 @@
 package filehub.demo;
 
-import com.sun.istack.internal.Nullable;
-
-import javax.servlet.http.HttpSession;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -730,7 +727,7 @@ public class GroupModel {
         }
     }
 
-    public static boolean isInvited(int user_id, int group_id){
+    public static boolean isInvited(int user_id, int group_id) {
         boolean invited = false;
         Connection conn = null;
         Statement stmt = null;
@@ -741,13 +738,13 @@ public class GroupModel {
             stmt = conn.createStatement();
             String myQuery;
             myQuery = "SELECT count(*) as invites FROM group_invites " +
-                      "where user_id = "+user_id+
-                           " and group_id ="+group_id +";";
+                    "where user_id = " + user_id +
+                    " and group_id =" + group_id + ";";
             ResultSet re = stmt.executeQuery(myQuery);
-            while (re.next()){
+            while (re.next()) {
                 count = re.getInt("invites");
-                System.out.println("invitation "+ count);
-                if(count > 0){
+                System.out.println("invitation " + count);
+                if (count > 0) {
                     invited = true;
                 }
             }
@@ -768,13 +765,12 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
-        System.out.println("invited? "+ invited);
+        System.out.println("invited? " + invited);
         return invited;
     }
 
 
-
-    public static boolean isInvitationPending(int user_id, int group_id){
+    public static boolean isInvitationPending(int user_id, int group_id) {
         boolean invitedPending = false;
         Connection conn = null;
         Statement stmt = null;
@@ -785,14 +781,14 @@ public class GroupModel {
             stmt = conn.createStatement();
             String myQuery;
             myQuery = "SELECT count(*) as invites FROM group_invites " +
-                    "where user_id = "+user_id+
-                    " and group_id ="+group_id +
-                    " and invite_status='"+PENDING+"';";
+                    "where user_id = " + user_id +
+                    " and group_id =" + group_id +
+                    " and invite_status='" + PENDING + "';";
             ResultSet re = stmt.executeQuery(myQuery);
-            while (re.next()){
+            while (re.next()) {
                 count = re.getInt("invites");
-                System.out.println("invitation pending "+ count);
-                if(count > 0){
+                System.out.println("invitation pending " + count);
+                if (count > 0) {
                     invitedPending = true;
                 }
             }
@@ -813,11 +809,11 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
-        System.out.println("invitedPending? "+ invitedPending);
+        System.out.println("invitedPending? " + invitedPending);
         return invitedPending;
     }
 
-    public static boolean isInvitationAccepted(int user_id, int group_id){
+    public static boolean isInvitationAccepted(int user_id, int group_id) {
         boolean invitedAccepted = false;
         Connection conn = null;
         Statement stmt = null;
@@ -828,14 +824,14 @@ public class GroupModel {
             stmt = conn.createStatement();
             String myQuery;
             myQuery = "SELECT count(*) as invites FROM group_invites " +
-                    "where user_id = "+user_id+
-                    " and group_id ="+group_id +
-                    " and invite_status='"+ACCEPTED+"';";
+                    "where user_id = " + user_id +
+                    " and group_id =" + group_id +
+                    " and invite_status='" + ACCEPTED + "';";
             ResultSet re = stmt.executeQuery(myQuery);
-            while (re.next()){
+            while (re.next()) {
                 count = re.getInt("invites");
-                System.out.println("invitation accepted "+ count);
-                if(count > 0){
+                System.out.println("invitation accepted " + count);
+                if (count > 0) {
                     invitedAccepted = true;
                 }
             }
@@ -856,11 +852,11 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
-        System.out.println("invitedAccepted? "+ invitedAccepted);
+        System.out.println("invitedAccepted? " + invitedAccepted);
         return invitedAccepted;
     }
 
-    public static boolean isMember(int user_id, int group_id){
+    public static boolean isMember(int user_id, int group_id) {
         boolean member = false;
         Connection conn = null;
         Statement stmt = null;
@@ -871,13 +867,13 @@ public class GroupModel {
             stmt = conn.createStatement();
             String myQuery;
             myQuery = "SELECT count(*) as isMember FROM group_members " +
-                    "where user_id = "+user_id+
-                    " and group_id ="+group_id +";";
+                    "where user_id = " + user_id +
+                    " and group_id =" + group_id + ";";
             ResultSet re = stmt.executeQuery(myQuery);
-            while (re.next()){
+            while (re.next()) {
                 count = re.getInt("isMember");
-                System.out.println("isMember "+ count);
-                if(count == 1){
+                System.out.println("isMember " + count);
+                if (count == 1) {
                     member = true;
                 }
             }
@@ -898,12 +894,12 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
-        System.out.println("member? "+ member);
+        System.out.println("member? " + member);
         return member;
     }
 
-    public static ArrayList<GroupMember> getAllGroupMembers(int group_id){
-       ArrayList<GroupMember> members = new ArrayList<>();
+    public static ArrayList<GroupMember> getAllGroupMembers(int group_id) {
+        ArrayList<GroupMember> members = new ArrayList<>();
         Connection conn = null;
         Statement stmt = null;
 
@@ -912,15 +908,16 @@ public class GroupModel {
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
             stmt = conn.createStatement();
             String myQuery;
-            myQuery = "SELECT concat(user.`first_name`, ' ',user.`last_name`) as member, `group_members`.`user_permission` " +
+            myQuery = "SELECT group_members.`user_id`, concat(user.`first_name`, ' ',user.`last_name`) as member, `group_members`.`user_permission` " +
                     "from group_members, `user` " +
                     "where group_members.`user_id` = user.`id` " +
-                    "      and group_members.`group_id`="+group_id+";";
+                    "      and group_members.`group_id`=" + group_id + ";";
             ResultSet re = stmt.executeQuery(myQuery);
-            while (re.next()){
+            while (re.next()) {
                 String fullName = re.getString("member");
                 int userPermission = re.getInt("user_permission");
-                members.add(new GroupMember(fullName, userPermission));
+                int user_id = re.getInt("user_id");
+                members.add(new GroupMember(fullName, userPermission, user_id));
             }
         } catch (SQLException se) {
             se.printStackTrace();
@@ -943,9 +940,9 @@ public class GroupModel {
         return members;
     }
 
-    public static String getPermissionString(int user_permission){
+    public static String getPermissionString(int user_permission) {
         String permission = "";
-        switch (user_permission){
+        switch (user_permission) {
             case 1:
                 permission = "Guest";
                 break;
@@ -965,8 +962,8 @@ public class GroupModel {
     }
 
 
-    public static String getGroupName(int group_id){
-       String groupName = null;
+    public static String getGroupName(int group_id) {
+        String groupName = null;
         Connection conn = null;
         Statement stmt = null;
 
@@ -977,9 +974,9 @@ public class GroupModel {
             String myQuery;
             myQuery = "select groups.`group_name` " +
                     "from groups " +
-                    "where groups.`id`="+group_id+";";
+                    "where groups.`id`=" + group_id + ";";
             ResultSet re = stmt.executeQuery(myQuery);
-            while (re.next()){
+            while (re.next()) {
                 groupName = re.getString("group_name");
             }
         } catch (SQLException se) {
@@ -1001,5 +998,58 @@ public class GroupModel {
         }
 
         return groupName;
+    }
+
+    public static boolean updatePermission(int userId, int permission, int groupID) {
+        Connection conn = null;
+        Statement stmt = null;
+        boolean status = false;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            stmt = conn.createStatement();
+
+            String myQuery = "update group_members " +
+                    "set `user_permission`= "+permission  +
+                    " where `user_id`= "+userId +" and `group_id`= "+ groupID +";";
+            System.out.println(myQuery);
+            int re = stmt.executeUpdate(myQuery);
+            System.out.println("total lines updated " + re);
+            if (re == 1) {
+                status = true;
+            } else {
+                status = false;
+            }
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            status = false;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            status = false;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            status = false;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            status = false;
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return status;
+
     }
 }

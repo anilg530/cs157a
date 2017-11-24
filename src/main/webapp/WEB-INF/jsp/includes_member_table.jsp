@@ -26,7 +26,7 @@
                 System.out.println("size: " + members.size());
                 if (members != null && members.size() > 0) {
                     for (GroupMember member : members) {
-
+                        int userId = member.getUser_id();
                         String fullName = member.getFullName();
                         int userPermission = member.getPermission();
                         String userPermissionString = GroupModel.getPermissionString(userPermission);
@@ -38,10 +38,13 @@
             <tr>
 
                 <td class="vertical-align-middle"><% out.print(fullName); %></td>
+
                 <td class="vertical-align-middle">
+                    <% if(userPermission!=4 && userId!=user_id){ %>
                     <select name="invite_access_level" id="invite_access_level"
-                            class="selectpicker show-tick form-control"
-                            autocomplete="off" data-size="10" required onchange="dataOnchange();">
+                            class="selectpicker show-tick form-control" data-attr="<% out.print(userId); %>"
+                            data-attr1="<% out.print(fullName); %>" data-attr2="<% out.print(group_id); %>"
+                            autocomplete="off" data-size="10" required onchange="dataOnchange(this);">
                         <%
                             HashMap<String, String> getUserPermissionsType = CommonModel.getUserPermissionsType();
                             for (HashMap.Entry<String, String> entry : getUserPermissionsType.entrySet()) {
@@ -51,9 +54,17 @@
                                 <% if (userPermission == Integer.valueOf(user_permission_id)) { %>
                                 SELECTED<%}%> > <%out.print(user_permission_formal); %></option>
                         <% } %>
+
                     </select>
+                    <%}else{ %>
+                    <% out.print(userPermissionString); %>
+                    <%}%>
                 </td>
-                <td class="vertical-align-middle"><a id="apply" style="visibility:hidden">Apply</a></td>
+                <td class="vertical-align-middle">
+                    <% if(userPermission!=4 && userId!=user_id){ %>
+                    <a id="apply" href="javascript:;" data-attr="<% out.print(userId); %>" onclick="apply(this)">Apply</a>
+                    <%}%>
+                </td>
             </tr>
             <% } } else {%>
 
@@ -68,10 +79,20 @@
 
 <script type="text/javascript">
 
-    function dataOnchange() {
-        var selectBox = document.getElementById("invite_access_level");
-        var selectedValue = selectBox.options[selectBox.selectedIndex].value;
-        alert(selectedValue);
+    /*function dataOnchange(object) {
+        var selectedValue =  object.options[object.selectedIndex].value;
+        var userId = $(object).attr('data-attr');
+       alert("permission " + selectedValue + "user id "+ userId);
+
+
+    }*/
+
+    function apply(object){
+        var userId = $(object).attr('data-attr');
+        alert("user id" + userId);
+
     }
 
+
 </script>
+<script src="/assets/js/group.js"></script>
