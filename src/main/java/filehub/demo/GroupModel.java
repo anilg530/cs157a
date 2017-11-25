@@ -131,10 +131,15 @@ public class GroupModel {
         return groups;
     }
 
-    public static void insertGroup(String groupName, int groupOwner, String groupPassword) {
+    /*
+     * add a new group
+     * return true: inserted successfully
+     *        false: otherwise
+     */
+    public static boolean insertGroup(String groupName, int groupOwner, String groupPassword) {
         Connection conn = null;
         Statement stmt = null;
-
+        boolean success = false;
         try {
             Class.forName(JDBC_DRIVER).newInstance();
 
@@ -159,8 +164,10 @@ public class GroupModel {
             for (String query : queries) {
                 stmt.addBatch(query);
             }
-            stmt.executeBatch();
-
+            int[] counts = stmt.executeBatch();
+            if(counts[1]==1){
+                success = true;
+            }
             conn.commit();
 
             stmt.close();
@@ -182,6 +189,8 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
+        System.out.println("success "+success);
+        return success;
     }
 
     public static int checkGroupExit(String groupName) {

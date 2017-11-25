@@ -26,7 +26,8 @@ public class GroupController {
     @RequestMapping("group")
     public String main(HttpSession session, HttpServletRequest request, Model model) {
         model.addAttribute("page_name", "Group Management");
-        request.getSession().setAttribute("user_id", 4);
+        request.getSession().setAttribute("user_id", 2);
+        System.out.println("exist? "+GroupModel.checkGroupExit("squad"));
         return "group_page";
     }
 
@@ -37,22 +38,39 @@ public class GroupController {
     }
 
     @RequestMapping("group/create_group/add")
+    @ResponseBody
     public String addGroup(HttpServletRequest request, HttpSession session, Model model) {
         model.addAttribute("page_name", "Create Group");
-        String groupname = request.getParameter("group_name");
-        String groupPassword = request.getParameter("group_password");
-        if (!CommonModel.isLoggedIn(request, session)) {
-            return "not_logged_in";
-        } else {
-            if (request.getMethod().equals("POST")) {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if(CommonModel.isLoggedIn(request, session)){
+            if (request.getMethod().equals("POST") && request.getParameter("group_name") != null && request.getParameter("group_password") != null) {
+                String groupname = request.getParameter("group_name");
+                String groupPassword = request.getParameter("group_password");
                 int userID = (int) session.getAttribute("user_id");
-                GroupModel.insertGroup(groupname, userID, groupPassword);
+                if(0==GroupModel.checkGroupExit(groupname)){
+                    if(GroupModel.insertGroup(groupname, userID, groupPassword)){
+                        resultArray.put("status", "success");
+                        resultArray.put("content", "group "+ groupname+ " added.");
+                    }else {
+                        resultArray.put("status", "failed");
+                        resultArray.put("type", "mysql");
+                        resultArray.put("content", "Unable to add group "+ groupname+ ".");
+                    }
+                }else {
+                    resultArray.put("status", "failed");
+                    resultArray.put("type", "name exist");
+                    resultArray.put("content", "Group name: "+ groupname+ " is taken. Please choose another name.");
+                }
 
-                return "redirect:/group";
-            } else {
-                return "group_create";
             }
+        }else {
+            resultArray.put("status", "failed");
+            resultArray.put("type", "login");
+            resultArray.put("content", "not_logged_in");
         }
+
+        return gson.toJson(resultArray);
     }
 
     @RequestMapping("group/all")
@@ -274,18 +292,18 @@ public class GroupController {
             String group_name = request.getParameter("group_name");
             String group_password = request.getParameter("group_password");
             int userId = (int) session.getAttribute("user_id");
-            System.out.println("group_name "+ group_name);
-            System.out.println("group_password "+ group_password);
-            System.out.println("userId "+ userId);
+            System.out.println("group_name " + group_name);
+            System.out.println("group_password " + group_password);
+            System.out.println("userId " + userId);
             if (0 == GroupModel.checkGroupExit(group_name)) {
                 System.out.println("group not exist");
                 resultArray.put("status", "failed");
-                resultArray.put("content", "Group "+group_name+" not found!");
+                resultArray.put("content", "Group " + group_name + " not found!");
             } else {
                 if (GroupModel.isGroupPassCorrect(group_name, group_password)) {
                     System.out.println("pass correct!");
                     int group_id = GroupModel.getGroupId(group_name, group_password);
-                    System.out.println("group_id "+ group_id);
+                    System.out.println("group_id " + group_id);
                     System.out.println("--------------------------");
                     //if all ready a member
                     if (GroupModel.isMember(userId, group_id)) {
@@ -296,7 +314,7 @@ public class GroupController {
                         resultArray.put("member", "yes");
                     } else {
                         //check for any pending invitation
-                        if(0==GroupModel.isInvalid(group_id)) {
+                        if (0 == GroupModel.isInvalid(group_id)) {
                             if (GroupModel.isGroupInviteAlreadyExist(userId, group_id)) {
                                 System.out.println("invitation exist");
                                 //if exist, accepted the invitation, update invitation, add to group with the permission
@@ -307,10 +325,7 @@ public class GroupController {
                                 System.out.println("code " + code);
                                 System.out.println("adding group member with permission " + permission);
                                 System.out.println("inviter " + inviter);
-                                //update
-                                //GroupModel.removeAllInvitesByUserIDAndGroup(String.valueOf(userId).trim(), String.valueOf(group_id).trim());
-                                //add
-                                //GroupModel.addMember(userId, group_id, permission);
+
                                 resultArray.put("status", "success");
                                 resultArray.put("invitation", "yes");
                                 resultArray.put("content", "You have an invitation by <b>" + inviter + "</b> with the code: <b>" + code + "</b> and access level:  <b>" + GroupModel.getPermissionString(permission) + "</b>");
@@ -328,7 +343,7 @@ public class GroupController {
                                 resultArray.put("content", "you joined group " + group_name + " successfully with GUEST permission");
                                 resultArray.put("group_id", String.valueOf(group_id));
                             }
-                        }else {
+                        } else {
                             resultArray.put("status", "failed");
                             resultArray.put("content", "Group " + group_name + " was deleted by owner.");
                         }

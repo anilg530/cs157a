@@ -40,6 +40,7 @@ function group_delete(object) {
                     setTimeout( bootbox.prompt({
                         size: "small",
                         title: "Enter Password",
+                        inputType: "password",
                         callback: function(result){
                             if(result!=null) {
                                 confirmGroupDeletePassword(result, groupName, groupId, groupOwner);
@@ -61,6 +62,7 @@ function group_password(object) {
     setTimeout( bootbox.prompt({
         size: "small",
         title: "Enter Password",
+        inputType: "password",
         callback: function(result){
             if(result!=null) {
                 confirmGroupPassword(result, groupName, groupId);
@@ -349,7 +351,8 @@ function submit_join_group() {
 
                 }else if(response.status=="success" && response.invitation=="no"){
                     //successToast(response.status, response.content);
-                    swal(response.status, response.content, "success")
+                    swal(response.status, response.content, "success");
+                    window.location='/group';
 
                 }else if(response.status=="success" && response.member=="yes"){
                     setTimeout(function () {
@@ -385,6 +388,42 @@ function submit_join_group() {
     }
     return false;
 }
+
+function submit_add_group() {
+    console.log("in submit_join_group")
+    var form = $('#add_group_form');
+    if (form.valid()) {
+        var serialized = $(form).serialize();
+
+        $.ajax({
+            type: 'POST',
+            url: '/group/create_group/add',
+            dataType: 'json',
+            data: serialized,
+            beforeSend: function () {
+            },
+            success: function (response) {
+                if(response.status=="success"){
+                    swal(response.status, response.content, "success");
+                    window.location='../group';
+                }else {
+                    if(response.type=="mysql" || response.type=="name exist"){
+                        swal(response.status, response.content, "error");
+                    } else {
+                        $(this).html(response.content).promise().done(function () {
+                        });
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+                internet_connectivity_swal();
+            }
+        });
+    }
+    return false;
+}
+
 
 function dataOnchange(object) {
     var permission =  object.options[object.selectedIndex].value;

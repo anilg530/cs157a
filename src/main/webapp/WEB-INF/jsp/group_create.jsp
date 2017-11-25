@@ -13,7 +13,7 @@
     <meta name="author" content="#"/>
 
     <title>${page_name}</title>
-
+    <script src="/assets/js/group.js"></script>
     <jsp:include page="common/top.jsp"/>
 </head>
 <body>
@@ -28,8 +28,8 @@
         <div class="row">
             <div class="col-xs-offset-1 col-xs-10 col-sm-offset-4 col-sm-4 col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-3">
                 <p>Enter the following information to create your group:</p>
-                <hr>
-                <form action="/group/create_group/add" method="post" accept-charset="utf-8">
+                <hr><!--action="/group/create_group/add"-->
+                <form id="add_group_form"  method="post" accept-charset="utf-8">
                     <div class="form-group">
                         <label class="control-label">Group Name</label>
                         <input type="text" class="form-control" name="group_name" value="" placeholder="group name"
@@ -38,12 +38,14 @@
                     </div>
                     <div class="form-group">
                         <label class="control-label">Group Password</label>
-                        <input type="text" class="form-control" name="group_password" value="" placeholder="group password"
+                        <input type="password" class="form-control" name="group_password" value=""  placeholder="group password"
                                autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
                                required="true"/>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-success btn-block">Create Group</button>
+                        <a class="btn btn-sm btn-primary pull-right" href="javascript:;"
+                           onclick="submit_add_group();">
+                            <i class="fa fa-plus" aria-hidden="true"></i> Add Group</a>
                     </div>
                 </form>
             </div>

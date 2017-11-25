@@ -45,7 +45,7 @@
                     </div>
                     <div class="form-group">
                         <label class="control-label">Group Password</label>
-                        <input type="text" class="form-control" name="group_password" value="" placeholder="group password"
+                        <input type="password" class="form-control" name="group_password" value="" placeholder="group password"
                                autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
                                required="true"/>
                     </div>
