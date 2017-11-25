@@ -12,6 +12,7 @@
                 <th>Group Name</th>
                 <th>Owner</th>
                 <th>Created On</th>
+                <th>Access Level</th>
                 <th>Action</th>
             </tr>
             </thead>
@@ -27,6 +28,7 @@
                     String owner = CommonModel.getFullName(Integer.toString(group.getGroup_owner()));
                     String createdOn = CommonModel.timeStampToFormalDate(group.getCreated_on());
                    int permission = group.getUser_permission();
+                   String permissionStr = GroupModel.getPermissionString(permission);
             %>
 
             <tr>
@@ -45,6 +47,7 @@
                     </td>
                     <td class="vertical-align-middle"><% out.print(owner); %></td>
                     <td class="vertical-align-middle"><% out.print(createdOn); %></td>
+                     <td class="vertical-align-middle"><% out.print(permissionStr); %></td>
                     <td class="vertical-align-middle">
                         <% if(GroupModel.isOwner(permission)|| GroupModel.isAdvancedUser(permission)){ %>
                         <a class="btn no-padding" href="javascript:;" data-attr="<% out.print(groupName); %>"
@@ -63,9 +66,6 @@
 
                         <%} %>
                     </td>
-
-
-
             </tr>
 
             <% }}else{%>
