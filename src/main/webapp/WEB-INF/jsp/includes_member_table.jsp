@@ -13,7 +13,6 @@
             <tr>
                 <th>Member</th>
                 <th>Permission</th>
-                <th></th>
             </tr>
             </thead>
 
@@ -60,11 +59,7 @@
                     <% out.print(userPermissionString); %>
                     <%}%>
                 </td>
-                <td class="vertical-align-middle">
-                    <% if(userPermission!=4 && userId!=user_id){ %>
-                    <a id="apply" href="javascript:;" data-attr="<% out.print(userId); %>" onclick="apply(this)">Apply</a>
-                    <%}%>
-                </td>
+
             </tr>
             <% } } else {%>
 
@@ -77,22 +72,5 @@
     </div>
 </div>
 
-<script type="text/javascript">
 
-    /*function dataOnchange(object) {
-        var selectedValue =  object.options[object.selectedIndex].value;
-        var userId = $(object).attr('data-attr');
-       alert("permission " + selectedValue + "user id "+ userId);
-
-
-    }*/
-
-    function apply(object){
-        var userId = $(object).attr('data-attr');
-        alert("user id" + userId);
-
-    }
-
-
-</script>
-<script src="/assets/js/group.js"></script>
+<!--<script src="/assets/js/group.js"></script>-->

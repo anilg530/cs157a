@@ -24,8 +24,9 @@ import java.util.UUID;
 public class GroupController {
 
     @RequestMapping("group")
-    public String main(HttpSession session, Model model) {
-        model.addAttribute("page_name", "Group Page 01");
+    public String main(HttpSession session, HttpServletRequest request, Model model) {
+        model.addAttribute("page_name", "Group Management");
+        request.getSession().setAttribute("user_id", 4);
         return "group_page";
     }
 
@@ -40,14 +41,18 @@ public class GroupController {
         model.addAttribute("page_name", "Create Group");
         String groupname = request.getParameter("group_name");
         String groupPassword = request.getParameter("group_password");
-        if (request.getMethod().equals("POST")) {
-            int userID = (int) session.getAttribute("user_id");
-            //System.out.println("group name: " + groupname);
-            //System.out.println("group pass: " + groupPassword);
-            GroupModel.insertGroup(groupname, userID, groupPassword);
+        if (!CommonModel.isLoggedIn(request, session)) {
+            return "not_logged_in";
+        } else {
+            if (request.getMethod().equals("POST")) {
+                int userID = (int) session.getAttribute("user_id");
+                GroupModel.insertGroup(groupname, userID, groupPassword);
 
+                return "redirect:/group";
+            } else {
+                return "group_create";
+            }
         }
-        return "redirect:/group";
     }
 
     @RequestMapping("group/all")
@@ -156,7 +161,7 @@ public class GroupController {
                 String getGroupInviteCode = GroupModel.getGroupInviteCode(Integer.toString(user_id), send_to_id, group_id, invite_access_level);
                 String user_full_name = CommonModel.getFullName(Integer.toString(user_id));
                 String group_name = CommonModel.getGroupName(group_id);
-                String message = user_full_name + " has invited you to join the group: <b>" + group_name + "</b><br>" + "Visit the following page to join:<br><a href=\"/group/invite_code/"+getGroupInviteCode+"\">Click Here</a>";
+                String message = user_full_name + " has invited you to join the group: <b>" + group_name + "</b><br>" + "Visit the following page to join:<br><a href=\"/group/invite_code/" + getGroupInviteCode + "\">Click Here</a>";
                 MessagingModel.insertNewMessage(Integer.toString(user_id), send_to_id, message);
                 resultArray.put("status", "success");
                 resultArray.put("toastr", "A group invite has been sent to the user.");
@@ -181,8 +186,7 @@ public class GroupController {
             if (CommonModel.isInGroup(user_id, Integer.parseInt(group_id))) {
                 model.addAttribute("error_message", "You have already joined this group");
                 return "generic_error_page";
-            }
-            else {
+            } else {
                 String invite_access_level = getCodeData.get(5);
                 GroupModel.addNewMemberByInviteCode(Integer.toString(user_id), group_id, invite_access_level);
                 GroupModel.removeAllInvitesByUserIDAndGroup(Integer.toString(user_id), group_id);
@@ -190,8 +194,7 @@ public class GroupController {
                 model.addAttribute("group_id", group_id);
                 return "group_invite_success";
             }
-        }
-        else {
+        } else {
             model.addAttribute("error_message", "This URL is no longer valid.");
             return "generic_error_page";
         }
@@ -206,13 +209,14 @@ public class GroupController {
         } else {
             int user_id = (int) session.getAttribute("user_id");
             model.addAttribute("user_id", user_id);
+            model.addAttribute("page_name", "Join a group");
             return "join_a_group";
         }
     }
 
     @RequestMapping("group/join_a_group/join")
     public String joinGroup(HttpServletRequest request, HttpSession session, Model model) {
-        if (request.getMethod().equals("POST") && request.getParameter("group_name")!=null && request.getParameter("group_password")!=null) {
+        if (request.getMethod().equals("POST") && request.getParameter("group_name") != null && request.getParameter("group_password") != null) {
             String groupname = request.getParameter("group_name");
             String groupPassword = request.getParameter("group_password");
             int userID = (int) session.getAttribute("user_id");
@@ -236,14 +240,10 @@ public class GroupController {
     public String UpdatePermission(HttpServletRequest request, HttpSession session) {
         HashMap<String, String> resultArray = new HashMap<>();
         Gson gson = new Gson();
-        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("userId") != null && request.getParameter("groupId") != null  && request.getParameter("userPermission") != null) {
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("userId") != null && request.getParameter("groupId") != null && request.getParameter("userPermission") != null) {
             int userPermission = Integer.valueOf(request.getParameter("userPermission").trim());
             int groupId = Integer.valueOf(request.getParameter("groupId").trim());
             int userId = Integer.valueOf(request.getParameter("userId").trim());
-
-            System.out.println("userPermission = " + userPermission);
-            System.out.println("group id = " + groupId);
-            System.out.println("userId id = " + userId);
 
             if (GroupModel.updatePermission(userId, userPermission, groupId)) {
                 resultArray.put("status", "success");
@@ -261,6 +261,90 @@ public class GroupController {
         }
 
         System.out.println(gson.toJson(resultArray).toString());
+        return gson.toJson(resultArray);
+    }
+
+    @RequestMapping(value = {"/group/submit_join_group"})
+    @ResponseBody
+    public String submitJoinGroup(HttpServletRequest request, HttpSession session) {
+        System.out.println(" in /group/submit_join_group");
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("group_name") != null && request.getParameter("group_password") != null) {
+            String group_name = request.getParameter("group_name");
+            String group_password = request.getParameter("group_password");
+            int userId = (int) session.getAttribute("user_id");
+            System.out.println("group_name "+ group_name);
+            System.out.println("group_password "+ group_password);
+            System.out.println("userId "+ userId);
+            if (0 == GroupModel.checkGroupExit(group_name)) {
+                System.out.println("group not exist");
+                resultArray.put("status", "failed");
+                resultArray.put("content", "Group "+group_name+" not found!");
+            } else {
+                if (GroupModel.isGroupPassCorrect(group_name, group_password)) {
+                    System.out.println("pass correct!");
+                    int group_id = GroupModel.getGroupId(group_name, group_password);
+                    System.out.println("group_id "+ group_id);
+                    System.out.println("--------------------------");
+                    //if all ready a member
+                    if (GroupModel.isMember(userId, group_id)) {
+                        System.out.println("MEMBER!");
+                        resultArray.put("status", "success");
+                        resultArray.put("content", "You are already in " + group_name + " group.");
+                        resultArray.put("group_id", String.valueOf(group_id));
+                        resultArray.put("member", "yes");
+                    } else {
+                        //check for any pending invitation
+                        if(0==GroupModel.isInvalid(group_id)) {
+                            if (GroupModel.isGroupInviteAlreadyExist(userId, group_id)) {
+                                System.out.println("invitation exist");
+                                //if exist, accepted the invitation, update invitation, add to group with the permission
+                                GroupInvite invite = GroupModel.getGroupInvite(userId, group_id);
+                                int permission = invite.getAccessLevel();
+                                String code = invite.getInviteCode();
+                                String inviter = CommonModel.getFullName(String.valueOf(invite.getFromUser()));
+                                System.out.println("code " + code);
+                                System.out.println("adding group member with permission " + permission);
+                                System.out.println("inviter " + inviter);
+                                //update
+                                //GroupModel.removeAllInvitesByUserIDAndGroup(String.valueOf(userId).trim(), String.valueOf(group_id).trim());
+                                //add
+                                //GroupModel.addMember(userId, group_id, permission);
+                                resultArray.put("status", "success");
+                                resultArray.put("invitation", "yes");
+                                resultArray.put("content", "You have an invitation by <b>" + inviter + "</b> with the code: <b>" + code + "</b> and access level:  <b>" + GroupModel.getPermissionString(permission) + "</b>");
+                                resultArray.put("group_id", String.valueOf(group_id));
+                                resultArray.put("code", code);
+                                resultArray.put("inviter", inviter);
+                                resultArray.put("permission", String.valueOf(permission));
+                                resultArray.put("group_name", GroupModel.getGroupName(group_id));
+                            } else {
+                                //if not, add as GUEST
+                                System.out.println("adding group member with GUEST permission ");
+                                GroupModel.addMember(userId, group_id, 1);
+                                resultArray.put("status", "success");
+                                resultArray.put("invitation", "no");
+                                resultArray.put("content", "you joined group " + group_name + " successfully with GUEST permission");
+                                resultArray.put("group_id", String.valueOf(group_id));
+                            }
+                        }else {
+                            resultArray.put("status", "failed");
+                            resultArray.put("content", "Group " + group_name + " was deleted by owner.");
+                        }
+
+                    }
+                } else {
+                    System.out.println("wrong pass!");
+                    resultArray.put("status", "failed");
+                    resultArray.put("content", "Wrong Password");
+                }
+
+            }
+        } else {
+            resultArray.put("status", "failed");
+            resultArray.put("content", "Unable to send invite. Internal Error.");
+        }
         return gson.toJson(resultArray);
     }
 }

@@ -38,7 +38,7 @@
                         <div class="col-xs-6">
                             <div class="btn-group pull-right">
                                 <a class="btn btn-default" href="/group/create_group">Create a Group</a>
-                                <a class="btn btn-default" data-attr="<% out.print(user_id); %>" href="javascript:;" onclick="join_a_group_popup(this)">Join a Group</a>
+                                <a class="btn btn-default" data-attr="<% out.print(user_id); %>" href="/group/join_a_group">Join a Group</a>
                             </div>
                         </div>
                     </div>

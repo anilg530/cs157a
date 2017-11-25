@@ -20,7 +20,9 @@
 
 <jsp:include page="common/navigation.jsp"/>
 
-
+<div id="mySidenav" class="sidenav">
+    <jsp:include page="common/messaging_sidebar.jsp"/>
+</div>
 <div class="vertical-center-70">
     <div class="vertical-center-container">
         <div class="row">

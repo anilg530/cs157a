@@ -287,26 +287,103 @@ function join_a_group_popup(object){
 }
 
 function submit_join_group() {
-    console.log("submit_join_group");
+    console.log("in submit_join_group")
     var form = $('#join_group_form');
-    form.validate().settings.ignore = ':disabled,:hidden';
     if (form.valid()) {
         var serialized = $(form).serialize();
+
         $.ajax({
             type: 'POST',
-            url: '/group/join_a_group/join',
+            url: '/group/submit_join_group',
             dataType: 'json',
             data: serialized,
             beforeSend: function () {
             },
             success: function (response) {
+                var group_id= response.group_id;
+                var code = response.code;
+                var group_name = response.group_name;
+                if(response.status=="success" && response.invitation=="yes"){
+                    setTimeout(function () {
+                        swal({
+                                html: true,
+                                title: 'Invitation found',
+                                text: response.content + ". Click Confirm to accept invitation and join the group.",
+                                type: 'warning',
+                                allowOutsideClick: true,
+                                showCancelButton: true,
+                                confirmButtonColor: '#dd2420',
+                                confirmButtonText: 'Confirm',
+                                cancelButtonText: 'Cancel',
+                                closeOnConfirm: true,
+                                closeOnCancel: true,
+                            },
+                            function (is_confirm) {
+                                if (is_confirm) {
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: 'invite_code/'+code,
+                                        dataType: 'html',
+                                        data: {
+                                            group_id: group_id,
+                                            group_name: group_name
+                                        },
+                                        beforeSend: function () {
+                                            //$('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>');
+                                        },
+                                        success: function (response) {
+                                            $('#ajax_modal_body_sm').html(response).promise().done(function () {
+                                            });
+                                            $('#ajax_modal_sm').modal('show');
+                                        },
+                                        error: function (xhr, status, error) {
+                                            internet_connectivity_swal();
+                                            console.log(xhr.responseText);
+                                            //$('body').html(xhr.responseText);
+                                        }
+                                    });
 
+                                }
+                            });
+                    }, 200);
+
+                }else if(response.status=="success" && response.invitation=="no"){
+                    //successToast(response.status, response.content);
+                    swal(response.status, response.content, "success")
+
+                }else if(response.status=="success" && response.member=="yes"){
+                    setTimeout(function () {
+                        swal({
+                                html: true,
+                                title: 'You already join this group',
+                                text: response.content + " Click Confirm to view the group.",
+                                type: 'warning',
+                                allowOutsideClick: true,
+                                showCancelButton: true,
+                                confirmButtonColor: '#dd2420',
+                                confirmButtonText: 'Confirm',
+                                cancelButtonText: 'Cancel',
+                                closeOnConfirm: true,
+                                closeOnCancel: true,
+                            },
+                            function (is_confirm) {
+                                if (is_confirm) {
+                                    window.location='/file/view/'+group_id;
+                                }
+                            });
+                    }, 200);
+                }else{
+                    swal(response.status, response.content, "error")
+                    return false;
+                }
             },
             error: function (xhr, status, error) {
-
+                console.log(xhr.responseText);
+                internet_connectivity_swal();
             }
         });
     }
+    return false;
 }
 
 function dataOnchange(object) {
