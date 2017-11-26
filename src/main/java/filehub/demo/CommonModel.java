@@ -139,7 +139,8 @@ public class CommonModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_URL,
+                    CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
             myQuery = "SELECT * FROM group_members WHERE (user_id = ? AND group_id = ?)";

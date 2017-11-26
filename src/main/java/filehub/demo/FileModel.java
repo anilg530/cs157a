@@ -28,7 +28,6 @@ public class FileModel {
 
     public static ArrayList<String> getDirectory(String current_path) {
         ArrayList<String> returnArray = new ArrayList<>();
-        //System.out.println("Working Directory = " + System.getProperty("user.dir"));
         File theDir = new File(current_path);
 
         if (!theDir.exists()) {
@@ -50,20 +49,19 @@ public class FileModel {
 
     public static String getFilePathByID(String id) {
         String returnString = "";
-
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            stmt = conn.createStatement();
             String myQuery;
-            myQuery = "SELECT file_path FROM file_data " +
-                    "WHERE (id='" + id + "' AND file_status='Active')";
-            ResultSet sqlResult = stmt.executeQuery(myQuery);
-            if (sqlResult != null && sqlResult.next()) {
+            myQuery = "SELECT file_path FROM file_data WHERE (id = ? AND file_status = 'Active')";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, id);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                sqlResult.next();
                 returnString = sqlResult.getString(1);
                 sqlResult.close();
             }
@@ -73,19 +71,19 @@ public class FileModel {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
                 }
             } catch (SQLException se2) {
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
         }
-
         return returnString;
     }
 
@@ -93,21 +91,20 @@ public class FileModel {
         ArrayList<String> returnArray = new ArrayList<>();
         String current_path = (String) session.getAttribute("current_path");
         String new_path = current_path + "/" + folder_name;
-        //System.out.println(new_path);
 
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            stmt = conn.createStatement();
             String myQuery;
-            myQuery = "SELECT * FROM file_data " +
-                    "WHERE (file_path='" + new_path + "' AND file_status='Active' AND type='Folder')";
-            ResultSet sqlResult = stmt.executeQuery(myQuery);
-            if (sqlResult != null && sqlResult.next()) {
+            myQuery = "SELECT * FROM file_data WHERE (file_path = ? AND file_status = 'Active' AND type='Folder')";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, new_path);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                sqlResult.next();
                 for (int i = 1; i < 12; i++) {
                     String columnValue = sqlResult.getString(i);
                     if (columnValue == null) {
@@ -123,14 +120,15 @@ public class FileModel {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
                 }
             } catch (SQLException se2) {
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
@@ -142,46 +140,48 @@ public class FileModel {
         ArrayList<ArrayList<String>> returnArray = new ArrayList<>();
         String current_path = (String) session.getAttribute("current_path");
         String group_id = Integer.toString((int) session.getAttribute("group_id"));
-        //System.out.println(new_path);
 
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            stmt = conn.createStatement();
             String myQuery;
-            myQuery = "SELECT * FROM file_data " +
-                    "WHERE (group_id='" + group_id + "' AND folder_path='" + current_path + "' AND file_status='Active' AND type='File')";
-            ResultSet sqlResult = stmt.executeQuery(myQuery);
-            while (sqlResult != null && sqlResult.next()) {
-                ArrayList<String> temp_array = new ArrayList<>();
-                for (int i = 1; i < 12; i++) {
-                    String columnValue = sqlResult.getString(i);
-                    if (columnValue == null) {
-                        columnValue = "";
+            myQuery = "SELECT * FROM file_data WHERE (group_id = ? AND folder_path = ? AND file_status = 'Active' AND type = 'File')";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, group_id);
+            pstmt.setString(2, current_path);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                while (sqlResult.next()) {
+                    ArrayList<String> temp_array = new ArrayList<>();
+                    for (int i = 1; i < 12; i++) {
+                        String columnValue = sqlResult.getString(i);
+                        if (columnValue == null) {
+                            columnValue = "";
+                        }
+                        temp_array.add(columnValue);
                     }
-                    temp_array.add(columnValue);
+                    returnArray.add(temp_array);
                 }
-                returnArray.add(temp_array);
+                sqlResult.close();
             }
-            sqlResult.close();
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
                 }
             } catch (SQLException se2) {
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
@@ -197,7 +197,7 @@ public class FileModel {
         if (CommonModel.isMaster(Integer.toString(user_id))) {
             return true;
         }
-        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id), Integer.toString(group_id));
         if (user_permission == 2 || user_permission == 3 || user_permission == 4) {
             return true;
         }
@@ -208,7 +208,7 @@ public class FileModel {
         if (CommonModel.isMaster(Integer.toString(user_id))) {
             return true;
         }
-        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id), Integer.toString(group_id));
         if (user_permission == 3 || user_permission == 4) {
             return true;
         }
@@ -219,7 +219,7 @@ public class FileModel {
         if (CommonModel.isMaster(Integer.toString(user_id))) {
             return true;
         }
-        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id), Integer.toString(group_id));
         if (user_permission == 3 || user_permission == 4) {
             return true;
         }
@@ -230,7 +230,7 @@ public class FileModel {
         if (CommonModel.isMaster(Integer.toString(user_id))) {
             return true;
         }
-        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id), Integer.toString(group_id));
         if (user_permission == 3 || user_permission == 4) {
             return true;
         }
@@ -241,7 +241,7 @@ public class FileModel {
         if (CommonModel.isMaster(Integer.toString(user_id))) {
             return true;
         }
-        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id), Integer.toString(group_id));
         if (user_permission == 3 || user_permission == 4) {
             return true;
         }
@@ -252,7 +252,7 @@ public class FileModel {
         if (CommonModel.isMaster(Integer.toString(user_id))) {
             return true;
         }
-        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id), Integer.toString(group_id));
         if (user_permission == 3 || user_permission == 4) {
             return true;
         }
@@ -263,7 +263,7 @@ public class FileModel {
         if (CommonModel.isMaster(Integer.toString(user_id))) {
             return true;
         }
-        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id), Integer.toString(group_id));
         if (user_permission == 2 || user_permission == 3 || user_permission == 4) {
             return true;
         }
@@ -274,7 +274,7 @@ public class FileModel {
         if (CommonModel.isMaster(Integer.toString(user_id))) {
             return true;
         }
-        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id), Integer.toString(group_id));
         if (user_permission == 3 || user_permission == 4) {
             return true;
         }
@@ -285,7 +285,7 @@ public class FileModel {
         if (CommonModel.isMaster(Integer.toString(user_id))) {
             return true;
         }
-        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id),Integer.toString(group_id));
+        int user_permission = CommonModel.getUserPermissions(Integer.toString(user_id), Integer.toString(group_id));
         if (user_permission == 3 || user_permission == 4) {
             return true;
         }
@@ -305,12 +305,11 @@ public class FileModel {
         int group_id = (int) session.getAttribute("group_id");
         String current_path = (String) session.getAttribute("current_path");
         String new_path = current_path + "/" + new_folder_name;
-        Connection conn = null;
 
+        Connection conn = null;
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -358,7 +357,6 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -407,7 +405,6 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -471,23 +468,28 @@ public class FileModel {
                 se.printStackTrace();
             }
         }
-
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            stmt = conn.createStatement();
             String myQuery;
             myQuery = "INSERT INTO file_data(group_id,file_name,folder_Path,file_path,file_status,type,uploaded_by)" +
-                    "VALUES ('" + group_id + "','" + file_name + "','" + folder_path + "','" + file_path + "','" + file_status + "','" + type + "','" + uploaded_by + "')";
-            stmt.executeUpdate(myQuery, Statement.RETURN_GENERATED_KEYS);
-            ResultSet sqlResult = stmt.getGeneratedKeys();
-            if (sqlResult != null) {
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(myQuery, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, group_id);
+            pstmt.setString(2, file_name);
+            pstmt.setString(3, folder_path);
+            pstmt.setString(4, file_path);
+            pstmt.setString(5, file_status);
+            pstmt.setString(6, type);
+            pstmt.setString(7, uploaded_by);
+            pstmt.executeUpdate();
+            ResultSet sqlResult = pstmt.getGeneratedKeys();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
                 if (sqlResult.next()) {
-                    insertFileUploadLogEntry(uploaded_by, "New folder created: " + new_folder_name+ " (Group: "+CommonModel.getGroupName(group_id)+")");
+                    insertFileUploadLogEntry(uploaded_by, "New folder created: " + new_folder_name + " (Group: " + CommonModel.getGroupName(group_id) + ")");
                     sqlInsertSuccess = true;
                 }
                 sqlResult.close();
@@ -498,8 +500,8 @@ public class FileModel {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
                 }
             } catch (SQLException se2) {
             }
@@ -552,7 +554,7 @@ public class FileModel {
                             "WHERE (id='" + id + "')";
                     int affected_rows = stmt.executeUpdate(myQuery);
                     if (affected_rows > 0) {
-                        insertFileUploadLogEntry(modified_by, "Folder deleted: " + old_single_folder_name+ " (Group: "+CommonModel.getGroupName(group_id)+")");
+                        insertFileUploadLogEntry(modified_by, "Folder deleted: " + old_single_folder_name + " (Group: " + CommonModel.getGroupName(group_id) + ")");
                         returnBoolean = true;
                         stmt = conn.createStatement();
                         String myQuery2;
@@ -625,7 +627,7 @@ public class FileModel {
                             "WHERE (id='" + id + "')";
                     int affected_rows = stmt.executeUpdate(myQuery);
                     if (affected_rows > 0) {
-                        insertFileUploadLogEntry(modified_by, "File deleted: " + old_single_file_name+ " (Group: "+CommonModel.getGroupName(group_id)+")");
+                        insertFileUploadLogEntry(modified_by, "File deleted: " + old_single_file_name + " (Group: " + CommonModel.getGroupName(group_id) + ")");
                         returnBoolean = true;
                     }
                 } catch (SQLException se) {
@@ -756,7 +758,7 @@ public class FileModel {
                             "WHERE (id='" + id + "')";
                     int affected_rows = stmt.executeUpdate(myQuery);
                     if (affected_rows > 0) {
-                        insertFileUploadLogEntry(modified_by, "Folder renamed from " + old_single_folder_name + " to " + new_folder_name+ " (Group: "+CommonModel.getGroupName(group_id)+")");
+                        insertFileUploadLogEntry(modified_by, "Folder renamed from " + old_single_folder_name + " to " + new_folder_name + " (Group: " + CommonModel.getGroupName(group_id) + ")");
                         returnBoolean = true;
                         for (ArrayList<String> a : getSubfilesAndFoldersWithNewPath) {
                             String temp_id = a.get(0);
@@ -817,7 +819,7 @@ public class FileModel {
                     "WHERE (id='" + id + "')";
             int affected_rows = stmt.executeUpdate(myQuery);
             if (affected_rows > 0) {
-                insertFileUploadLogEntry(modified_by, "File renamed from " + old_single_file_name + " to " + new_file_name+ " (Group: "+CommonModel.getGroupName(group_id)+")");
+                insertFileUploadLogEntry(modified_by, "File renamed from " + old_single_file_name + " to " + new_file_name + " (Group: " + CommonModel.getGroupName(group_id) + ")");
                 returnBoolean = true;
             }
 
@@ -1015,7 +1017,7 @@ public class FileModel {
             pstmt.setString(3, id);
             int affected_rows = pstmt.executeUpdate();
             if (affected_rows > 0) {
-                insertFileUploadLogEntry(notes_by, "New notes added: " + notes+ " (Group: "+CommonModel.getGroupName(group_id)+")");
+                insertFileUploadLogEntry(notes_by, "New notes added: " + notes + " (Group: " + CommonModel.getGroupName(group_id) + ")");
                 returnBoolean = true;
             }
         } catch (SQLException se) {
@@ -1113,8 +1115,7 @@ public class FileModel {
                 ResultSet sqlResult = pstmt.getGeneratedKeys();
                 if (sqlResult != null) {
                     if (sqlResult.next()) {
-                        insertFileUploadLogEntry(uploaded_by, "New file uploaded: " + file_name+ " (Group: "+CommonModel.getGroupName(group_id)+")");
-                        //int insert_id = sqlResult.getInt(1);
+                        insertFileUploadLogEntry(uploaded_by, "New file uploaded: " + file_name + " (Group: " + CommonModel.getGroupName(group_id) + ")");
                         returnBoolean = true;
                     }
                     sqlResult.close();
@@ -1506,7 +1507,7 @@ public class FileModel {
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
-            myQuery = "DELETE FROM file_url WHERE (file_id= ?)";
+            myQuery = "DELETE FROM file_url WHERE (file_id = ?)";
             pstmt = conn.prepareStatement(myQuery, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, file_id);
             pstmt.executeUpdate();

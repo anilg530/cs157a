@@ -24,8 +24,8 @@ public class FileController {
         return "file_page";
     }
 
-    @RequestMapping(value = "file/view/{id}")
-    public String file_browser(@PathVariable("id") int group_id, HttpServletRequest request, HttpSession session, Model model) {
+    @RequestMapping(value = "file/view/{group_id}")
+    public String file_browser(@PathVariable("group_id") int group_id, HttpServletRequest request, HttpSession session, Model model) {
         if (!CommonModel.isLoggedIn(request, session)) {
             return "not_logged_in";
         }
@@ -33,6 +33,7 @@ public class FileController {
         model.addAttribute("page_name", "File Browser");
         boolean isInGroup = CommonModel.isInGroup(user_id, group_id);
         if (isInGroup) {
+            // in group
             String current_path = "group_files/" + Integer.toString(group_id);
             request.getSession().setAttribute("group_id", group_id);
             request.getSession().setAttribute("root_dir", current_path);
@@ -43,7 +44,6 @@ public class FileController {
             model.addAttribute("file_list", file_list);
             String group_name = CommonModel.getGroupName(Integer.toString(group_id));
             model.addAttribute("group_name", group_name);
-            // in group
             return "file_browser";
         } else {
             // not in group
