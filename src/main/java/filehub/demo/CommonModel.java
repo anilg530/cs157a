@@ -87,25 +87,27 @@ public class CommonModel {
             return returnString;
         }
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            stmt = conn.createStatement();
             String myQuery;
-            myQuery = "SELECT first_name,last_name FROM user " +
-                    "WHERE (id='" + user_id + "' AND login_status='Active')";
-            ResultSet sqlResult = stmt.executeQuery(myQuery);
-            if (sqlResult != null && sqlResult.next()) {
-                String first_name = sqlResult.getString(1);
-                String last_name = sqlResult.getString(2);
-                if (first_name != null && !first_name.isEmpty()) {
-                    returnString = returnString + first_name;
-                }
-                if (last_name != null && !last_name.isEmpty()) {
-                    returnString = returnString + " " + last_name;
+            myQuery = "SELECT first_name,last_name FROM user WHERE (id = ? AND login_status = 'Active')";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, user_id);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    sqlResult.next();
+                    String first_name = sqlResult.getString(1);
+                    String last_name = sqlResult.getString(2);
+                    if (first_name != null && !first_name.isEmpty()) {
+                        returnString = returnString + first_name;
+                    }
+                    if (last_name != null && !last_name.isEmpty()) {
+                        returnString = returnString + " " + last_name;
+                    }
                 }
                 sqlResult.close();
             }
@@ -115,14 +117,15 @@ public class CommonModel {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
                 }
             } catch (SQLException se2) {
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
@@ -133,21 +136,20 @@ public class CommonModel {
     public static boolean isInGroup(int user_id, int group_id) {
         boolean returnBoolean = false;
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            stmt = conn.createStatement();
             String myQuery;
-            myQuery = "SELECT * FROM group_members WHERE (user_id='" + user_id + "' AND group_id='" + group_id + "')";
-            ResultSet sqlResult = stmt.executeQuery(myQuery);
+            myQuery = "SELECT * FROM group_members WHERE (user_id = ? AND group_id = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setInt(1, user_id);
+            pstmt.setInt(2, group_id);
+            ResultSet sqlResult = pstmt.executeQuery();
             if (sqlResult != null) {
                 if (sqlResult.isBeforeFirst()) {
                     returnBoolean = true;
-                } else {
-                    returnBoolean = false;
                 }
                 sqlResult.close();
             }
@@ -157,14 +159,15 @@ public class CommonModel {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
                 }
             } catch (SQLException se2) {
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
@@ -178,19 +181,21 @@ public class CommonModel {
             return returnString;
         }
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            stmt = conn.createStatement();
             String myQuery;
-            myQuery = "SELECT group_name FROM groups " +
-                    "WHERE (id='" + group_id + "')";
-            ResultSet sqlResult = stmt.executeQuery(myQuery);
-            if (sqlResult != null && sqlResult.next()) {
-                returnString = sqlResult.getString(1);
+            myQuery = "SELECT group_name FROM groups WHERE id = ?";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, group_id);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null) {
+                if (sqlResult.isBeforeFirst()) {
+                    sqlResult.next();
+                    returnString = sqlResult.getString(1);
+                }
                 sqlResult.close();
             }
         } catch (SQLException se) {
@@ -199,14 +204,15 @@ public class CommonModel {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
                 }
             } catch (SQLException se2) {
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
@@ -256,7 +262,6 @@ public class CommonModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -364,7 +369,6 @@ public class CommonModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
@@ -408,7 +412,6 @@ public class CommonModel {
                 if (pstmt != null) {
                     pstmt.close();
                 }
-                conn.close();
             } catch (SQLException se2) {
             }
             try {
