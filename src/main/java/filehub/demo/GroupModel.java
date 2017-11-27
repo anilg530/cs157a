@@ -561,6 +561,58 @@ public class GroupModel {
 
     }
 
+    public static boolean groupMemberDelete(int userId, int groupId) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        boolean status = false;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            String myQuery = "delete from `group_members` where `group_id` = ? and `user_id` = ?;";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1,String.valueOf(groupId));
+            pstmt.setString(2, String.valueOf(userId));
+            System.out.println(pstmt.toString());
+            int sqlResult = pstmt.executeUpdate();
+            System.out.println("total lines updated " + sqlResult);
+            if (sqlResult == 1) {
+                status = true;
+            } else {
+                status = false;
+            }
+            pstmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            status = false;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            status = false;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            status = false;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            status = false;
+        } finally {
+            try {
+                if (pstmt != null)
+                    pstmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return status;
+
+    }
     public static boolean isOwner(int userPermission) {
         if (userPermission == 4) {
             return true;

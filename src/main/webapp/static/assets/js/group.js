@@ -480,6 +480,8 @@ function updatePermision(userId, groupId, userPermission){
         }
     });
 }
+
+
 function getPermissionString(code) {
     code = Number(code);
     var str = "";
@@ -500,4 +502,59 @@ function getPermissionString(code) {
     }
 
     return str;
+}
+
+function userDelete(object){
+    $(object).tooltip('hide');
+
+    var userId = $(object).attr('data-attr');
+    var fullName = $(object).attr('data-attr2');
+    var groupId = $(object).attr('data-attr3');
+    var groupName = $(object).attr('data-attr4');
+    setTimeout(function () {
+        swal({
+                html: true,
+                title: 'User Deletion',
+                text: 'User <b>' + fullName + '</b> will be deleted from group <b>' + groupName + '</b>. Are you sure ?',
+                type: 'warning',
+                allowOutsideClick: true,
+                showCancelButton: true,
+                confirmButtonColor: '#dd2420',
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
+                closeOnConfirm: true,
+                closeOnCancel: true,
+
+            },
+            function (is_confirm) {
+                if (is_confirm) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/group/members/delete',
+                        dataType: 'json',
+                        data: {
+                            groupId:groupId,
+                            userId:userId,
+                            fullName:fullName
+                        },
+                        beforeSend: function () {
+                        },
+                        success: function (response) {
+                            if(response.status == 'success'){
+                                successToast(response.title, response.content);
+                                window.location.reload();
+                            }else{
+                                errorToast(response.title, response.content);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+
+                        }
+                    });
+
+
+                }
+            });
+    }, 200);
+
 }

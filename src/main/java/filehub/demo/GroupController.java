@@ -27,7 +27,6 @@ public class GroupController {
     public String main(HttpSession session, HttpServletRequest request, Model model) {
         model.addAttribute("page_name", "Group Management");
         request.getSession().setAttribute("user_id", 2);
-        System.out.println("exist? "+GroupModel.checkGroupExit("squad"));
         return "group_page";
     }
 
@@ -123,6 +122,39 @@ public class GroupController {
     }
 
 
+    @RequestMapping(value = {"/group/members/delete"}, method = RequestMethod.POST)
+    @ResponseBody
+    public String delete_user(HttpServletRequest request, HttpSession session) {
+        System.out.println("in delete_user");
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        System.out.println("in delete_user groupId "+ Integer.valueOf(request.getParameter("groupId").trim()));
+        System.out.println("in delete_user userId "+Integer.valueOf(request.getParameter("userId").trim()));
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("groupId") != null && request.getParameter("userId") != null) {
+            System.out.println("got info");
+            int groupId = Integer.valueOf(request.getParameter("groupId").trim());
+            int userId = Integer.valueOf(request.getParameter("userId").trim());
+            String name = request.getParameter("fullName");
+            System.out.println("userId = " + userId);
+            System.out.println("group id = " + groupId);
+            System.out.println("full name = " + name);
+            if (GroupModel.groupMemberDelete(userId, groupId)) {
+                resultArray.put("status", "success");
+                resultArray.put("title", "Success");
+                resultArray.put("content", "User deleted Successfully!");
+            } else {
+                resultArray.put("status", "failed");
+                resultArray.put("title", "Failed");
+                resultArray.put("content", "User deletion failed!");
+            }
+        } else {
+            resultArray.put("status", "failed");
+            resultArray.put("title", "Failed");
+            resultArray.put("content", "Deleted failed!");
+        }
+        System.out.println(gson.toJson(resultArray).toString());
+        return gson.toJson(resultArray);
+    }
     @RequestMapping(value = {"/group/refresh_group_table"})
     public String refresh_group_table(HttpServletRequest request, HttpSession session, Model model) {
 
