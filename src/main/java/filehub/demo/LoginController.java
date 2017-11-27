@@ -6,6 +6,9 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -29,10 +32,14 @@ public class LoginController {
             // username provided and set it below
             request.getSession().setAttribute("user_id",1);
             request.getSession().setAttribute("username",username);
+
         }
         model.addAttribute("page_name", "FileHub Login Page");
-        return "login_page";
+        return "welcome_page";
+
     }
+
+
 
     @RequestMapping(value={"/logout"})
     public void logout(HttpServletResponse response, HttpSession session) {
@@ -45,36 +52,61 @@ public class LoginController {
         }
     }
 
-    @RequestMapping(value={"/login_test"})
-    public void login_test(HttpServletResponse response, HttpSession session) {
-        ArrayList<String> tempArray = new ArrayList<>();
-        tempArray.add("mfdafa");
-        tempArray.add("password2");
-        tempArray.add("user1");
-        tempArray.add("tim");
-        tempArray.add("530141312");
-        UserDatabase.insertUser(tempArray);
+
+
+
+
+    @RequestMapping(value = "/form", method = RequestMethod.GET)
+    public String getForm(HttpServletRequest request, HttpServletResponse response) {
+        return "create_account_page";
     }
 
-    @RequestMapping(value={"/sign-up"})
-    public void sign_up(HttpServletRequest request) {
-        ArrayList<String> userSignInfo = new ArrayList<>();
-        String username = request.getParameter( "username");
-        String password = request.getParameter("password");
-        String firstname = request.getParameter("First name");
-        String lastname = request.getParameter("Last name");
-        String cellphone = request.getParameter("Phone");
-        String email = request.getParameter("Email");
 
-        userSignInfo.add(username);
-        userSignInfo.add(password);
-        userSignInfo.add(firstname);
-        userSignInfo.add(lastname);
-        userSignInfo.add(cellphone);
-        userSignInfo.add(email);
+    @RequestMapping(value={"/sign-up"}, method = RequestMethod.POST)
+    public String sign_up(HttpServletRequest request, HttpServletResponse response, Model model) {
 
-        UserDatabase.insertUser1(userSignInfo);
-      //  return "create_account_page";
+        //if (request.getMethod().equals("POST")) {
+            ArrayList<String> userSignInfo = new ArrayList<>();
+            String firstname = request.getParameter("firstname");
+            String lastname = request.getParameter("lastname");
+            String username = request.getParameter("username");
+            String phone = request.getParameter("phone");
+            String password = request.getParameter("password");
+            model.addAttribute("firstname", firstname);
+
+
+            userSignInfo.add(firstname);
+            userSignInfo.add(lastname);
+            userSignInfo.add(username);
+            userSignInfo.add(phone);
+            userSignInfo.add(password);
+
+
+           if (!UserDatabase.userExist(username)) {
+               UserDatabase.insertUser1(userSignInfo);
+           }
+           else
+           {
+               System.out.println("username exists");
+           }
+
+        return "welcome_page";
+    }
+
+
+    @RequestMapping(value = "/profile", method = RequestMethod.GET)
+    public String getProfile(HttpServletRequest request, HttpServletResponse response, HttpSession session){
+
+        UserDatabase.getUser(session);
+
+// return that array
+
+        // add each thing to the model model.addObject(" ", )
+
+
+
+            return "user_profile";
+
     }
 
 }
