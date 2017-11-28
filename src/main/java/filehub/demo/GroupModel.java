@@ -251,7 +251,6 @@ public class GroupModel {
             String myQuery = "select exists(select * from groups where `id` = ? and `group_status`='Inactive');";
             stmt = conn.prepareStatement(myQuery);
             stmt.setInt(1, groupId);
-            System.out.println(stmt.toString());
             ResultSet re = stmt.executeQuery();
 
             while (re.next()) {
@@ -464,7 +463,6 @@ public class GroupModel {
             while (re.next()) {
                 temp = re.getString("group_password");
             }
-            System.out.println("input pass= " + inputPassword + " pass retrieved " + temp);
             stmt.close();
             conn.close();
         } catch (SQLException e) {
@@ -513,9 +511,7 @@ public class GroupModel {
             stmt = conn.createStatement();
 
             String myQuery = "UPDATE groups SET group_status = '" + INACTIVE + "' where groups.group_owner = " + ownerId + " and groups.id = " + groupId + ";";
-            System.out.println(myQuery);
-            int re = stmt.executeUpdate(myQuery);
-            System.out.println("total lines updated " + re);
+            int re = stmt.executeUpdate(myQuery); //re: number of row affected
             if (re == 1) {
                 status = true;
             } else {
@@ -566,9 +562,7 @@ public class GroupModel {
             pstmt = conn.prepareStatement(myQuery);
             pstmt.setString(1, String.valueOf(groupId));
             pstmt.setString(2, String.valueOf(userId));
-            System.out.println(pstmt.toString());
             int sqlResult = pstmt.executeUpdate();
-            System.out.println("total lines updated " + sqlResult);
             if (sqlResult == 1) {
                 status = true;
             } else {
@@ -1151,7 +1145,6 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
-        System.out.println("invitedPending? " + invitedPending);
         return invitedPending;
     }
 
@@ -1214,7 +1207,6 @@ public class GroupModel {
             ResultSet re = stmt.executeQuery(myQuery);
             while (re.next()) {
                 count = re.getInt("isMember");
-                System.out.println("isMember " + count);
                 if (count == 1) {
                     member = true;
                 }
@@ -1236,7 +1228,6 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
-        System.out.println("member? " + member);
         return member;
     }
 
@@ -1354,9 +1345,7 @@ public class GroupModel {
             String myQuery = "update group_members " +
                     "set `user_permission`= " + permission +
                     " where `user_id`= " + userId + " and `group_id`= " + groupID + ";";
-            System.out.println(myQuery);
             int re = stmt.executeUpdate(myQuery);
-            System.out.println("total lines updated " + re);
             if (re == 1) {
                 status = true;
             } else {
