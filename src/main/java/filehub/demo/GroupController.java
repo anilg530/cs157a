@@ -41,21 +41,20 @@ public class GroupController {
                 String groupname = request.getParameter("group_name");
                 String groupPassword = request.getParameter("group_password");
                 int userID = (int) session.getAttribute("user_id");
-                if(0==GroupModel.checkGroupExist(groupname)){
-                    if(GroupModel.insertGroup(groupname, userID, groupPassword)){
-                        resultArray.put("status", "success");
-                        resultArray.put("content", "group "+ groupname+ " added.");
-                    }else {
+                    if (0 == GroupModel.checkGroupExist(groupname)) {
+                        if (GroupModel.insertGroup(groupname, userID, groupPassword)) {
+                            resultArray.put("status", "success");
+                            resultArray.put("content", "group " + groupname + " added.");
+                        } else {
+                            resultArray.put("status", "failed");
+                            resultArray.put("type", "mysql");
+                            resultArray.put("content", "Unable to add group " + groupname + ".");
+                        }
+                    } else {
                         resultArray.put("status", "failed");
-                        resultArray.put("type", "mysql");
-                        resultArray.put("content", "Unable to add group "+ groupname+ ".");
+                        resultArray.put("type", "name exist");
+                        resultArray.put("content", "Group name: " + groupname + " is taken. Please choose another name.");
                     }
-                }else {
-                    resultArray.put("status", "failed");
-                    resultArray.put("type", "name exist");
-                    resultArray.put("content", "Group name: "+ groupname+ " is taken. Please choose another name.");
-                }
-
             }
         }else {
             resultArray.put("status", "failed");
@@ -64,18 +63,6 @@ public class GroupController {
         }
 
         return gson.toJson(resultArray);
-    }
-
-    @RequestMapping("group/all")
-    public String listGroups(HttpServletRequest request, HttpSession session, Model model) {
-        ArrayList<Groups> allGroup = GroupModel.getAllGroup();
-        for (Groups e : allGroup) {
-            System.out.println(e);
-        }
-        System.out.println("group count " + GroupModel.countGroup((int) session.getAttribute("user_id")));
-        model.addAttribute("page_name", "View all group");
-
-        return "group_page";
     }
 
     @RequestMapping(value = "/group/confirmpass/{groupName}/{input}", method = RequestMethod.GET)
