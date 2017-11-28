@@ -7,18 +7,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.UUID;
 
 @Controller
 public class GroupController {
@@ -47,7 +42,7 @@ public class GroupController {
                 String groupname = request.getParameter("group_name");
                 String groupPassword = request.getParameter("group_password");
                 int userID = (int) session.getAttribute("user_id");
-                if(0==GroupModel.checkGroupExit(groupname)){
+                if(0==GroupModel.checkGroupExist(groupname)){
                     if(GroupModel.insertGroup(groupname, userID, groupPassword)){
                         resultArray.put("status", "success");
                         resultArray.put("content", "group "+ groupname+ " added.");
@@ -324,22 +319,14 @@ public class GroupController {
             String group_name = request.getParameter("group_name");
             String group_password = request.getParameter("group_password");
             int userId = (int) session.getAttribute("user_id");
-            System.out.println("group_name " + group_name);
-            System.out.println("group_password " + group_password);
-            System.out.println("userId " + userId);
-            if (0 == GroupModel.checkGroupExit(group_name)) {
-                System.out.println("group not exist");
+            if (0 == GroupModel.checkGroupExist(group_name)) {
                 resultArray.put("status", "failed");
                 resultArray.put("content", "Group " + group_name + " not found!");
             } else {
                 if (GroupModel.isGroupPassCorrect(group_name, group_password)) {
-                    System.out.println("pass correct!");
                     int group_id = GroupModel.getGroupId(group_name, group_password);
-                    System.out.println("group_id " + group_id);
-                    System.out.println("--------------------------");
                     //if all ready a member
                     if (GroupModel.isMember(userId, group_id)) {
-                        System.out.println("MEMBER!");
                         resultArray.put("status", "success");
                         resultArray.put("content", "You are already in " + group_name + " group.");
                         resultArray.put("group_id", String.valueOf(group_id));
@@ -348,16 +335,11 @@ public class GroupController {
                         //check for any pending invitation
                         if (0 == GroupModel.isInvalid(group_id)) {
                             if (GroupModel.isGroupInviteAlreadyExist(userId, group_id)) {
-                                System.out.println("invitation exist");
                                 //if exist, accepted the invitation, update invitation, add to group with the permission
                                 GroupInvite invite = GroupModel.getGroupInvite(userId, group_id);
                                 int permission = invite.getAccessLevel();
                                 String code = invite.getInviteCode();
                                 String inviter = CommonModel.getFullName(String.valueOf(invite.getFromUser()));
-                                System.out.println("code " + code);
-                                System.out.println("adding group member with permission " + permission);
-                                System.out.println("inviter " + inviter);
-
                                 resultArray.put("status", "success");
                                 resultArray.put("invitation", "yes");
                                 resultArray.put("content", "You have an invitation by <b>" + inviter + "</b> with the code: <b>" + code + "</b> and access level:  <b>" + GroupModel.getPermissionString(permission) + "</b>");
@@ -368,7 +350,6 @@ public class GroupController {
                                 resultArray.put("group_name", GroupModel.getGroupName(group_id));
                             } else {
                                 //if not, add as GUEST
-                                System.out.println("adding group member with GUEST permission ");
                                 GroupModel.addMember(userId, group_id, 1);
                                 resultArray.put("status", "success");
                                 resultArray.put("invitation", "no");
@@ -382,11 +363,9 @@ public class GroupController {
 
                     }
                 } else {
-                    System.out.println("wrong pass!");
                     resultArray.put("status", "failed");
                     resultArray.put("content", "Wrong Password");
                 }
-
             }
         } else {
             resultArray.put("status", "failed");
