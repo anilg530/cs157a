@@ -1045,13 +1045,16 @@ public class FileModel {
     public static boolean addNewFile(HttpSession session, MultipartFile file) {
         boolean returnBoolean = false;
         boolean fileUploadSuccess = false;
+        // Session date
         String group_id = Integer.toString((int) session.getAttribute("group_id"));
         String uploaded_by = Integer.toString((int) session.getAttribute("user_id"));
         String file_name = file.getOriginalFilename();
         String ext = "";
+        // extract file extension
         if (FilenameUtils.getExtension(file_name) != null && !FilenameUtils.getExtension(file_name).isEmpty()) {
             ext = FilenameUtils.getExtension(file_name);
         }
+        // rename file to a randomized unique string
         String file_uuid = CommonModel.generateUUID();
         if (!ext.isEmpty()) {
             file_uuid = file_uuid + "." + ext;
@@ -1066,6 +1069,7 @@ public class FileModel {
                 se.printStackTrace();
             }
         }
+        // create the file
         File temp_new_file = new File(current_path, file_uuid);
         try {
             temp_new_file.createNewFile();
@@ -1079,6 +1083,7 @@ public class FileModel {
             e.printStackTrace();
         }
 
+        // file written to disc succesful, write history into DB
         if (fileUploadSuccess) {
             Connection conn = null;
             PreparedStatement pstmt = null;
@@ -1115,7 +1120,8 @@ public class FileModel {
                 ResultSet sqlResult = pstmt.getGeneratedKeys();
                 if (sqlResult != null) {
                     if (sqlResult.next()) {
-                        insertFileUploadLogEntry(uploaded_by, "New file uploaded: " + file_name + " (Group: " + CommonModel.getGroupName(group_id) + ")");
+                        insertFileUploadLogEntry(uploaded_by, "New file uploaded: "
+                                + file_name + " (Group: " + CommonModel.getGroupName(group_id) + ")");
                         returnBoolean = true;
                     }
                     sqlResult.close();

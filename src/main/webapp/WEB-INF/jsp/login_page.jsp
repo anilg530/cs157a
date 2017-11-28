@@ -50,7 +50,7 @@
                     </div>
                 </form>
                 <div>
-                    <a class="pull-left white" href="#">Sign Up</a>
+                    <a class="pull-left white" href="/form">Sign Up</a>
                     <a class="pull-right white" href="#">Forgot your password?</a>
                 </div>
             </div>
