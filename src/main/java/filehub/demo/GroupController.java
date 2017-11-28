@@ -276,7 +276,6 @@ public class GroupController {
             int userPermission = Integer.valueOf(request.getParameter("userPermission").trim());
             int groupId = Integer.valueOf(request.getParameter("groupId").trim());
             int userId = Integer.valueOf(request.getParameter("userId").trim());
-
             if (GroupModel.updatePermission(userId, userPermission, groupId)) {
                 resultArray.put("status", "success");
                 resultArray.put("title", "Success");
