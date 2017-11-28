@@ -21,7 +21,6 @@ public class GroupController {
     @RequestMapping("group")
     public String main(HttpSession session, HttpServletRequest request, Model model) {
         model.addAttribute("page_name", "Group Management");
-        request.getSession().setAttribute("user_id", 2);
         return "group_page";
     }
 

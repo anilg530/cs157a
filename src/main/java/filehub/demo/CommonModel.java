@@ -536,7 +536,7 @@ public class CommonModel {
                 if (sqlResult.isBeforeFirst()) {
                     sqlResult.next();
                     String role = sqlResult.getString(1);
-                    if (role.equals("5")) {
+                    if (role != null && role.equals("5")) {
                         returnBoolean = true;
                     }
                 }
