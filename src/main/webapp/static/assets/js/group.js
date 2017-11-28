@@ -331,17 +331,16 @@ function submit_join_group() {
                                             group_name: group_name
                                         },
                                         beforeSend: function () {
-                                            //$('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>');
                                         },
                                         success: function (response) {
-                                            $('#ajax_modal_body_sm').html(response).promise().done(function () {
+                                            data=$(response).find('div#main_row');
+                                            $('#ajax_modal_body_sm').html(data).promise().done(function () {
                                             });
                                             $('#ajax_modal_sm').modal('show');
                                         },
                                         error: function (xhr, status, error) {
                                             internet_connectivity_swal();
                                             console.log(xhr.responseText);
-                                            //$('body').html(xhr.responseText);
                                         }
                                     });
 
