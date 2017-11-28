@@ -20,11 +20,36 @@ import java.util.Calendar;
 @Controller
 public class LoginController {
 
-    @RequestMapping(value = {"/", "login"})
+    @RequestMapping(value = {"login"})
     public String login(HttpServletRequest request, HttpSession session, Model model) {
+        if (CommonModel.isLoggedIn(request,session)) {
+            return "redirect:/";
+        }
         if (request.getMethod().equals("POST")) {
 
+            String username = request.getParameter("username").trim();
+            String password = request.getParameter("password");
+            boolean flag = UserDatabase.isValidUsernamePassword(username, password);
+
+            // model.addAttribute("page_name", "FileHub Login Page");
+            if (flag) {
+                String user_id = CommonModel.getUserIDByEmail(username);
+                int user_id_int = Integer.parseInt(user_id);
+                request.getSession().setAttribute("user_id", user_id_int);
+                request.getSession().setAttribute("username", CommonModel.getEmailByUserID(Integer.toString(user_id_int)));
+                return "redirect:/";
+            }
+            else {
+                model.addAttribute("temp_username", username);
+                model.addAttribute("error_message", "The password/username is incorrect.");
+            }
         }
+        return "login_page";
+    }
+
+    @RequestMapping(value = {"/"})
+    public String homepage(HttpServletRequest request, HttpSession session, Model model) {
+
         model.addAttribute("page_name", "FileHub Login Page");
         return "welcome_page";
 
@@ -84,7 +109,7 @@ public class LoginController {
 
 
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
-    public String getProfile(HttpServletRequest request, HttpServletResponse response, HttpSession session,Model model) {
+    public String getProfile(HttpServletRequest request, HttpServletResponse response, HttpSession session, Model model) {
         int user_id = (int) session.getAttribute("user_id");
         ArrayList<String> userInfo = UserDatabase.getUser(user_id);
 
