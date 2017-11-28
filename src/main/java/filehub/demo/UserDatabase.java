@@ -14,14 +14,7 @@ import java.util.ArrayList;
  */
 public class UserDatabase {
 
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://p3plcpnl0569.prod.phx3.secureserver.net:3306/cs157a";
-    static final String USER = "cs157a_main";
-    static final String PASS = "cs157a_db";
-
-
-
-    public static void insertUser(ArrayList<String> user_info){
+    public static void insertUser(ArrayList<String> user_info) {
 
         Connection conn = null;
         Statement stmt = null;
@@ -30,30 +23,26 @@ public class UserDatabase {
         String password = user_info.get(1);
         String first_name = user_info.get(2);
         String last_name = user_info.get(3);
-        String cellphone= user_info.get(4);
+        String cellphone = user_info.get(4);
 
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             stmt = conn.createStatement();
             String myQuery;
             myQuery = "INSERT INTO user (username, password, login_status)" +
-                    "VALUES ('"+ username +"','"+ password +"', 'Active');";
-           stmt.executeUpdate(myQuery, Statement.RETURN_GENERATED_KEYS);
+                    "VALUES ('" + username + "','" + password + "', 'Active');";
+            stmt.executeUpdate(myQuery, Statement.RETURN_GENERATED_KEYS);
 
-           ResultSet genKeys = stmt.getGeneratedKeys();
-           if (genKeys.next()){
-               int user_id = genKeys.getInt(1);
-               String myQuery2;
-               myQuery2 = "INSERT INTO user_profile (user_id, first_name, last_name,cellphone)" +
-                       "VALUES ('"+user_id+"', '"+first_name+"','"+last_name+"','"+cellphone+"');";
-               stmt.executeUpdate(myQuery2, Statement.RETURN_GENERATED_KEYS);
-           }
-
-
-
+            ResultSet genKeys = stmt.getGeneratedKeys();
+            if (genKeys.next()) {
+                int user_id = genKeys.getInt(1);
+                String myQuery2;
+                myQuery2 = "INSERT INTO user_profile (user_id, first_name, last_name,cellphone)" +
+                        "VALUES ('" + user_id + "', '" + first_name + "','" + last_name + "','" + cellphone + "');";
+                stmt.executeUpdate(myQuery2, Statement.RETURN_GENERATED_KEYS);
+            }
 
 
             stmt.close();
@@ -79,7 +68,7 @@ public class UserDatabase {
     }
 
 
-    public static boolean userExist(String username){
+    public static boolean userExist(String username) {
 
         boolean returnBoolean = true;
         Connection conn = null;
@@ -127,8 +116,8 @@ public class UserDatabase {
     }
 
 
-    public static void insertUser1(ArrayList<String> user_info) {
-
+    public static int insertUser1(ArrayList<String> user_info) {
+        int returnInt = -1;
         Connection conn = null;
         Statement stmt = null;
 
@@ -141,15 +130,20 @@ public class UserDatabase {
 
 
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             stmt = conn.createStatement();
             String myQuery;
-            myQuery = "INSERT INTO user (first_name,last_name,username,cellphone,password)" +
-                    "VALUES ('" + first_name + "','" + last_name + "', '" + username + "','" + cellphone + "','" + password + "');";
-            stmt.executeUpdate(myQuery);
+            myQuery = "INSERT INTO user (first_name,last_name,username,cellphone,password,login_status)" +
+                    "VALUES ('" + first_name + "','" + last_name + "', '" + username + "','" + cellphone + "','" + password + "', 'Active');";
+            stmt.executeUpdate(myQuery, Statement.RETURN_GENERATED_KEYS);
+            ResultSet sqlResult = stmt.getGeneratedKeys();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                sqlResult.next();
+                returnInt = sqlResult.getInt(1);
+            }
+
 
             stmt.close();
             conn.close();
@@ -171,10 +165,11 @@ public class UserDatabase {
                 se.printStackTrace();
             }
         }
+        return returnInt;
     }
 
 
-        public static void updateUser(ArrayList<String> user_info){
+    public static void updateUser(ArrayList<String> user_info) {
 
         Connection conn = null;
         PreparedStatement preparedStmt = null;
@@ -187,14 +182,13 @@ public class UserDatabase {
 
 
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
 
             String query = "update users set first_name = ?, last_name = ?, username = ?, cellphone = ?, password = ?";
             preparedStmt = conn.prepareStatement(query);
-            preparedStmt.setString   (1, first_name);
+            preparedStmt.setString(1, first_name);
             preparedStmt.setString(2, last_name);
             preparedStmt.setString(3, username);
             preparedStmt.setString(4, cellphone);
@@ -205,9 +199,7 @@ public class UserDatabase {
             preparedStmt.close();
             conn.close();
 
-        }
-
-        catch (SQLException se) {
+        } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
@@ -229,63 +221,89 @@ public class UserDatabase {
     }
 
 
-    public static ArrayList<String> getUser(HttpSession session){
-            //String userName = (String)session.getAttribute("username");
-            String userName = "john@gmail.com";
+    public static ArrayList<String> getUser(int user_id) {
+        ArrayList<String> returnArray = new ArrayList<>();
         Connection conn = null;
-        PreparedStatement preparedStmt = null;
-
-        ArrayList<String> userinf = new ArrayList<String>();
-
+        PreparedStatement pstmt = null;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
-
-
-            String query = " SELECT * FROM user WHERE username = " + "'"+ userName+ "'" ;
-            preparedStmt = conn.prepareStatement(query);
-
-            // execute the java preparedstatement
-           ResultSet sqlResult = preparedStmt.executeQuery();
-
-            String username = sqlResult.getString(1);
-            String first_name = sqlResult.getString(2);
-            String last_name = sqlResult.getString(3);
-            String cellphone = sqlResult.getString(4);
-            userinf.add(username);
-            userinf.add(first_name);
-            userinf.add(last_name);
-            userinf.add(cellphone);
-            sqlResult.close();
-
-
-        }
-
-        catch (SQLException se) {
+            String myQuery;
+            myQuery = "SELECT * FROM user WHERE id = ?";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, Integer.toString(user_id));
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                sqlResult.next();
+                for (int i = 1; i < 8; i++) {
+                    String columnValue = sqlResult.getString(i);
+                    if (columnValue == null) {
+                        columnValue = "";
+                    }
+                    returnArray.add(columnValue);
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if (preparedStmt != null)
-                    preparedStmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
+                }
             } catch (SQLException se2) {
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
         }
-
-        return userinf;
-
-
+        return returnArray;
     }
 
+    public static boolean isValidUsernamePassword(String username, String password) {
+        boolean returnBoolean = false;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-
-
+            String myQuery;
+            myQuery = "SELECT * FROM user WHERE (username = ? AND password = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                returnBoolean = true;
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnBoolean;
+    }
 }

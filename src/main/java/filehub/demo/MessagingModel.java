@@ -17,7 +17,6 @@ public class MessagingModel {
         ArrayList<ArrayList<String>> returnArray = new ArrayList<>();
         String group_id_list = CommonModel.getAllGroupIDMembershipCommaSeparated(user_id);
         Connection conn = null;
-
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();

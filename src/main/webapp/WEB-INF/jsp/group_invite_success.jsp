@@ -23,7 +23,7 @@
 </div>
 <div id="root_html">
     <jsp:include page="common/navigation.jsp"/>
-    <div class="row">
+    <div id ="main_row" class="row">
         <div class="col-xs-12">
             <div class="row">
                 <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
