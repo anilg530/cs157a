@@ -55,7 +55,6 @@ public class GroupController {
                     resultArray.put("type", "name exist");
                     resultArray.put("content", "Group name: " + groupname + " is taken. Please choose another name.");
                 }
-
             }
         } else {
             resultArray.put("status", "failed");
@@ -64,18 +63,6 @@ public class GroupController {
         }
 
         return gson.toJson(resultArray);
-    }
-
-    @RequestMapping("group/all")
-    public String listGroups(HttpServletRequest request, HttpSession session, Model model) {
-        ArrayList<Groups> allGroup = GroupModel.getAllGroup();
-        for (Groups e : allGroup) {
-            System.out.println(e);
-        }
-        System.out.println("group count " + GroupModel.countGroup((int) session.getAttribute("user_id")));
-        model.addAttribute("page_name", "View all group");
-
-        return "group_page";
     }
 
     @RequestMapping(value = "/group/confirmpass/{groupName}/{input}", method = RequestMethod.GET)
@@ -289,7 +276,6 @@ public class GroupController {
             int userPermission = Integer.valueOf(request.getParameter("userPermission").trim());
             int groupId = Integer.valueOf(request.getParameter("groupId").trim());
             int userId = Integer.valueOf(request.getParameter("userId").trim());
-
             if (GroupModel.updatePermission(userId, userPermission, groupId)) {
                 resultArray.put("status", "success");
                 resultArray.put("title", "Success");
