@@ -1,7 +1,6 @@
-<script src="/assets/third_party/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-<script src="js/jquery.easing.min.js"></script>
-<script src="js/custom.js"></script>
-<script src="contactform/contactform.js"></script>
+<script src="/assets/third_party/jquery-ui-1.12.1/jquery-ui.js"></script>
+<script src="/assets/js/jquery.easing.min.js"></script>
+<script src="/assets/js/custom.js"></script>
 <script src="/assets/third_party/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
 <script src="/assets/third_party/moment-with-locales-2.18.1/moment-with-locales.min.js"></script>
 <script src="/assets/third_party/bootstrap-datepicker-1.7.1/js/bootstrap-datepicker.js"></script>

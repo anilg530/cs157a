@@ -37,7 +37,6 @@ public class GroupModel {
                         String group_password = allGroup.getString("group_password");
                         String group_status = allGroup.getString("group_status");
                         String created_on = allGroup.getString("created_on");
-                        //System.out.println(created_on);
                         returnGroup.add(new Groups(id, group_name, group_owner, group_password, group_status, created_on));
                     }
                 } catch (SQLException e) {
@@ -74,54 +73,48 @@ public class GroupModel {
     get all group of a user
      */
     public static ArrayList<Groups> getAllGroups(int user_id) {
-        Connection conn = null;
-        Statement stmt = null;
         ArrayList<Groups> groups = new ArrayList<>();
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
-
-            stmt = conn.createStatement();
-            conn.setAutoCommit(false);
-            String query = "select group_members.group_id, group_members.user_permission, " +
-                    "groups.group_name, groups.group_owner, groups.created_on " +
-                    "from group_members " +
-                    "inner join groups on group_members.group_id=groups.id " +
-                    "inner join user on groups.group_owner=user.id " +
-                    " where group_members.user_id=" + user_id + "" +
-                    " and groups.group_status = 'Active';";
-            ResultSet rs = stmt.executeQuery(query);
-            while (rs.next()) {
-                int userID = rs.getInt("group_id");
-                int userPermission = rs.getInt("user_permission");
-                String groupName = rs.getString("group_name");
-                int groupOwner = rs.getInt("group_owner");
-                String createdOn = rs.getString("created_on");
-                groups.add(new Groups(userID, userPermission, groupName, groupOwner, createdOn));
+            String myQuery;
+            myQuery = "SELECT * FROM group_members JOIN groups ON groups.id=group_members.group_id WHERE group_members.user_id = ? AND groups.group_status = 'Active'";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, Integer.toString(user_id));
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                while (sqlResult.next()) {
+                    int userID = sqlResult.getInt("group_id");
+                    int userPermission = sqlResult.getInt("user_permission");
+                    String groupName = sqlResult.getString("group_name");
+                    int groupOwner = sqlResult.getInt("group_owner");
+                    String createdOn = sqlResult.getString("created_on");
+                    groups.add(new Groups(userID, userPermission, groupName, groupOwner, createdOn));
+                }
+                sqlResult.close();
             }
-
-            conn.commit();
-
-            stmt.close();
-            conn.close();
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null)
-                    stmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
+                }
             } catch (SQLException se2) {
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
         }
-
         return groups;
     }
 
@@ -131,57 +124,63 @@ public class GroupModel {
      *        false: otherwise
      */
     public static boolean insertGroup(String groupName, int groupOwner, String groupPassword) {
-        Connection conn = null;
-        Statement stmt = null;
         boolean success = false;
+        int new_group_id = 0;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            stmt = conn.createStatement();
-            conn.setAutoCommit(false);
-            ArrayList<String> queries = new ArrayList<>();
-            int maxGroupId = 0;
-            ResultSet maxIdQuery = stmt.executeQuery("SELECT * FROM groups ORDER BY id DESC LIMIT 1");
-            if (maxIdQuery.next()) {
-                maxGroupId = maxIdQuery.getInt("id") + 1;
+            String myQuery;
+            myQuery = "INSERT INTO groups(group_name,group_owner,group_password,group_status)" +
+                    "VALUES (?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(myQuery, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, groupName);
+            pstmt.setInt(2, groupOwner);
+            pstmt.setString(3, groupPassword);
+            pstmt.setString(4, "Active");
+            pstmt.executeUpdate();
+            ResultSet sqlResult = pstmt.getGeneratedKeys();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                sqlResult.next();
+                new_group_id = sqlResult.getInt(1);
+                sqlResult.close();
             }
-            queries.add("start transaction;");
-            queries.add("INSERT INTO groups (id, group_name, group_owner, group_password, group_status)" +
-                    " VALUES (" + maxGroupId + ", '" + groupName + "'" + ", " + groupOwner + ", " + "'" + groupPassword + "'" + ", 'Active') ");
-
-            queries.add("INSERT INTO group_members (user_id, group_id, user_permission)" +
-                    " VALUES (" + groupOwner + "," + maxGroupId + ", " + ADMIN_PERMISSION + ") ");
-            queries.add("COMMIT;");
-            for (String query : queries) {
-                stmt.addBatch(query);
-            }
-            int[] counts = stmt.executeBatch();
-            if (counts[1] == 1) {
+            if (new_group_id != 0) {
+                String myQuery2;
+                myQuery2 = "INSERT INTO group_members(user_id,group_id,user_permission)" +
+                        "VALUES (?, ?, ?)";
+                pstmt = conn.prepareStatement(myQuery2, Statement.RETURN_GENERATED_KEYS);
+                pstmt.setInt(1, groupOwner);
+                pstmt.setInt(2, new_group_id);
+                pstmt.setInt(3, ADMIN_PERMISSION);
+                pstmt.executeUpdate();
+                sqlResult = pstmt.getGeneratedKeys();
                 success = true;
+                if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                    sqlResult.close();
+                }
             }
-            conn.commit();
-
-            stmt.close();
-            conn.close();
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null)
-                    stmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
+                }
             } catch (SQLException se2) {
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
         }
-        System.out.println("success " + success);
         return success;
     }
 

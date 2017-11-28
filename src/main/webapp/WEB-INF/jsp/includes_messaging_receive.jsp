@@ -38,10 +38,17 @@
                 </td>
                 <td class="vertical-align-middle">
                     <a href="javascript:;" data-attr="<% out.print(send_from_user_id); %>"
-                       onclick="filehub_send_message(this);" data-toggle="tooltip" data-original-title="Reply"><i class="fa fa-mail-reply"></i></a>
+                       onclick="filehub_send_message(this);" data-toggle="tooltip" data-original-title="Reply"><i
+                            class="fa fa-mail-reply"></i></a>
                 </td>
             </tr>
             <% } %>
+            <% } else { %>
+            <tr>
+                <td class="vertical-align-middle" colspan="5">
+                    There are no messages yet.
+                </td>
+            </tr>
             <% } %>
             </tbody>
         </table>

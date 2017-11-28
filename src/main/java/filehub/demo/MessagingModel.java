@@ -16,23 +16,21 @@ public class MessagingModel {
     public static ArrayList<ArrayList<String>> getGroupMembersForMessaging(String user_id) {
         ArrayList<ArrayList<String>> returnArray = new ArrayList<>();
         String group_id_list = CommonModel.getAllGroupIDMembershipCommaSeparated(user_id);
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        try {
-            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+        if (!group_id_list.isEmpty()) {
+            Connection conn = null;
+            PreparedStatement pstmt = null;
+            try {
+                Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+                conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
-
-            String myQuery;
-            myQuery = "SELECT group_members.user_id,user.first_name,user.last_name FROM group_members" +
-                    "  JOIN user ON (user.id=group_members.user_id) WHERE group_members.group_id IN(" + group_id_list + ") AND user.login_status = ? AND group_members.user_id != ? GROUP BY group_members.user_id;";
-            pstmt = conn.prepareStatement(myQuery);
-            pstmt.setString(1, "Active");
-            pstmt.setString(2, user_id);
-            //System.out.println(pstmt);
-            ResultSet sqlResult = pstmt.executeQuery();
-            if (sqlResult != null) {
-                if (sqlResult.isBeforeFirst()) {
+                String myQuery;
+                myQuery = "SELECT group_members.user_id,user.first_name,user.last_name FROM group_members" +
+                        "  JOIN user ON (user.id=group_members.user_id) WHERE group_members.group_id IN(" + group_id_list + ") AND user.login_status = ? AND group_members.user_id != ? GROUP BY group_members.user_id;";
+                pstmt = conn.prepareStatement(myQuery);
+                pstmt.setString(1, "Active");
+                pstmt.setString(2, user_id);
+                ResultSet sqlResult = pstmt.executeQuery();
+                if (sqlResult != null && sqlResult.isBeforeFirst()) {
                     while (sqlResult.next()) {
                         ArrayList<String> temp = new ArrayList<>();
                         temp.add(sqlResult.getString(1));
@@ -40,26 +38,26 @@ public class MessagingModel {
                         temp.add(sqlResult.getString(3));
                         returnArray.add(temp);
                     }
-                }
-                sqlResult.close();
-            }
-        } catch (SQLException se) {
-            se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (pstmt != null) {
-                    pstmt.close();
-                }
-            } catch (SQLException se2) {
-            }
-            try {
-                if (conn != null) {
-                    conn.close();
+                    sqlResult.close();
                 }
             } catch (SQLException se) {
                 se.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (pstmt != null) {
+                        pstmt.close();
+                    }
+                } catch (SQLException se2) {
+                }
+                try {
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (SQLException se) {
+                    se.printStackTrace();
+                }
             }
         }
         return returnArray;
@@ -71,7 +69,6 @@ public class MessagingModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -116,7 +113,6 @@ public class MessagingModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -160,7 +156,6 @@ public class MessagingModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -203,7 +198,6 @@ public class MessagingModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -252,7 +246,6 @@ public class MessagingModel {
                     "  JOIN user ON (user.id=user_messages.sent_from) WHERE (user_messages.sent_to = ?)";
             pstmt = conn.prepareStatement(myQuery);
             pstmt.setString(1, user_id);
-            //System.out.println(pstmt);
             ResultSet sqlResult = pstmt.executeQuery();
             if (sqlResult != null) {
                 if (sqlResult.isBeforeFirst()) {
@@ -306,7 +299,6 @@ public class MessagingModel {
                     "  JOIN user ON (user.id=user_messages.sent_to) WHERE (user_messages.sent_from = ?)";
             pstmt = conn.prepareStatement(myQuery);
             pstmt.setString(1, user_id);
-            //System.out.println(pstmt);
             ResultSet sqlResult = pstmt.executeQuery();
             if (sqlResult != null) {
                 if (sqlResult.isBeforeFirst()) {
@@ -373,7 +365,6 @@ public class MessagingModel {
             pstmt.setString(2, new_search);
             pstmt.setString(3, new_search);
             pstmt.setString(4, user_id);
-            //System.out.println(pstmt);
             ResultSet sqlResult = pstmt.executeQuery();
             if (sqlResult != null) {
                 if (sqlResult.isBeforeFirst()) {

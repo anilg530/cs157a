@@ -5,16 +5,19 @@
 <% if (session.getAttribute("user_id") != null) {
     String temp_user_id = Integer.toString((Integer) session.getAttribute("user_id"));
     ArrayList<ArrayList<String>> quick_group_members = MessagingModel.getGroupMembersForMessaging(temp_user_id);
-    if (!quick_group_members.isEmpty()) { %>
+%>
 <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 <% int message_count = MessagingModel.getNewMessageCount(Integer.toString((int) session.getAttribute("user_id"))); %>
 <% if (message_count > 0) { %>
-<a href="/messaging"><i class="fa fa-envelope-o"></i> View Messages <span class="badge badge-success filehub_new_message"><%
+<a href="/messaging"><i class="fa fa-envelope-o"></i> View Messages <span
+        class="badge badge-success filehub_new_message"><%
     out.print(message_count); %></span></a>
 <% } else { %>
-<a href="/messaging"><i class="fa fa-envelope-o"></i> View Messages <span class="badge badge-success filehub_new_message"></span></a>
+<a href="/messaging"><i class="fa fa-envelope-o"></i> View Messages <span
+        class="badge badge-success filehub_new_message"></span></a>
 <% } %>
 <a href="#" onclick="filehub_send_message(this);"><i class="fa fa-paper-plane-o"></i> Send Message</a>
+<% if (!quick_group_members.isEmpty()) { %>
 <br>
 <h4>Quick Send:</h4>
 <% for (ArrayList<String> single_member : quick_group_members) {
