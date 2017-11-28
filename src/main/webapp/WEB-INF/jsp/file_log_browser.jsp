@@ -71,6 +71,12 @@
                                     </td>
                                 </tr>
                                 <% } %>
+                                <% } else { %>
+                                <tr>
+                                    <td class="vertical-align-middle" colspan="3">
+                                        No File Upload Activity Yet.
+                                    </td>
+                                </tr>
                                 <% } %>
                                 </tbody>
                             </table>
