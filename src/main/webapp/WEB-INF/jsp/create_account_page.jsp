@@ -31,13 +31,16 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="username"  class="form-control input-lg" placeholder="email" tabindex="3">
+                    <input type="email" name="username"  class="form-control input-lg" placeholder="email" tabindex="3">
+                </div>
+                <div class="form-group">
+                    <p class="text-danger">${error_message}</p>
                 </div>
                 <div class="form-group">
                     <input type="text" name="phone"  class="form-control input-lg" placeholder="Phone Number" tabindex="4">
                 </div>
                 <div class="form-group">
-                    <input type="text" name="password"  class="form-control input-lg" placeholder="password" tabindex="5">
+                    <input type="password" name="password"  class="form-control input-lg" placeholder="password" tabindex="5">
                 </div>
                 <hr/>
                 <div class="row">

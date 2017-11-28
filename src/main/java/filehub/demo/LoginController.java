@@ -20,18 +20,9 @@ import java.util.Calendar;
 @Controller
 public class LoginController {
 
-    @RequestMapping(value={"/", "login"})
+    @RequestMapping(value = {"/", "login"})
     public String login(HttpServletRequest request, HttpSession session, Model model) {
         if (request.getMethod().equals("POST")) {
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
-            System.out.println(username);
-            System.out.println(password);
-            model.addAttribute("username", username);
-            // the user_id should be retrieved from DB based on the correct
-            // username provided and set it below
-            request.getSession().setAttribute("user_id",1);
-            request.getSession().setAttribute("username",username);
 
         }
         model.addAttribute("page_name", "FileHub Login Page");
@@ -40,8 +31,7 @@ public class LoginController {
     }
 
 
-
-    @RequestMapping(value={"/logout"})
+    @RequestMapping(value = {"/logout"})
     public void logout(HttpServletResponse response, HttpSession session) {
         session.removeAttribute("user_id");
         session.removeAttribute("username");
@@ -53,59 +43,60 @@ public class LoginController {
     }
 
 
-
-
-
     @RequestMapping(value = "/form", method = RequestMethod.GET)
     public String getForm(HttpServletRequest request, HttpServletResponse response) {
         return "create_account_page";
     }
 
 
-    @RequestMapping(value={"/sign-up"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/sign-up"}, method = RequestMethod.POST)
     public String sign_up(HttpServletRequest request, HttpServletResponse response, Model model) {
 
         //if (request.getMethod().equals("POST")) {
-            ArrayList<String> userSignInfo = new ArrayList<>();
-            String firstname = request.getParameter("firstname");
-            String lastname = request.getParameter("lastname");
-            String username = request.getParameter("username");
-            String phone = request.getParameter("phone");
-            String password = request.getParameter("password");
-            model.addAttribute("firstname", firstname);
+        ArrayList<String> userSignInfo = new ArrayList<>();
+        String firstname = request.getParameter("firstname");
+        String lastname = request.getParameter("lastname");
+        String username = request.getParameter("username");
+        String phone = request.getParameter("phone");
+        String password = request.getParameter("password");
+        model.addAttribute("firstname", firstname);
 
 
-            userSignInfo.add(firstname);
-            userSignInfo.add(lastname);
-            userSignInfo.add(username);
-            userSignInfo.add(phone);
-            userSignInfo.add(password);
+        userSignInfo.add(firstname);
+        userSignInfo.add(lastname);
+        userSignInfo.add(username);
+        userSignInfo.add(phone);
+        userSignInfo.add(password);
 
 
-           if (!UserDatabase.userExist(username)) {
-               UserDatabase.insertUser1(userSignInfo);
-           }
-           else
-           {
-               System.out.println("username exists");
-           }
-
-        return "welcome_page";
+        if (!UserDatabase.userExist(username)) {
+            int user_id = UserDatabase.insertUser1(userSignInfo);
+            if (user_id != -1) {
+                request.getSession().setAttribute("user_id", user_id);
+                request.getSession().setAttribute("username", CommonModel.getEmailByUserID(Integer.toString(user_id)));
+            }
+            return "welcome_page";
+        } else {
+            model.addAttribute("error_message", "This user already exists.");
+            return "create_account_page";
+        }
     }
 
 
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
-    public String getProfile(HttpServletRequest request, HttpServletResponse response, HttpSession session){
+    public String getProfile(HttpServletRequest request, HttpServletResponse response, HttpSession session,Model model) {
+        int user_id = (int) session.getAttribute("user_id");
+        ArrayList<String> userInfo = UserDatabase.getUser(user_id);
 
-        UserDatabase.getUser(session);
+        for (String e : userInfo) {
+            System.out.println(e);
+        }
 
-// return that array
-
-        // add each thing to the model model.addObject(" ", )
-
-
-
-            return "user_profile";
+        model.addAttribute("username", userInfo.get(1));
+        model.addAttribute("first_name", userInfo.get(4));
+        model.addAttribute("last_name", userInfo.get(5));
+        model.addAttribute("cellphone", userInfo.get(6));
+        return "user_profile";
 
     }
 
