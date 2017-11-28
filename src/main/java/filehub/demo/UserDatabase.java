@@ -275,4 +275,44 @@ public class UserDatabase {
         }
         return returnArray;
     }
+
+    public static boolean isValidUsernamePassword(String username, String password) {
+        boolean returnBoolean = false;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "SELECT * FROM user WHERE (username = ? AND password = ?)";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                returnBoolean = true;
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return returnBoolean;
+    }
 }

@@ -122,15 +122,6 @@ public class MessagingController {
     @RequestMapping(value = {"messaging/send_message_autocomplete_suggestions"})
     @ResponseBody
     public String send_message_autocomplete_suggestions(HttpServletRequest request, HttpSession session) {
-//        Map<String, String[]> temp = request.getParameterMap();
-//        for (Map.Entry<String, String[]> entry : temp.entrySet()) {
-//            String key = entry.getKey();
-//            String value[] = entry.getValue();
-//            System.out.println("key: " + key);
-//            for (int i = 0; i < value.length; i++) {
-//                System.out.println(value[i]);
-//            }
-//        }
         if (CommonModel.isLoggedIn(request, session) && request.getParameter("query") != null) {
             int user_id = (int) session.getAttribute("user_id");
             String user_id_string = Integer.toString(user_id);
