@@ -36,27 +36,27 @@ public class GroupController {
         model.addAttribute("page_name", "Create Group");
         HashMap<String, String> resultArray = new HashMap<>();
         Gson gson = new Gson();
-        if(CommonModel.isLoggedIn(request, session)){
+        if (CommonModel.isLoggedIn(request, session)) {
             if (request.getMethod().equals("POST") && request.getParameter("group_name") != null && request.getParameter("group_password") != null) {
                 String groupname = request.getParameter("group_name");
                 String groupPassword = request.getParameter("group_password");
                 int userID = (int) session.getAttribute("user_id");
-                    if (0 == GroupModel.checkGroupExist(groupname)) {
-                        if (GroupModel.insertGroup(groupname, userID, groupPassword)) {
-                            resultArray.put("status", "success");
-                            resultArray.put("content", "group " + groupname + " added.");
-                        } else {
-                            resultArray.put("status", "failed");
-                            resultArray.put("type", "mysql");
-                            resultArray.put("content", "Unable to add group " + groupname + ".");
-                        }
+                if (0 == GroupModel.checkGroupExist(groupname)) {
+                    if (GroupModel.insertGroup(groupname, userID, groupPassword)) {
+                        resultArray.put("status", "success");
+                        resultArray.put("content", "group " + groupname + " added.");
                     } else {
                         resultArray.put("status", "failed");
-                        resultArray.put("type", "name exist");
-                        resultArray.put("content", "Group name: " + groupname + " is taken. Please choose another name.");
+                        resultArray.put("type", "mysql");
+                        resultArray.put("content", "Unable to add group " + groupname + ".");
                     }
+                } else {
+                    resultArray.put("status", "failed");
+                    resultArray.put("type", "name exist");
+                    resultArray.put("content", "Group name: " + groupname + " is taken. Please choose another name.");
+                }
             }
-        }else {
+        } else {
             resultArray.put("status", "failed");
             resultArray.put("type", "login");
             resultArray.put("content", "not_logged_in");
@@ -109,8 +109,8 @@ public class GroupController {
         System.out.println("in delete_user");
         HashMap<String, String> resultArray = new HashMap<>();
         Gson gson = new Gson();
-        System.out.println("in delete_user groupId "+ Integer.valueOf(request.getParameter("groupId").trim()));
-        System.out.println("in delete_user userId "+Integer.valueOf(request.getParameter("userId").trim()));
+        System.out.println("in delete_user groupId " + Integer.valueOf(request.getParameter("groupId").trim()));
+        System.out.println("in delete_user userId " + Integer.valueOf(request.getParameter("userId").trim()));
         if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("groupId") != null && request.getParameter("userId") != null) {
             System.out.println("got info");
             int groupId = Integer.valueOf(request.getParameter("groupId").trim());
@@ -136,6 +136,7 @@ public class GroupController {
         System.out.println(gson.toJson(resultArray).toString());
         return gson.toJson(resultArray);
     }
+
     @RequestMapping(value = {"/group/refresh_group_table"})
     public String refresh_group_table(HttpServletRequest request, HttpSession session, Model model) {
 

@@ -5,10 +5,6 @@ import java.util.ArrayList;
 
 public class GroupModel {
 
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://p3plcpnl0569.prod.phx3.secureserver.net:3306/cs157a";
-    static final String USER = "cs157a_main";
-    static final String PASS = "cs157a_db";
     static final String ACTIVE = "Active";
     static final String INACTIVE = "Inactive";
     static final String ACCEPTED = "Accepted";
@@ -19,44 +15,39 @@ public class GroupModel {
     static final int ADMIN_PERMISSION = 4; //owner
     static final int MASTER_PERMISSION = 5;
 
-
-
-    /*
-    get all group of a user
-    return: ArrayList<Groups>
-     */
-    public static ArrayList<Groups> getAllGroups(int user_id) {
+    public static ArrayList<Groups> getAllGroup() {
+        ArrayList<Groups> returnGroup = new ArrayList<>();
         Connection conn = null;
-        PreparedStatement stmt = null;
-        ArrayList<Groups> groups = new ArrayList<>();
+        Statement stmt = null;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
-            conn.setAutoCommit(false);
-            String query = "select group_members.group_id, group_members.user_permission, " +
-                    "groups.group_name, groups.group_owner, groups.created_on " +
-                    "from group_members " +
-                    "inner join groups on group_members.group_id=groups.id " +
-                    "inner join `user` on groups.group_owner=user.id " +
-                    " where group_members.user_id= ?" +
-                    " and groups.group_status = 'Active';";
+            stmt = conn.createStatement();
+            String myQuery;
+            myQuery = "SELECT * FROM groups";
+            ResultSet allGroup = stmt.executeQuery(myQuery);
 
-            stmt = conn.prepareStatement(query);
-            stmt.setInt(1, user_id);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                int userID = rs.getInt("group_id");
-                int userPermission = rs.getInt("user_permission");
-                String groupName = rs.getString("group_name");
-                int groupOwner = rs.getInt("group_owner");
-                String createdOn = rs.getString("created_on");
-                groups.add(new Groups(userID, userPermission, groupName, groupOwner, createdOn));
+            if (allGroup != null) {
+                try {
+                    while (allGroup.next()) {
+                        int id = allGroup.getInt("id");
+                        String group_name = allGroup.getString("group_name");
+                        int group_owner = allGroup.getInt("group_owner");
+                        String group_password = allGroup.getString("group_password");
+                        String group_status = allGroup.getString("group_status");
+                        String created_on = allGroup.getString("created_on");
+                        returnGroup.add(new Groups(id, group_name, group_owner, group_password, group_status, created_on));
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
 
-            conn.commit();
             stmt.close();
             conn.close();
+            allGroup.close();
+            return returnGroup;
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
@@ -74,7 +65,57 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
+        return null;
+    }
 
+
+    /*
+    get all group of a user
+    return: ArrayList<Groups>
+     */
+    public static ArrayList<Groups> getAllGroups(int user_id) {
+        ArrayList<Groups> groups = new ArrayList<>();
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            String myQuery;
+            myQuery = "SELECT * FROM group_members JOIN groups ON groups.id=group_members.group_id WHERE group_members.user_id = ? AND groups.group_status = 'Active'";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, Integer.toString(user_id));
+            ResultSet sqlResult = pstmt.executeQuery();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                while (sqlResult.next()) {
+                    int userID = sqlResult.getInt("group_id");
+                    int userPermission = sqlResult.getInt("user_permission");
+                    String groupName = sqlResult.getString("group_name");
+                    int groupOwner = sqlResult.getInt("group_owner");
+                    String createdOn = sqlResult.getString("created_on");
+                    groups.add(new Groups(userID, userPermission, groupName, groupOwner, createdOn));
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
         return groups;
     }
 
@@ -84,69 +125,64 @@ public class GroupModel {
      *        false: otherwise
      */
     public static boolean insertGroup(String groupName, int groupOwner, String groupPassword) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
         boolean success = false;
-
+        int new_group_id = 0;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
-            //stmt = conn.createStatement();
-            conn.setAutoCommit(false);
-            ArrayList<String> queries = new ArrayList<>();
-            int maxGroupId = 0;
-            stmt = conn.prepareStatement("SELECT * FROM groups ORDER BY id DESC LIMIT 1");
-            ResultSet maxIdQuery = stmt.executeQuery();
-            if (maxIdQuery.next()) {
-                maxGroupId = maxIdQuery.getInt("id") + 1;
+            String myQuery;
+            myQuery = "INSERT INTO groups(group_name,group_owner,group_password,group_status)" +
+                    "VALUES (?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(myQuery, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, groupName);
+            pstmt.setInt(2, groupOwner);
+            pstmt.setString(3, groupPassword);
+            pstmt.setString(4, "Active");
+            pstmt.executeUpdate();
+            ResultSet sqlResult = pstmt.getGeneratedKeys();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                sqlResult.next();
+                new_group_id = sqlResult.getInt(1);
+                sqlResult.close();
             }
+            if (new_group_id != 0) {
+                String myQuery2;
+                myQuery2 = "INSERT INTO group_members(user_id,group_id,user_permission)" +
+                        "VALUES (?, ?, ?)";
+                pstmt = conn.prepareStatement(myQuery2, Statement.RETURN_GENERATED_KEYS);
+                pstmt.setInt(1, groupOwner);
+                pstmt.setInt(2, new_group_id);
+                pstmt.setInt(3, ADMIN_PERMISSION);
+                pstmt.executeUpdate();
+                sqlResult = pstmt.getGeneratedKeys();
 
-            String query = "INSERT INTO groups (id, group_name, group_owner, group_password, group_status)" +
-                    " VALUES (?,?,?,?,'Active');";
-            stmt = conn.prepareStatement(query);
-            stmt.setInt(1, maxGroupId);
-            stmt.setString(2, groupName);
-            stmt.setInt(3,groupOwner);
-            stmt.setString(4, groupPassword);
-
-            int affectedrow1 = stmt.executeUpdate();
-
-
-
-            String query2 = "INSERT INTO group_members (user_id, group_id, user_permission) VALUES (?,?,?);";
-            stmt = conn.prepareStatement(query2);
-            stmt.setInt(1, groupOwner);
-            stmt.setInt(2, maxGroupId);
-            stmt.setInt(3,ADMIN_PERMISSION);
-
-            int affectedrow2 = stmt.executeUpdate();
-
-            if(affectedrow1==1 && affectedrow2 == 1){
                 success = true;
+                if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                    sqlResult.close();
+                }
             }
-
-            conn.commit();
-            stmt.close();
-            conn.close();
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null)
-                    stmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
+                }
             } catch (SQLException se2) {
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
         }
-        System.out.println("success " + success);
         return success;
     }
 
@@ -161,8 +197,9 @@ public class GroupModel {
         int found = 0;
 
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
             //stmt = conn.createStatement();
             String myQuery = "select EXISTS(select * from groups where `group_name` = ?);";
             stmt = conn.prepareStatement(myQuery);
@@ -210,8 +247,8 @@ public class GroupModel {
         int found = 0;
 
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
 
             String myQuery = "select exists(select * from groups where `id` = ? and `group_status`='Inactive');";
@@ -262,8 +299,8 @@ public class GroupModel {
         boolean success = false;
 
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery = "insert into group_members values(?, ?, ?);";
             pstmt = conn.prepareStatement(myQuery);
@@ -303,11 +340,124 @@ public class GroupModel {
         return success;
     }
 
+
     /*
      * compare password
      * return boolean: true - passwords match
      *                 false - otherwise
      */
+
+    public static int checkGroupExist(String groupName, int ownerId) {
+        Connection conn = null;
+        Statement stmt = null;
+        int found = 0;
+
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            stmt = conn.createStatement();
+
+            String myQuery = "select EXISTS(select * from groups where `group_name` = '" + groupName + "'  and `group_owner`=" + ownerId + ");";
+            System.out.println(myQuery);
+            ResultSet re = stmt.executeQuery(myQuery);
+
+            while (re.next()) {
+                found = re.getInt(1);
+            }
+
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return found;
+    }
+
+    public static int countGroup(int userId) {
+        Connection conn = null;
+        Statement stmt = null;
+        int count = 0;
+
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            stmt = conn.createStatement();
+
+            String myQuery = "SELECT count(*)  FROM  groups WHERE group_owner=" + userId;
+
+            ResultSet re = stmt.executeQuery(myQuery);
+
+            while (re.next()) {
+                count = re.getInt(1);
+            }
+            // System.out.println("userid" + userId+ ": " + count + "groups");
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return count;
+
+
+    }
+
+    public static void testSQLConnectionWorking() {
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            System.out.println("Connection OK");
+        } catch (SQLException e) {
+            System.out.println("Connection Not OK");
+        } finally {
+            if (connection != null) try {
+                connection.close();
+            } catch (SQLException ignore) {
+            }
+        }
+    }
+
     public static boolean isGroupPassCorrect(String groupName, String inputPassword) {
         boolean status = false;
         Connection conn = null;
@@ -315,8 +465,8 @@ public class GroupModel {
         String temp = "";
 
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
             //stmt = conn.createStatement();
 
             String myQuery = "SELECT group_password " +
@@ -376,8 +526,8 @@ public class GroupModel {
         PreparedStatement stmt = null;
         boolean status = false;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery = "UPDATE groups SET group_status = ? where groups.group_owner = ? and groups.id = ?;";
             stmt = conn.prepareStatement(myQuery);
@@ -432,8 +582,8 @@ public class GroupModel {
         PreparedStatement pstmt = null;
         boolean status = false;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery = "delete from `group_members` where `group_id` = ? and `user_id` = ?;";
             pstmt = conn.prepareStatement(myQuery);
@@ -526,7 +676,6 @@ public class GroupModel {
             PreparedStatement pstmt = null;
             try {
                 Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
                 conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
                 String myQuery;
@@ -573,7 +722,6 @@ public class GroupModel {
             PreparedStatement pstmt = null;
             try {
                 Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
                 conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
                 String myQuery;
@@ -621,7 +769,6 @@ public class GroupModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -669,7 +816,6 @@ public class GroupModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -720,7 +866,6 @@ public class GroupModel {
         GroupInvite groupInvite = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -780,7 +925,6 @@ public class GroupModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -831,7 +975,6 @@ public class GroupModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -880,7 +1023,6 @@ public class GroupModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -922,7 +1064,6 @@ public class GroupModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -964,9 +1105,9 @@ public class GroupModel {
         PreparedStatement stmt = null;
         int count = 0;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
             String myQuery;
             myQuery = "SELECT count(*) as invites FROM group_invites " +
                     "where user_id = ? and group_id =? ";
@@ -1009,8 +1150,9 @@ public class GroupModel {
         PreparedStatement stmt = null;
         int count = 0;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
             String myQuery;
             myQuery = "SELECT count(*) as invites FROM group_invites " +
                     "where user_id = ? and group_id =? and invite_status=?;";
@@ -1052,8 +1194,9 @@ public class GroupModel {
         PreparedStatement stmt = null;
         int count = 0;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
             String myQuery;
             myQuery = "SELECT count(*) as invites FROM group_invites " +
                     "where user_id = ? and group_id = ? and invite_status= ?;";
@@ -1102,8 +1245,9 @@ public class GroupModel {
         PreparedStatement stmt = null;
         int count = 0;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
             myQuery = "SELECT count(*) as isMember FROM group_members " +
@@ -1149,8 +1293,8 @@ public class GroupModel {
         PreparedStatement stmt = null;
 
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
             myQuery = "SELECT group_members.`user_id`, concat(user.`first_name`, ' ',user.`last_name`) as member, `group_members`.`user_permission` " +
@@ -1219,8 +1363,9 @@ public class GroupModel {
         PreparedStatement stmt = null;
 
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
             myQuery = "select groups.`group_name` " +
@@ -1265,8 +1410,9 @@ public class GroupModel {
         PreparedStatement stmt = null;
         boolean status = false;
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery = "update group_members " +
                     "set `user_permission`= ? where `user_id`= ? and `group_id`= ?;";

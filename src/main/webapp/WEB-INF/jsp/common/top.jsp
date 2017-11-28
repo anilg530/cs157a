@@ -20,8 +20,7 @@
 <link rel="stylesheet" type="text/css" href="/assets/css/custom_anil.css"/>
 <link rel="stylesheet" type="text/css" href="/assets/css/custom_jennifer.css"/>
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans|Candal|Alegreya+Sans">
-<link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
-<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="assets/css/imagehover.min.css">
-<link rel="stylesheet" type="text/css" href="assets/css/style.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/imagehover.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/style.css">
 <script src="/assets/third_party/jquery-3.2.1/jquery-3.2.1.min.js"></script>

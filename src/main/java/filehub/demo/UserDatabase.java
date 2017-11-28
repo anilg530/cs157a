@@ -14,12 +14,6 @@ import java.util.ArrayList;
  */
 public class UserDatabase {
 
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://p3plcpnl0569.prod.phx3.secureserver.net:3306/cs157a";
-    static final String USER = "cs157a_main";
-    static final String PASS = "cs157a_db";
-
-
     public static void insertUser(ArrayList<String> user_info) {
 
         Connection conn = null;
@@ -32,9 +26,8 @@ public class UserDatabase {
         String cellphone = user_info.get(4);
 
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -137,9 +130,8 @@ public class UserDatabase {
 
 
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -190,9 +182,8 @@ public class UserDatabase {
 
 
         try {
-            Class.forName(JDBC_DRIVER).newInstance();
-
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
 
             String query = "update users set first_name = ?, last_name = ?, username = ?, cellphone = ?, password = ?";

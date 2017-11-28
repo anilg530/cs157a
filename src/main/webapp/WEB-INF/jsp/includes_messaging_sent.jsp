@@ -43,6 +43,12 @@
                 </td>
             </tr>
             <% } %>
+            <% } else { %>
+            <tr>
+                <td class="vertical-align-middle" colspan="5">
+                    There are no messages yet.
+                </td>
+            </tr>
             <% } %>
             </tbody>
         </table>

@@ -781,6 +781,10 @@ Footer
     padding: 10px 20px;
 }
 
+.btn-sm {
+    padding: 5px 10px 5px 10px;
+}
+
 .light-form-button {
     background: #5fcf80;
     border: 1px solid rgba(119, 81, 81, 0.34);
