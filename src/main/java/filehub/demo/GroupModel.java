@@ -144,10 +144,8 @@ public class GroupModel {
             Class.forName(JDBC_DRIVER).newInstance();
 
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
-
             stmt = conn.createStatement();
             conn.setAutoCommit(false);
-
             ArrayList<String> queries = new ArrayList<>();
             int maxGroupId = 0;
             ResultSet maxIdQuery = stmt.executeQuery("SELECT * FROM groups ORDER BY id DESC LIMIT 1");
@@ -165,7 +163,7 @@ public class GroupModel {
                 stmt.addBatch(query);
             }
             int[] counts = stmt.executeBatch();
-            if(counts[1]==1){
+            if (counts[1] == 1) {
                 success = true;
             }
             conn.commit();
@@ -189,11 +187,11 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
-        System.out.println("success "+success);
+        System.out.println("success " + success);
         return success;
     }
 
-    public static int checkGroupExit(String groupName) {
+    public static int checkGroupExist(String groupName) {
         Connection conn = null;
         Statement stmt = null;
         int found = 0;
@@ -202,15 +200,11 @@ public class GroupModel {
             Class.forName(JDBC_DRIVER).newInstance();
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
             stmt = conn.createStatement();
-
             String myQuery = "select EXISTS(select * from groups where `group_name` = '" + groupName + "');";
-            System.out.println(myQuery);
             ResultSet re = stmt.executeQuery(myQuery);
-
             while (re.next()) {
                 found = re.getInt(1);
             }
-
             stmt.close();
             conn.close();
         } catch (SQLException e) {
@@ -257,7 +251,6 @@ public class GroupModel {
             String myQuery = "select exists(select * from groups where `id` = ? and `group_status`='Inactive');";
             stmt = conn.prepareStatement(myQuery);
             stmt.setInt(1, groupId);
-            System.out.println(stmt.toString());
             ResultSet re = stmt.executeQuery();
 
             while (re.next()) {
@@ -342,7 +335,7 @@ public class GroupModel {
         return success;
     }
 
-    public static int checkGroupExit(String groupName, int ownerId) {
+    public static int checkGroupExist(String groupName, int ownerId) {
         Connection conn = null;
         Statement stmt = null;
         int found = 0;
@@ -465,13 +458,11 @@ public class GroupModel {
             String myQuery = "SELECT group_password " +
                     "FROM groups " +
                     "WHERE group_name = '" + groupName.trim() + "';";
-            System.out.println(myQuery);
             ResultSet re = stmt.executeQuery(myQuery);
 
             while (re.next()) {
                 temp = re.getString("group_password");
             }
-            System.out.println("input pass= " + inputPassword + " pass retrieved " + temp);
             stmt.close();
             conn.close();
         } catch (SQLException e) {
@@ -520,9 +511,7 @@ public class GroupModel {
             stmt = conn.createStatement();
 
             String myQuery = "UPDATE groups SET group_status = '" + INACTIVE + "' where groups.group_owner = " + ownerId + " and groups.id = " + groupId + ";";
-            System.out.println(myQuery);
-            int re = stmt.executeUpdate(myQuery);
-            System.out.println("total lines updated " + re);
+            int re = stmt.executeUpdate(myQuery); //re: number of row affected
             if (re == 1) {
                 status = true;
             } else {
@@ -546,6 +535,57 @@ public class GroupModel {
             try {
                 if (stmt != null)
                     stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return status;
+
+    }
+
+    public static boolean groupMemberDelete(int userId, int groupId) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        boolean status = false;
+        try {
+            Class.forName(JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            String myQuery = "delete from `group_members` where `group_id` = ? and `user_id` = ?;";
+            pstmt = conn.prepareStatement(myQuery);
+            pstmt.setString(1, String.valueOf(groupId));
+            pstmt.setString(2, String.valueOf(userId));
+            int sqlResult = pstmt.executeUpdate();
+            if (sqlResult == 1) {
+                status = true;
+            } else {
+                status = false;
+            }
+            pstmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            status = false;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            status = false;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            status = false;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            status = false;
+        } finally {
+            try {
+                if (pstmt != null)
+                    pstmt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -1105,7 +1145,6 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
-        System.out.println("invitedPending? " + invitedPending);
         return invitedPending;
     }
 
@@ -1168,7 +1207,6 @@ public class GroupModel {
             ResultSet re = stmt.executeQuery(myQuery);
             while (re.next()) {
                 count = re.getInt("isMember");
-                System.out.println("isMember " + count);
                 if (count == 1) {
                     member = true;
                 }
@@ -1190,7 +1228,6 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
-        System.out.println("member? " + member);
         return member;
     }
 
@@ -1308,9 +1345,7 @@ public class GroupModel {
             String myQuery = "update group_members " +
                     "set `user_permission`= " + permission +
                     " where `user_id`= " + userId + " and `group_id`= " + groupID + ";";
-            System.out.println(myQuery);
             int re = stmt.executeUpdate(myQuery);
-            System.out.println("total lines updated " + re);
             if (re == 1) {
                 status = true;
             } else {

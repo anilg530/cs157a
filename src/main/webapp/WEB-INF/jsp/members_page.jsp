@@ -15,7 +15,10 @@
 
     <title>${page_name}</title>
 
+
+
     <jsp:include page="common/top.jsp"/>
+    <script src="/assets/js/group.js"></script>
 </head>
 <body>
 <div id="mySidenav" class="sidenav">
@@ -54,8 +57,7 @@
 </div>
 
 <jsp:include page="common/bottom.jsp"/>
-<script src="/assets/js/group.js"></script>
-<script src="/assets/third_party/bootbox/bootbox.js"></script>
+
 
 </body>
 </html>

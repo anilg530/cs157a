@@ -13,6 +13,7 @@
             <tr>
                 <th>Member</th>
                 <th>Permission</th>
+                <th>Action</th>
             </tr>
             </thead>
 
@@ -39,7 +40,7 @@
                 <td class="vertical-align-middle"><% out.print(fullName); %></td>
 
                 <td class="vertical-align-middle">
-                    <% if(userPermission!=4 && userId!=user_id){ %>
+                    <% if (userPermission != 4 && userId != user_id) { %>
                     <select name="invite_access_level" id="invite_access_level"
                             class="selectpicker show-tick form-control" data-attr="<% out.print(userId); %>"
                             data-attr1="<% out.print(fullName); %>" data-attr2="<% out.print(group_id); %>"
@@ -51,17 +52,28 @@
                                 String user_permission_formal = entry.getValue(); %>
                         <option value="<% out.print(user_permission_id); %> "
                                 <% if (userPermission == Integer.valueOf(user_permission_id)) { %>
-                                SELECTED<%}%> > <%out.print(user_permission_formal); %></option>
+                                SELECTED<%}%> ><%out.print(user_permission_formal); %></option>
                         <% } %>
 
                     </select>
-                    <%}else{ %>
+                    <%} else { %>
                     <% out.print(userPermissionString); %>
                     <%}%>
                 </td>
+                <td class="vertical-align-middle">
+                    <%if (!GroupModel.isOwner(userPermission)) {%>
 
+                    <a class="btn no-padding" href="javascript:;"
+                       data-attr="<% out.print(userId); %>" data-attr2="<% out.print(fullName); %>"
+                       data-attr3="<% out.print(group_id); %>" data-attr4="<% out.print(GroupModel.getGroupName(group_id)); %>"
+                       onclick="userDelete(this);" data-toggle="tooltip" data-original-title="Delete"><i
+                            class="fa fa-trash-o"></i></a>
+
+                    <%}%>
+                </td>
             </tr>
-            <% } } else {%>
+            <% }
+            } else {%>
 
             <tr>
                 <td colspan="6">No member found.</td>
@@ -72,5 +84,62 @@
     </div>
 </div>
 
+<script>
+    function userDelete(object){
+        $(object).tooltip('hide');
 
-<!--<script src="/assets/js/group.js"></script>-->
+        var userId = $(object).attr('data-attr');
+        var fullName = $(object).attr('data-attr2');
+        var groupId = $(object).attr('data-attr3');
+        var groupName = $(object).attr('data-attr4');
+        setTimeout(function () {
+            swal({
+                    html: true,
+                    title: 'User Deletion',
+                    text: 'User <b>' + fullName + '</b> will be deleted from group <b>' + groupName + '</b>. Are you sure ?',
+                    type: 'warning',
+                    allowOutsideClick: true,
+                    showCancelButton: true,
+                    confirmButtonColor: '#dd2420',
+                    confirmButtonText: 'Confirm',
+                    cancelButtonText: 'Cancel',
+                    closeOnConfirm: true,
+                    closeOnCancel: true,
+
+                },
+                function (is_confirm) {
+                    if (is_confirm) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '/group/members/delete',
+                            dataType: 'json',
+                            data: {
+                                groupId:groupId,
+                                userId:userId,
+                                fullName:fullName
+                            },
+                            beforeSend: function () {
+                            },
+                            success: function (response) {
+                                if(response.status == 'success'){
+                                    successToast(response.title, response.content);
+                                    window.location.reload();
+                                }else{
+                                    errorToast(response.title, response.content);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+
+                            }
+                        });
+
+
+                    }
+                });
+        }, 200);
+
+    }
+</script>
+
+
+
