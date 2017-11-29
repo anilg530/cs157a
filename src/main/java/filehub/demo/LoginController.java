@@ -125,4 +125,45 @@ public class LoginController {
 
     }
 
+
+
+
+    @RequestMapping(value = "/updateEmail", method = RequestMethod.POST)
+    public String updateEmail(HttpServletRequest request, HttpServletResponse response, HttpSession session, Model model) {
+        int user_id = (int) session.getAttribute("user_id");
+        ArrayList<String> userInfo = UserDatabase.getUser(user_id);
+
+        for (String e : userInfo) {
+            System.out.println(e);
+        }
+
+        model.addAttribute("username", userInfo.get(1));
+        model.addAttribute("first_name", userInfo.get(4));
+        model.addAttribute("last_name", userInfo.get(5));
+        model.addAttribute("cellphone", userInfo.get(6));
+
+
+
+
+        String username = request.getParameter("usern");
+        String password = request.getParameter("password");
+
+        if (!UserDatabase.userExist(username)) {
+            int user_idd = (int) session.getAttribute("user_id");
+            UserDatabase.updateE(username,password,user_idd);
+            if (user_id != -1) {
+                request.getSession().setAttribute("user_id", user_id);
+                request.getSession().setAttribute("username", CommonModel.getEmailByUserID(Integer.toString(user_id)));
+            }
+            this.getProfile(request, response, session,model);
+        } else {
+            model.addAttribute("error_message", "This username already exists.");
+            return "user_profile";
+        }
+        return "user_profile";
+    }
+
+
+
+
 }

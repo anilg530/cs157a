@@ -15,7 +15,7 @@
             <ul class="nav navbar-nav">
                 <% if (session.getAttribute("username") != null) { %>
                 <li><a href="/group"><i class="fa fa-user"></i> Group Management</a></li>
-                <li><a href="#"><i class="fa fa-cog"></i> My Profile</a></li>
+                <li><a href="/profile"><i class="fa fa-cog"></i> My Profile</a></li>
                 <li><a href="#" onclick="filehub_send_issue();"><i class="fa fa-question-circle-o"></i> Report An Issue</a></li>
                 <% int temp_user_id = (int) session.getAttribute("user_id");
                     if (CommonModel.isMaster(Integer.toString(temp_user_id))) { %>
