@@ -489,11 +489,9 @@ public class CommonModel {
             pstmt.setString(1, user_id);
             pstmt.setString(2, group_id);
             ResultSet sqlResult = pstmt.executeQuery();
-            if (sqlResult != null) {
-                if (sqlResult.isBeforeFirst()) {
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
                     sqlResult.next();
                     returnInt = sqlResult.getInt(1);
-                }
                 sqlResult.close();
             }
         } catch (SQLException se) {

@@ -25,7 +25,8 @@ public class FileController {
     }
 
     @RequestMapping(value = "file/view/{group_id}")
-    public String file_browser(@PathVariable("group_id") int group_id, HttpServletRequest request, HttpSession session, Model model) {
+    public String file_browser(@PathVariable("group_id") int group_id, HttpServletRequest request,
+                               HttpSession session, Model model) {
         if (!CommonModel.isLoggedIn(request, session)) {
             return "not_logged_in";
         }
@@ -353,7 +354,8 @@ public class FileController {
 
     @RequestMapping(value = {"file/group_files_upload"})
     @ResponseBody
-    public String group_files_upload(@RequestParam("fileToUpload") MultipartFile file, HttpServletRequest request, HttpSession session) {
+    public String group_files_upload(@RequestParam("fileToUpload") MultipartFile file,
+                                     HttpServletRequest request, HttpSession session) {
         HashMap<String, String> resultArray = new HashMap<>();
         Gson gson = new Gson();
         if (CommonModel.isLoggedIn(request, session) && !file.getOriginalFilename().isEmpty()) {

@@ -529,7 +529,8 @@ public class GroupModel {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            String myQuery = "UPDATE groups SET group_status = ? where groups.group_owner = ? and groups.id = ?;";
+            String myQuery = "UPDATE groups SET group_status = ? " +
+                    "where groups.group_owner = ? and groups.id = ?;";
             stmt = conn.prepareStatement(myQuery);
             stmt.setString(1,INACTIVE);
             stmt.setInt(2, ownerId);

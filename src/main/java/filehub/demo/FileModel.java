@@ -147,7 +147,8 @@ public class FileModel {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
             String myQuery;
-            myQuery = "SELECT * FROM file_data WHERE (group_id = ? AND folder_path = ? AND file_status = 'Active' AND type = 'File')";
+            myQuery = "SELECT * FROM file_data WHERE (group_id = ? AND " +
+                    "folder_path = ? AND file_status = 'Active' AND type = 'File')";
             pstmt = conn.prepareStatement(myQuery);
             pstmt.setString(1, group_id);
             pstmt.setString(2, current_path);
