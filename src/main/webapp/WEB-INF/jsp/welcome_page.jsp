@@ -29,9 +29,9 @@
                         </div>
                         <div class="intro-para text-center quote">
                             <p class="big-text">Share today.. Share tomorrow..</p>
-                            <p class="small-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium
-                                enim repellat sapiente quos architecto<br>Laudantium enim repellat sapiente quos
-                                architecto</p>
+                            <p class="small-text">FileHub aims to provide file sharing services without the headache. <br> Upload files
+                                and use a unique url to share with your friends!
+                              </p>
                             <% if (!CommonModel.isLoggedIn(request, session)) { %>
                             <a href="form" class="btn get-quote">Sign up Today</a>
                             <% } %>
@@ -49,17 +49,16 @@
             <div class="row">
                 <div class="header-section text-center">
                     <h2>Features</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Exercitationem nesciunt vitae,<br>
-                        maiores, magni dolorum aliquam.</p>
+                    <p> </p>
                     <hr class="bottom-line">
                 </div>
                 <div class="feature-info">
                     <div class="fea">
                         <div class="col-md-4">
                             <div class="heading pull-right">
-                                <h4>Latest Technologies</h4>
-                                <p>Donec et lectus bibendum dolor dictum auctor in ac erat. Vestibulum egestas
-                                    sollicitudin metus non urna in eros tincidunt convallis id id nisi in interdum.</p>
+                                <h4> What's special about FileHub?</h4>
+                                <p>FileHub can be hosted on your private server without the need of extra deployment. Save your
+                                documents on a private storage and forget about Dropbox, or Google Drives.</p>
                             </div>
                             <div class="fea-img pull-left">
                                 <i class="fa fa-css3"></i>
@@ -69,9 +68,9 @@
                     <div class="fea">
                         <div class="col-md-4">
                             <div class="heading pull-right">
-                                <h4>Toons Background</h4>
-                                <p>Donec et lectus bibendum dolor dictum auctor in ac erat. Vestibulum egestas
-                                    sollicitudin metus non urna in eros tincidunt convallis id id nisi in interdum.</p>
+                                <h4>Easy To Use</h4>
+                                <p>FileHub's main goal is to enhance user usability. Uploading documents is simple as dragging
+                                and dropping. </p>
                             </div>
                             <div class="fea-img pull-left">
                                 <i class="fa fa-drupal"></i>
@@ -81,9 +80,9 @@
                     <div class="fea">
                         <div class="col-md-4">
                             <div class="heading pull-right">
-                                <h4>Award Winning Design</h4>
-                                <p>Donec et lectus bibendum dolor dictum auctor in ac erat. Vestibulum egestas
-                                    sollicitudin metus non urna in eros tincidunt convallis id id nisi in interdum.</p>
+                                <h4>Group Management</h4>
+                                <p>Have more people to share documents with? FileHub creates a unique url of your document. You
+                                have the freedom to allow access to who can access the document.</p>
                             </div>
                             <div class="fea-img pull-left">
                                 <i class="fa fa-trophy"></i>

@@ -169,55 +169,47 @@ public class UserDatabase {
     }
 
 
-    public static void updateUser(ArrayList<String> user_info) {
-
+    public static void updateE(String email, String pass, int user_id) {
         Connection conn = null;
         PreparedStatement preparedStmt = null;
-
-        String first_name = user_info.get(0);
-        String last_name = user_info.get(1);
-        String username = user_info.get(2);
-        String cellphone = user_info.get(3);
-        String password = user_info.get(4);
-
 
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
+            String myQuery;
+            myQuery = "UPDATE user SET username = ?, password = ? WHERE (id = ?)";
+            preparedStmt = conn.prepareStatement(myQuery, Statement.RETURN_GENERATED_KEYS);
+            preparedStmt.setString(1, email);
+            preparedStmt.setString(2, pass);
+            preparedStmt.setInt(3, user_id);
 
-            String query = "update users set first_name = ?, last_name = ?, username = ?, cellphone = ?, password = ?";
-            preparedStmt = conn.prepareStatement(query);
-            preparedStmt.setString(1, first_name);
-            preparedStmt.setString(2, last_name);
-            preparedStmt.setString(3, username);
-            preparedStmt.setString(4, cellphone);
-            preparedStmt.setString(5, password);
-            // execute the java preparedstatement
             preparedStmt.executeUpdate();
-
-            preparedStmt.close();
-            conn.close();
-
+            ResultSet sqlResult = preparedStmt.getGeneratedKeys();
+            if (sqlResult != null) {
+                if (sqlResult.next()) {
+                }
+                sqlResult.close();
+            }
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if (preparedStmt != null)
+                if (preparedStmt != null) {
                     preparedStmt.close();
+                }
             } catch (SQLException se2) {
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
         }
-
-
     }
 
 
