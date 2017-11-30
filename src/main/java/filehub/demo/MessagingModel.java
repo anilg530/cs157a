@@ -347,8 +347,7 @@ public class MessagingModel {
             return gson.toJson(resultArray);
         }
         if (search != null && !search.isEmpty()) {
-            search = search.trim().replaceAll(" +", " ");
-            String[] split = search.split(" ");
+            String[] split = search.trim().split(" ");
             new_search = ".*(" + String.join("|", split) + ").*";
         }
 
@@ -356,7 +355,6 @@ public class MessagingModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
