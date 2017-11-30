@@ -21,26 +21,26 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <input type="text" name="firstname"  class="form-control input-lg" placeholder="First Name" tabindex="1">
+                            <input type="text" name="firstname"  class="form-control input-lg" placeholder="First Name" tabindex="1" autocomplete="off" required>
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <input type="text" name="lastname"  class="form-control input-lg" placeholder="Last Name" tabindex="2">
+                            <input type="text" name="lastname"  class="form-control input-lg" placeholder="Last Name" tabindex="2" autocomplete="off" required>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <input type="email" name="username"  class="form-control input-lg" placeholder="email" tabindex="3">
+                    <input type="email" name="username"  class="form-control input-lg" placeholder="email" tabindex="3" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <input type="phone" name="phone"  class="form-control input-lg" placeholder="Phone Number" tabindex="4" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password"  class="form-control input-lg" placeholder="password" tabindex="5" autocomplete="off" required>
                 </div>
                 <div class="form-group">
                     <p class="text-danger">${error_message}</p>
-                </div>
-                <div class="form-group">
-                    <input type="text" name="phone"  class="form-control input-lg" placeholder="Phone Number" tabindex="4">
-                </div>
-                <div class="form-group">
-                    <input type="password" name="password"  class="form-control input-lg" placeholder="password" tabindex="5">
                 </div>
                 <hr/>
                 <div class="row">

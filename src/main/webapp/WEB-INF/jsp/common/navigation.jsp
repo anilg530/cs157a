@@ -16,11 +16,19 @@
                 <% if (session.getAttribute("username") != null) { %>
                 <li><a href="/group"><i class="fa fa-user"></i> Group Management</a></li>
                 <li><a href="/profile"><i class="fa fa-cog"></i> My Profile</a></li>
-                <li><a href="#" onclick="filehub_send_issue();"><i class="fa fa-question-circle-o"></i> Report An Issue</a></li>
+                <li><a href="#" onclick="filehub_send_issue();"><i class="fa fa-question-circle-o"></i> Report An Issue</a>
+                </li>
                 <% int temp_user_id = (int) session.getAttribute("user_id");
                     if (CommonModel.isMaster(Integer.toString(temp_user_id))) { %>
-                <li><a href="/admin/view_file_log"><i class="fa fa-file-archive-o"></i> Admin File Browser Log</a></li>
-                <li><a href="/admin/view_reports"><i class="fa fa-inbox"></i> Admin User Issues Reports</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-key"></i> Admin Tools
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/admin/view_file_log"><i class="fa fa-file-archive-o"></i> Admin File Browser
+                            Log</a></li>
+                        <li><a href="/admin/view_reports"><i class="fa fa-inbox"></i> Admin User Issues Reports</a></li>
+                    </ul>
+                </li>
                 <% } %>
                 <% } %>
             </ul>

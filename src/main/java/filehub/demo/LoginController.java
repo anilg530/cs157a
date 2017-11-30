@@ -22,7 +22,7 @@ public class LoginController {
 
     @RequestMapping(value = {"login"})
     public String login(HttpServletRequest request, HttpSession session, Model model) {
-        if (CommonModel.isLoggedIn(request,session)) {
+        if (CommonModel.isLoggedIn(request, session)) {
             return "redirect:/";
         }
         if (request.getMethod().equals("POST")) {
@@ -38,8 +38,7 @@ public class LoginController {
                 request.getSession().setAttribute("user_id", user_id_int);
                 request.getSession().setAttribute("username", CommonModel.getEmailByUserID(Integer.toString(user_id_int)));
                 return "redirect:/";
-            }
-            else {
+            } else {
                 model.addAttribute("temp_username", username);
                 model.addAttribute("error_message", "The password/username is incorrect.");
             }
@@ -79,12 +78,19 @@ public class LoginController {
 
         //if (request.getMethod().equals("POST")) {
         ArrayList<String> userSignInfo = new ArrayList<>();
-        String firstname = request.getParameter("firstname");
-        String lastname = request.getParameter("lastname");
-        String username = request.getParameter("username");
-        String phone = request.getParameter("phone");
-        String password = request.getParameter("password");
+        String firstname = request.getParameter("firstname").trim();
+        String lastname = request.getParameter("lastname").trim();
+        String username = request.getParameter("username").trim();
+        String phone = request.getParameter("phone").trim();
+        String password = request.getParameter("password").trim();
         model.addAttribute("firstname", firstname);
+
+        if (firstname == null || firstname.isEmpty() || lastname == null || lastname.isEmpty()
+                || username == null || username.isEmpty() || phone == null || phone.isEmpty()
+                || password == null || password.isEmpty()) {
+            model.addAttribute("error_message", "You have invalid values in your form.");
+            return "create_account_page";
+        }
 
 
         userSignInfo.add(firstname);
@@ -126,8 +132,6 @@ public class LoginController {
     }
 
 
-
-
     @RequestMapping(value = "/updateEmail", method = RequestMethod.POST)
     public String updateEmail(HttpServletRequest request, HttpServletResponse response, HttpSession session, Model model) {
         int user_id = (int) session.getAttribute("user_id");
@@ -143,27 +147,23 @@ public class LoginController {
         model.addAttribute("cellphone", userInfo.get(6));
 
 
-
-
         String username = request.getParameter("usern");
         String password = request.getParameter("password");
 
         if (!UserDatabase.userExist(username)) {
             int user_idd = (int) session.getAttribute("user_id");
-            UserDatabase.updateE(username,password,user_idd);
+            UserDatabase.updateE(username, password, user_idd);
             if (user_id != -1) {
                 request.getSession().setAttribute("user_id", user_id);
                 request.getSession().setAttribute("username", CommonModel.getEmailByUserID(Integer.toString(user_id)));
             }
-            this.getProfile(request, response, session,model);
+            this.getProfile(request, response, session, model);
         } else {
             model.addAttribute("error_message", "This username already exists.");
             return "user_profile";
         }
         return "user_profile";
     }
-
-
 
 
 }
