@@ -14,15 +14,15 @@ import java.util.*;
 import java.util.Date;
 
 public class CommonModel {
-//    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-//    static final String DB_URL = "jdbc:mysql://p3plcpnl0569.prod.phx3.secureserver.net:3306/cs157a";
-//    static final String USER = "cs157a_main";
-//    static final String PASS = "cs157a_db";
-
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/cs157a?useSSL=false";
-    static final String USER = "root";
-    static final String PASS = "1234";
+    static final String DB_URL = "jdbc:mysql://p3plcpnl0569.prod.phx3.secureserver.net:3306/cs157a";
+    static final String USER = "cs157a_main";
+    static final String PASS = "cs157a_db";
+
+//    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+//    static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/cs157a?useSSL=false";
+//    static final String USER = "root";
+//    static final String PASS = "1234";
 
     public static Boolean isLettersNumbersUnderscoreOnlyString(String string) {
         String regex = "^[a-zA-Z0-9_]*$";
@@ -427,30 +427,28 @@ public class CommonModel {
 
     public static String getAllGroupIDMembershipCommaSeparated(String user_id) {
         String returnString = "";
-        Connection conn = null;
 
+        Connection conn = null;
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
             myQuery = "SELECT DISTINCT group_members.group_id FROM group_members" +
-                    " JOIN groups ON (groups.id=group_members.group_id) WHERE (group_members.user_id = ? AND groups.group_status = ?)";
+                    " JOIN groups ON (groups.id=group_members.group_id) " +
+                    "WHERE (group_members.user_id = ? AND groups.group_status = ?)";
             pstmt = conn.prepareStatement(myQuery);
             pstmt.setString(1, user_id);
             pstmt.setString(2, "Active");
             ResultSet sqlResult = pstmt.executeQuery();
-            if (sqlResult != null) {
-                if (sqlResult.isBeforeFirst()) {
-                    ArrayList<String> temp = new ArrayList<>();
-                    while (sqlResult.next()) {
-                        temp.add(sqlResult.getString(1));
-                    }
-                    String idList = temp.toString();
-                    returnString = idList.substring(1, idList.length() - 1).replace(", ", ",");
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                ArrayList<String> temp = new ArrayList<>();
+                while (sqlResult.next()) {
+                    temp.add(sqlResult.getString(1));
                 }
+                String idList = temp.toString();
+                returnString = idList.substring(1, idList.length() - 1).replace(", ", ",");
                 sqlResult.close();
             }
         } catch (SQLException se) {
@@ -533,11 +531,11 @@ public class CommonModel {
             pstmt.setString(1, user_id);
             ResultSet sqlResult = pstmt.executeQuery();
             if (sqlResult != null && sqlResult.isBeforeFirst()) {
-                    sqlResult.next();
-                    String role = sqlResult.getString(1);
-                    if (role != null && role.equals("5")) {
-                        returnBoolean = true;
-                    }
+                sqlResult.next();
+                String role = sqlResult.getString(1);
+                if (role != null && role.equals("5")) {
+                    returnBoolean = true;
+                }
                 sqlResult.close();
             }
         } catch (SQLException se) {
@@ -622,7 +620,7 @@ public class CommonModel {
                 while (sqlResult.next()) {
                     String user_type_id = sqlResult.getString(1);
                     String user_type_formal = sqlResult.getString(2);
-                    returnMap.put(user_type_id,user_type_formal);
+                    returnMap.put(user_type_id, user_type_formal);
                 }
                 sqlResult.close();
             }

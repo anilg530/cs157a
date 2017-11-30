@@ -1004,7 +1004,6 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -1016,7 +1015,8 @@ public class FileModel {
             pstmt.setString(3, id);
             int affected_rows = pstmt.executeUpdate();
             if (affected_rows > 0) {
-                insertFileUploadLogEntry(notes_by, "New notes added: " + notes + " (Group: " + CommonModel.getGroupName(group_id) + ")");
+                insertFileUploadLogEntry(notes_by, "New notes added: " +
+                        notes + " (Group: " + CommonModel.getGroupName(group_id) + ")");
                 returnBoolean = true;
             }
         } catch (SQLException se) {
@@ -1334,18 +1334,18 @@ public class FileModel {
 
         if (isFileURLExist(file_id)) {
             Connection conn = null;
-            Statement stmt = null;
+            PreparedStatement pstmt = null;
             try {
                 Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
                 conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-                stmt = conn.createStatement();
                 String myQuery;
-                myQuery = "SELECT * FROM file_url " +
-                        "WHERE (file_id='" + file_id + "')";
-                ResultSet sqlResult = stmt.executeQuery(myQuery);
-                if (sqlResult != null && sqlResult.next()) {
+                myQuery = "SELECT * FROM file_url WHERE file_id = ?";
+                pstmt = conn.prepareStatement(myQuery);
+                pstmt.setString(1, file_id);
+                ResultSet sqlResult = pstmt.executeQuery();
+                if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                    sqlResult.next();
                     returnString = sqlResult.getString(1);
                     sqlResult.close();
                 }
@@ -1355,8 +1355,8 @@ public class FileModel {
                 e.printStackTrace();
             } finally {
                 try {
-                    if (stmt != null) {
-                        stmt.close();
+                    if (pstmt != null) {
+                        pstmt.close();
                     }
                 } catch (SQLException se2) {
                 }
@@ -1373,11 +1373,9 @@ public class FileModel {
             returnString = CommonModel.generateRandomCode();
 
             Connection conn = null;
-
             PreparedStatement pstmt = null;
             try {
                 Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
                 conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
                 String myQuery;
@@ -1421,7 +1419,6 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -1429,12 +1426,8 @@ public class FileModel {
             pstmt = conn.prepareStatement(myQuery);
             pstmt.setString(1, file_url);
             ResultSet sqlResult = pstmt.executeQuery();
-            if (sqlResult != null) {
-                if (sqlResult.isBeforeFirst()) {
-                    returnBoolean = true;
-                } else {
-                    returnBoolean = false;
-                }
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                returnBoolean = true;
                 sqlResult.close();
             }
         } catch (SQLException se) {

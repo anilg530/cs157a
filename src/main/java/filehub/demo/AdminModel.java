@@ -14,26 +14,25 @@ public class AdminModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
-            myQuery = "SELECT file_upload_log.*, user.first_name, user.last_name FROM file_upload_log JOIN user ON user.id=file_upload_log.action_by ORDER BY file_upload_log.action_date DESC;";
+            myQuery = "SELECT file_upload_log.*, user.first_name, user.last_name " +
+                    "FROM file_upload_log " +
+                    "JOIN user ON user.id=file_upload_log.action_by " +
+                    "ORDER BY file_upload_log.action_date DESC;";
             pstmt = conn.prepareStatement(myQuery);
-            //System.out.println(pstmt);
             ResultSet sqlResult = pstmt.executeQuery();
-            if (sqlResult != null) {
-                if (sqlResult.isBeforeFirst()) {
-                    while (sqlResult.next()) {
-                        ArrayList<String> temp = new ArrayList<>();
-                        temp.add(sqlResult.getString(1));
-                        temp.add(sqlResult.getString(2));
-                        temp.add(sqlResult.getString(3));
-                        temp.add(sqlResult.getString(4));
-                        temp.add(sqlResult.getString(5));
-                        temp.add(sqlResult.getString(6));
-                        returnArray.add(temp);
-                    }
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                while (sqlResult.next()) {
+                    ArrayList<String> temp = new ArrayList<>();
+                    temp.add(sqlResult.getString(1));
+                    temp.add(sqlResult.getString(2));
+                    temp.add(sqlResult.getString(3));
+                    temp.add(sqlResult.getString(4));
+                    temp.add(sqlResult.getString(5));
+                    temp.add(sqlResult.getString(6));
+                    returnArray.add(temp);
                 }
                 sqlResult.close();
             }
@@ -66,26 +65,25 @@ public class AdminModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
-            myQuery = "SELECT user_issues.*, user.first_name, user.last_name FROM user_issues JOIN user ON user.id=user_issues.issues_by ORDER BY user_issues.issue_date DESC;";
+            myQuery = "SELECT user_issues.*, user.first_name, user.last_name " +
+                    "FROM user_issues " +
+                    "JOIN user ON user.id=user_issues.issues_by " +
+                    "ORDER BY user_issues.issue_date DESC;";
             pstmt = conn.prepareStatement(myQuery);
-            //System.out.println(pstmt);
             ResultSet sqlResult = pstmt.executeQuery();
-            if (sqlResult != null) {
-                if (sqlResult.isBeforeFirst()) {
-                    while (sqlResult.next()) {
-                        ArrayList<String> temp = new ArrayList<>();
-                        temp.add(sqlResult.getString(1));
-                        temp.add(sqlResult.getString(2));
-                        temp.add(sqlResult.getString(3));
-                        temp.add(sqlResult.getString(4));
-                        temp.add(sqlResult.getString(5));
-                        temp.add(sqlResult.getString(6));
-                        returnArray.add(temp);
-                    }
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                while (sqlResult.next()) {
+                    ArrayList<String> temp = new ArrayList<>();
+                    temp.add(sqlResult.getString(1));
+                    temp.add(sqlResult.getString(2));
+                    temp.add(sqlResult.getString(3));
+                    temp.add(sqlResult.getString(4));
+                    temp.add(sqlResult.getString(5));
+                    temp.add(sqlResult.getString(6));
+                    returnArray.add(temp);
                 }
                 sqlResult.close();
             }

@@ -24,8 +24,10 @@ public class MessagingModel {
                 conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
                 String myQuery;
-                myQuery = "SELECT group_members.user_id,user.first_name,user.last_name FROM group_members" +
-                        "  JOIN user ON (user.id=group_members.user_id) WHERE group_members.group_id IN(" + group_id_list + ") AND user.login_status = ? AND group_members.user_id != ? GROUP BY group_members.user_id;";
+                myQuery = "SELECT group_members.user_id,user.first_name,user.last_name FROM group_members " +
+                        "JOIN user ON (user.id=group_members.user_id) " +
+                        "WHERE group_members.group_id IN(" + group_id_list + ") " +
+                        "AND user.login_status = ? AND group_members.user_id != ? GROUP BY group_members.user_id;";
                 pstmt = conn.prepareStatement(myQuery);
                 pstmt.setString(1, "Active");
                 pstmt.setString(2, user_id);
