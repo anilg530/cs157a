@@ -1044,7 +1044,7 @@ public class FileModel {
     public static boolean addNewFile(HttpSession session, MultipartFile file) {
         boolean returnBoolean = false;
         boolean fileUploadSuccess = false;
-        // Session date
+        // Session data
         String group_id = Integer.toString((int) session.getAttribute("group_id"));
         String uploaded_by = Integer.toString((int) session.getAttribute("user_id"));
         String file_name = file.getOriginalFilename();
@@ -1082,13 +1082,12 @@ public class FileModel {
             e.printStackTrace();
         }
 
-        // file written to disc succesful, write history into DB
+        // file written to disc successful, write history into DB
         if (fileUploadSuccess) {
             Connection conn = null;
             PreparedStatement pstmt = null;
             try {
                 Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
                 conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
                 String myQuery;
