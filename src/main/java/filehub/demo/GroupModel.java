@@ -467,20 +467,21 @@ public class GroupModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
-            //stmt = conn.createStatement();
 
             String myQuery = "SELECT group_password " +
                     "FROM groups " +
                     "WHERE group_name = ? ;";
-            stmt= conn.prepareStatement(myQuery);
-            stmt.setString(1,groupName);
+            stmt = conn.prepareStatement(myQuery);
+            stmt.setString(1, groupName);
             ResultSet re = stmt.executeQuery();
-
-            while (re.next()) {
+            if (re != null && re.isBeforeFirst()) {
+                re.next();
                 temp = re.getString("group_password");
+                if (inputPassword.equals(temp)) {
+                    status = true;
+                }
             }
             stmt.close();
-            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -503,16 +504,6 @@ public class GroupModel {
                 se.printStackTrace();
             }
         }
-
-        if (temp.equals("")) {
-            status = false;
-        } else {
-            if (inputPassword.equals(temp)) {
-                status = true;
-            } else {
-                status = false;
-            }
-        }
         return status;
     }
 
@@ -531,7 +522,7 @@ public class GroupModel {
 
             String myQuery = "UPDATE groups SET group_status = ? where groups.group_owner = ? and groups.id = ?;";
             stmt = conn.prepareStatement(myQuery);
-            stmt.setString(1,INACTIVE);
+            stmt.setString(1, INACTIVE);
             stmt.setInt(2, ownerId);
             stmt.setInt(3, groupId);
             int re = stmt.executeUpdate(); //re: number of row affected
@@ -914,7 +905,8 @@ public class GroupModel {
     }
 
     /**
-     *get group id
+     * get group id
+     *
      * @param groupName
      * @param groupPassword
      * @return int
@@ -1235,6 +1227,7 @@ public class GroupModel {
 
     /**
      * check if a user is a member of a group
+     *
      * @param user_id
      * @param group_id
      * @return boolean
@@ -1284,6 +1277,7 @@ public class GroupModel {
 
     /**
      * get all members of a group
+     *
      * @param group_id
      * @return
      */
@@ -1354,6 +1348,7 @@ public class GroupModel {
 
     /**
      * get group name
+     *
      * @param group_id
      * @return String name
      */
@@ -1400,6 +1395,7 @@ public class GroupModel {
 
     /**
      * update user's permission
+     *
      * @param userId
      * @param permission
      * @param groupID
