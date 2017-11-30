@@ -124,7 +124,50 @@ public class MessagingModel {
             pstmt.setString(2, message);
             pstmt.executeUpdate();
             ResultSet sqlResult = pstmt.getGeneratedKeys();
-            if (sqlResult != null) {
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
+                if (sqlResult.next()) {
+                }
+                sqlResult.close();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                conn.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+    }
+
+    public static void insertNewReport(String send_from, String send_to, String message) {
+        Connection conn = null;
+
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(CommonModel.JDBC_DRIVER).newInstance();
+            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+
+            String myQuery;
+            myQuery = "INSERT INTO user_report(user_reported,reported_by,report_message) values(?, ?, ?) ";
+            pstmt = conn.prepareStatement(myQuery, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setInt(1, Integer.parseInt(send_from));
+            pstmt.setInt(2, Integer.parseInt(send_to));
+            pstmt.setString(3, message);
+            pstmt.executeUpdate();
+            ResultSet sqlResult = pstmt.getGeneratedKeys();
+            if (sqlResult != null && sqlResult.isBeforeFirst()) {
                 if (sqlResult.next()) {
                 }
                 sqlResult.close();

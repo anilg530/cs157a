@@ -156,4 +156,32 @@ public class MessagingController {
         resultArray.put("swal_error", "Unable to send message. Internal Error.");
         return gson.toJson(resultArray);
     }
+
+    @RequestMapping(value = {"messaging/user_report"})
+    public String user_report(HttpServletRequest request, HttpSession session, Model model) {
+        if (!CommonModel.isLoggedIn(request, session)) {
+            model.addAttribute("error_message", "You are not logged in");
+            return "file_url_modal_error";
+        }
+        return "user_report_modal";
+    }
+
+    @RequestMapping(value = {"messaging/user_report_submit"})
+    @ResponseBody
+    public String user_report_submit(HttpServletRequest request, HttpSession session) {
+        HashMap<String, String> resultArray = new HashMap<>();
+        Gson gson = new Gson();
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("report_id") != null && request.getParameter("message") != null) {
+            String message = request.getParameter("message").trim();
+            String report_id = request.getParameter("report_id").trim();
+            int user_id = (int) session.getAttribute("user_id");
+            MessagingModel.insertNewReport(Integer.toString(user_id), report_id, message);
+            resultArray.put("status", "success");
+            resultArray.put("toastr", "Report Sent");
+            return gson.toJson(resultArray);
+        }
+        resultArray.put("status", "failed");
+        resultArray.put("swal_error", "Unable to send message. Internal Error.");
+        return gson.toJson(resultArray);
+    }
 }

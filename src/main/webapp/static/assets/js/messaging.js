@@ -281,3 +281,75 @@ function filehub_send_issue_submit() {
     }
     return false;
 }
+
+function filehub_user_report() {
+    var formData = {};
+    $.ajax({
+        type: 'POST',
+        url: '/messaging/user_report',
+        dataType: 'html',
+        data: formData,
+        beforeSend: function () {
+            //$('#includes_files_table_html').html('<div class="text-center"><img src="/assets/images/preloader.gif" /></div>');
+        },
+        success: function (response) {
+            $('#ajax_modal_body_sm').html(response).promise().done(function () {
+            });
+            $('#ajax_modal_sm').modal('show');
+        },
+        error: function (xhr, status, error) {
+            internet_connectivity_swal();
+            console.log(xhr.responseText);
+            //$('body').html(xhr.responseText);
+        }
+    });
+    return false;
+}
+
+function filehub_user_report_submit() {
+    var form = $('#filehub_send_report_form');
+    form.validate().settings.ignore = ':disabled,:hidden';
+    if (form.valid()) {
+        var serialized = $(form).serialize();
+        $.ajax({
+            type: 'POST',
+            url: '/messaging/user_report_submit',
+            dataType: 'json',
+            data: serialized,
+            beforeSend: function () {
+            },
+            success: function (response) {
+                if (response.status == 'success') {
+                    if (response.toastr) {
+                        toastr.success(response.toastr, null, {'positionClass': 'toast-bottom-right'});
+                    }
+                    $('#ajax_modal_sm').modal('hide');
+                }
+                else if (response.swal_error) {
+                    setTimeout(function () {
+                        swal({
+                            html: true,
+                            title: 'Oops...',
+                            text: response.swal_error,
+                            type: 'error',
+                            allowOutsideClick: true,
+                            showCancelButton: true,
+                            showConfirmButton: false,
+                            cancelButtonText: 'OK',
+                        });
+                    }, 200);
+                }
+                if (response.error) {
+                    var error_array = jQuery.parseJSON(response.error);
+                    form.validate().showErrors(error_array);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+                internet_connectivity_swal();
+                //$('body').html(xhr.responseText);
+            }
+        });
+    }
+    return false;
+}
