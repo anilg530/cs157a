@@ -20,6 +20,9 @@ public class GroupController {
 
     @RequestMapping("group")
     public String main(HttpSession session, HttpServletRequest request, Model model) {
+        if (!CommonModel.isLoggedIn(request, session)) {
+            return "redirect:/";
+        }
         model.addAttribute("page_name", "Group Management");
         return "group_page";
     }

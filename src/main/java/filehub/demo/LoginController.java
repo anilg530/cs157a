@@ -116,12 +116,11 @@ public class LoginController {
 
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public String getProfile(HttpServletRequest request, HttpServletResponse response, HttpSession session, Model model) {
+        if (!CommonModel.isLoggedIn(request, session)) {
+            return "redirect:/";
+        }
         int user_id = (int) session.getAttribute("user_id");
         ArrayList<String> userInfo = UserDatabase.getUser(user_id);
-
-        for (String e : userInfo) {
-            System.out.println(e);
-        }
 
         model.addAttribute("username", userInfo.get(1));
         model.addAttribute("first_name", userInfo.get(4));
@@ -136,10 +135,6 @@ public class LoginController {
     public String updateEmail(HttpServletRequest request, HttpServletResponse response, HttpSession session, Model model) {
         int user_id = (int) session.getAttribute("user_id");
         ArrayList<String> userInfo = UserDatabase.getUser(user_id);
-
-        for (String e : userInfo) {
-            System.out.println(e);
-        }
 
         model.addAttribute("username", userInfo.get(1));
         model.addAttribute("first_name", userInfo.get(4));
