@@ -82,7 +82,7 @@ public class LoginController {
         String lastname = request.getParameter("lastname").trim();
         String username = request.getParameter("username").trim();
         String phone = request.getParameter("phone").trim();
-        String password = request.getParameter("password").trim();
+        String password = request.getParameter("password");
         model.addAttribute("firstname", firstname);
 
         if (firstname == null || firstname.isEmpty() || lastname == null || lastname.isEmpty()
@@ -115,7 +115,8 @@ public class LoginController {
 
 
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
-    public String getProfile(HttpServletRequest request, HttpServletResponse response, HttpSession session, Model model) {
+    public String getProfile(HttpServletRequest request, HttpServletResponse response,
+                             HttpSession session, Model model) {
         if (!CommonModel.isLoggedIn(request, session)) {
             return "redirect:/";
         }
@@ -127,9 +128,7 @@ public class LoginController {
         model.addAttribute("last_name", userInfo.get(5));
         model.addAttribute("cellphone", userInfo.get(6));
         return "user_profile";
-
     }
-
 
     @RequestMapping(value = "/updateEmail", method = RequestMethod.POST)
     public String updateEmail(HttpServletRequest request, HttpServletResponse response, HttpSession session, Model model) {
@@ -141,20 +140,25 @@ public class LoginController {
         model.addAttribute("last_name", userInfo.get(5));
         model.addAttribute("cellphone", userInfo.get(6));
 
-
-        String username = request.getParameter("usern");
+        String username = request.getParameter("usern").trim();
         String password = request.getParameter("password");
 
-        if (!UserDatabase.userExist(username)) {
-            int user_idd = (int) session.getAttribute("user_id");
-            UserDatabase.updateE(username, password, user_idd);
-            if (user_id != -1) {
-                request.getSession().setAttribute("user_id", user_id);
-                request.getSession().setAttribute("username", CommonModel.getEmailByUserID(Integer.toString(user_id)));
+        if (!username.isEmpty() && !password.isEmpty()) {
+            if (!UserDatabase.userExist(username)) {
+                int user_idd = (int) session.getAttribute("user_id");
+                UserDatabase.updateE(username, password, user_idd);
+                if (user_id != -1) {
+                    request.getSession().setAttribute("user_id", user_id);
+                    request.getSession().setAttribute("username", CommonModel.getEmailByUserID(Integer.toString(user_id)));
+                }
+                this.getProfile(request, response, session, model);
+            } else {
+                model.addAttribute("error_message", "This username already exists.");
+                return "user_profile";
             }
-            this.getProfile(request, response, session, model);
-        } else {
-            model.addAttribute("error_message", "This username already exists.");
+        }
+        else {
+            model.addAttribute("error_message", "You entered an invalid username or password");
             return "user_profile";
         }
         return "user_profile";

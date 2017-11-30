@@ -76,7 +76,6 @@ public class UserDatabase {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
             String myQuery;
@@ -118,9 +117,6 @@ public class UserDatabase {
 
     public static int insertUser1(ArrayList<String> user_info) {
         int returnInt = -1;
-        Connection conn = null;
-        Statement stmt = null;
-
 
         String first_name = user_info.get(0);
         String last_name = user_info.get(1);
@@ -128,39 +124,43 @@ public class UserDatabase {
         String cellphone = user_info.get(3);
         String password = user_info.get(4);
 
-
+        Connection conn = null;
+        PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
             conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
 
-            stmt = conn.createStatement();
             String myQuery;
             myQuery = "INSERT INTO user (first_name,last_name,username,cellphone,password,login_status)" +
-                    "VALUES ('" + first_name + "','" + last_name + "', '" + username + "','" + cellphone + "','" + password + "', 'Active');";
-            stmt.executeUpdate(myQuery, Statement.RETURN_GENERATED_KEYS);
-            ResultSet sqlResult = stmt.getGeneratedKeys();
+                    "VALUES (?, ?, ?, ?, ?, ?);";
+            pstmt = conn.prepareStatement(myQuery, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, first_name);
+            pstmt.setString(2, last_name);
+            pstmt.setString(3, username);
+            pstmt.setString(4, cellphone);
+            pstmt.setString(5, password);
+            pstmt.setString(6, "Active");
+            pstmt.executeUpdate();
+            ResultSet sqlResult = pstmt.getGeneratedKeys();
             if (sqlResult != null && sqlResult.isBeforeFirst()) {
                 sqlResult.next();
                 returnInt = sqlResult.getInt(1);
             }
-
-
-            stmt.close();
-            conn.close();
-            //allGroup.close();
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if (stmt != null)
-                    stmt.close();
+                if (pstmt != null) {
+                    pstmt.close();
+                }
             } catch (SQLException se2) {
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
@@ -183,7 +183,6 @@ public class UserDatabase {
             preparedStmt.setString(1, email);
             preparedStmt.setString(2, pass);
             preparedStmt.setInt(3, user_id);
-
             preparedStmt.executeUpdate();
             ResultSet sqlResult = preparedStmt.getGeneratedKeys();
             if (sqlResult != null) {
