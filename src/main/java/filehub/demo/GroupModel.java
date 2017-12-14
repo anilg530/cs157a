@@ -576,7 +576,7 @@ public class GroupModel {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
             conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
-            String myQuery = "delete from `group_members` where `group_id` = ? and `user_id` = ?;";
+            String myQuery = "DELETE from `group_members` where `group_id` = ? and `user_id` = ?;";
             pstmt = conn.prepareStatement(myQuery);
             pstmt.setString(1, String.valueOf(groupId));
             pstmt.setString(2, String.valueOf(userId));

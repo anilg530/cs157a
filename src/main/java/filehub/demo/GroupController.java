@@ -106,23 +106,15 @@ public class GroupController {
         return gson.toJson(resultArray);
     }
 
-
     @RequestMapping(value = {"/group/members/delete"}, method = RequestMethod.POST)
     @ResponseBody
     public String delete_user(HttpServletRequest request, HttpSession session) {
-        System.out.println("in delete_user");
         HashMap<String, String> resultArray = new HashMap<>();
         Gson gson = new Gson();
-        System.out.println("in delete_user groupId " + Integer.valueOf(request.getParameter("groupId").trim()));
-        System.out.println("in delete_user userId " + Integer.valueOf(request.getParameter("userId").trim()));
-        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("groupId") != null && request.getParameter("userId") != null) {
-            System.out.println("got info");
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST")
+                && request.getParameter("groupId") != null && request.getParameter("userId") != null) {
             int groupId = Integer.valueOf(request.getParameter("groupId").trim());
             int userId = Integer.valueOf(request.getParameter("userId").trim());
-            String name = request.getParameter("fullName");
-            System.out.println("userId = " + userId);
-            System.out.println("group id = " + groupId);
-            System.out.println("full name = " + name);
             if (GroupModel.groupMemberDelete(userId, groupId)) {
                 resultArray.put("status", "success");
                 resultArray.put("title", "Success");
@@ -137,7 +129,6 @@ public class GroupController {
             resultArray.put("title", "Failed");
             resultArray.put("content", "Deleted failed!");
         }
-        System.out.println(gson.toJson(resultArray).toString());
         return gson.toJson(resultArray);
     }
 
