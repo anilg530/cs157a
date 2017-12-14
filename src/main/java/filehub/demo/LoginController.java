@@ -31,7 +31,6 @@ public class LoginController {
             String password = request.getParameter("password");
             boolean flag = UserDatabase.isValidUsernamePassword(username, password);
 
-            // model.addAttribute("page_name", "FileHub Login Page");
             if (flag) {
                 String user_id = CommonModel.getUserIDByEmail(username);
                 int user_id_int = Integer.parseInt(user_id);
@@ -73,7 +72,6 @@ public class LoginController {
     @RequestMapping(value = {"/sign-up"}, method = RequestMethod.POST)
     public String sign_up(HttpServletRequest request, HttpServletResponse response, Model model) {
 
-        //if (request.getMethod().equals("POST")) {
         ArrayList<String> userSignInfo = new ArrayList<>();
         String firstname = request.getParameter("firstname").trim();
         String lastname = request.getParameter("lastname").trim();
@@ -89,13 +87,11 @@ public class LoginController {
             return "create_account_page";
         }
 
-
         userSignInfo.add(firstname);
         userSignInfo.add(lastname);
         userSignInfo.add(username);
         userSignInfo.add(phone);
         userSignInfo.add(password);
-
 
         if (!UserDatabase.userExist(username)) {
             int user_id = UserDatabase.insertUser1(userSignInfo);

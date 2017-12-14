@@ -40,7 +40,8 @@ public class GroupController {
         HashMap<String, String> resultArray = new HashMap<>();
         Gson gson = new Gson();
         if (CommonModel.isLoggedIn(request, session)) {
-            if (request.getMethod().equals("POST") && request.getParameter("group_name") != null && request.getParameter("group_password") != null) {
+            if (request.getMethod().equals("POST") && request.getParameter("group_name") != null
+                    && request.getParameter("group_password") != null) {
                 String groupname = request.getParameter("group_name");
                 String groupPassword = request.getParameter("group_password");
                 int userID = (int) session.getAttribute("user_id");
@@ -293,8 +294,6 @@ public class GroupController {
             resultArray.put("title", "Failed");
             resultArray.put("content", "Update failed!");
         }
-
-        System.out.println(gson.toJson(resultArray).toString());
         return gson.toJson(resultArray);
     }
 
@@ -304,7 +303,8 @@ public class GroupController {
         System.out.println(" in /group/submit_join_group");
         HashMap<String, String> resultArray = new HashMap<>();
         Gson gson = new Gson();
-        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST") && request.getParameter("group_name") != null && request.getParameter("group_password") != null) {
+        if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST")
+                && request.getParameter("group_name") != null && request.getParameter("group_password") != null) {
             String group_name = request.getParameter("group_name");
             String group_password = request.getParameter("group_password");
             int userId = (int) session.getAttribute("user_id");
@@ -331,7 +331,9 @@ public class GroupController {
                                 String inviter = CommonModel.getFullName(String.valueOf(invite.getFromUser()));
                                 resultArray.put("status", "success");
                                 resultArray.put("invitation", "yes");
-                                resultArray.put("content", "You have an invitation by <b>" + inviter + "</b> with the code: <b>" + code + "</b> and access level:  <b>" + GroupModel.getPermissionString(permission) + "</b>");
+                                resultArray.put("content", "You have an invitation by <b>" +
+                                        inviter + "</b> with the code: <b>" + code + "</b> and access level:  <b>" +
+                                        GroupModel.getPermissionString(permission) + "</b>");
                                 resultArray.put("group_id", String.valueOf(group_id));
                                 resultArray.put("code", code);
                                 resultArray.put("inviter", inviter);
@@ -342,7 +344,8 @@ public class GroupController {
                                 GroupModel.addMember(userId, group_id, 1);
                                 resultArray.put("status", "success");
                                 resultArray.put("invitation", "no");
-                                resultArray.put("content", "you joined group " + group_name + " successfully with GUEST permission");
+                                resultArray.put("content", "you joined group " +
+                                        group_name + " successfully with GUEST permission");
                                 resultArray.put("group_id", String.valueOf(group_id));
                             }
                         } else {

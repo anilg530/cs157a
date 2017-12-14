@@ -51,30 +51,6 @@ public class FileController {
         }
     }
 
-    @RequestMapping(value = {"file/ajax_test"})
-    @ResponseBody
-    public String ajax_test(HttpServletRequest request, HttpSession session, Model model) {
-        if (request.getMethod().equals("POST")) {
-            String test = request.getParameter("bob");
-            System.out.println(test);
-        }
-        HashMap<String, String> resultArray = new HashMap<>();
-        resultArray.put("status", "success");
-        resultArray.put("hello", "there");
-        resultArray.put("toastr", "this is a toast message");
-        model.addAttribute("extra_attribute", "this is an extra attribute");
-        Gson gson = new Gson();
-        System.out.println(gson.toJson(resultArray));
-        return gson.toJson(resultArray);
-    }
-
-    @RequestMapping(value = {"file/test"})
-    public String test(HttpServletRequest request, HttpSession session, Model model) {
-        String test = MessagingModel.getJSONUserSuggestionSearchByEmailFormalName(null, "");
-        System.out.println(test);
-        return "";
-    }
-
     @RequestMapping(value = {"file/refresh_files_table"})
     public String refresh_files_table(HttpServletRequest request, HttpSession session, Model model) {
         if (CommonModel.isLoggedIn(request, session)) {
