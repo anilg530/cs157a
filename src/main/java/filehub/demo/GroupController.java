@@ -84,9 +84,6 @@ public class GroupController {
             int groupOwner = Integer.valueOf(request.getParameter("groupOwner").trim());
             int groupId = Integer.valueOf(request.getParameter("groupId").trim());
 
-            System.out.println("group owner = " + groupOwner);
-            System.out.println("group id = " + groupId);
-
             if (GroupModel.deleteGroup(groupOwner, groupId)) {
                 resultArray.put("status", "success");
                 resultArray.put("title", "Success");
@@ -101,8 +98,6 @@ public class GroupController {
             resultArray.put("title", "Failed");
             resultArray.put("content", "Deleted failed!");
         }
-
-        System.out.println(gson.toJson(resultArray).toString());
         return gson.toJson(resultArray);
     }
 
@@ -139,10 +134,6 @@ public class GroupController {
             ArrayList<Groups> groups = GroupModel.getAllGroups((int) session.getAttribute("user_id"));
             model.addAttribute("user_id", (int) session.getAttribute("user_id"));
             model.addAttribute("groups", groups);
-            System.out.println("/group/refresh_group_table");
-            for (Groups g : groups) {
-                System.out.println("name " + g.getGroup_name());
-            }
             return "includes_group_table";
         } else {
             return null;
@@ -291,7 +282,6 @@ public class GroupController {
     @RequestMapping(value = {"/group/submit_join_group"})
     @ResponseBody
     public String submitJoinGroup(HttpServletRequest request, HttpSession session) {
-        System.out.println(" in /group/submit_join_group");
         HashMap<String, String> resultArray = new HashMap<>();
         Gson gson = new Gson();
         if (CommonModel.isLoggedIn(request, session) && request.getMethod().equals("POST")
