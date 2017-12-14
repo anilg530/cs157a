@@ -1,7 +1,5 @@
 package filehub.demo;
 
-import com.google.gson.Gson;
-
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -14,7 +12,7 @@ public class AdminModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT file_upload_log.*, user.first_name, user.last_name " +
@@ -65,7 +63,7 @@ public class AdminModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT user_issues.*, user.first_name, user.last_name " +

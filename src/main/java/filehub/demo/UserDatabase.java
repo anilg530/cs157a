@@ -1,11 +1,5 @@
 package filehub.demo;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.swing.tree.RowMapper;
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -27,7 +21,7 @@ public class UserDatabase {
 
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -76,7 +70,7 @@ public class UserDatabase {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT id FROM user WHERE (username = ?)";
@@ -128,7 +122,7 @@ public class UserDatabase {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "INSERT INTO user (first_name,last_name,username,cellphone,password,login_status)" +
@@ -175,7 +169,7 @@ public class UserDatabase {
 
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "UPDATE user SET username = ?, password = ? WHERE (id = ?)";
@@ -218,7 +212,7 @@ public class UserDatabase {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT * FROM user WHERE id = ?";
@@ -264,7 +258,7 @@ public class UserDatabase {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT * FROM user WHERE (username = ? AND password = ?)";

@@ -1,11 +1,10 @@
 package filehub.demo;
 
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -13,16 +12,32 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
+@Component
 public class CommonModel {
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://p3plcpnl0569.prod.phx3.secureserver.net:3306/cs157a";
-    static final String USER = "cs157a_main";
-    static final String PASS = "cs157a_db";
+    static String JDBC_DRIVER;
+    static String DB_SERVER;
+    static String DB_USER;
+    static String DB_PASS;
 
-//    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-//    static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/cs157a?useSSL=false";
-//    static final String USER = "root";
-//    static final String PASS = "1234";
+    @Value("${JDBC_DRIVER}")
+    public void jdbcDriver(String JDBC_DRIVER) {
+        this.JDBC_DRIVER = JDBC_DRIVER;
+    }
+
+    @Value("${DB_SERVER}")
+    public void jdbcServer(String DB_SERVER) {
+        this.DB_SERVER = DB_SERVER;
+    }
+
+    @Value("${DB_USER}")
+    public void jdbcUser(String DB_USER) {
+        this.DB_USER = DB_USER;
+    }
+
+    @Value("${DB_PASS}")
+    public void jdbcPassword(String DB_PASS) {
+        this.DB_PASS = DB_PASS;
+    }
 
     public static Boolean isLettersNumbersUnderscoreOnlyString(String string) {
         String regex = "^[a-zA-Z0-9_]*$";
@@ -89,7 +104,7 @@ public class CommonModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT first_name,last_name FROM user WHERE (id = ? AND login_status = 'Active')";
@@ -138,8 +153,8 @@ public class CommonModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL,
-                    CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER,
+                    CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT * FROM group_members WHERE (user_id = ? AND group_id = ?)";
@@ -184,7 +199,7 @@ public class CommonModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT group_name FROM groups WHERE id = ?";
@@ -227,7 +242,7 @@ public class CommonModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT url_code FROM file_url WHERE (url_code = ?)";
@@ -302,7 +317,7 @@ public class CommonModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT username FROM user WHERE (id = ?)";
@@ -346,7 +361,7 @@ public class CommonModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT id FROM user WHERE (username = ?)";
@@ -390,7 +405,7 @@ public class CommonModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT id FROM user WHERE (username = ?)";
@@ -432,7 +447,7 @@ public class CommonModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT DISTINCT group_members.group_id FROM group_members" +
@@ -479,7 +494,7 @@ public class CommonModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT user_permission FROM group_members WHERE (user_id = ? AND group_id = ?)";
@@ -523,7 +538,7 @@ public class CommonModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT role FROM user WHERE (id = ?)";
@@ -566,7 +581,7 @@ public class CommonModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT user_permissions_type.permission_formal FROM group_members JOIN user_permissions_type ON user_permissions_type.id=group_members.user_permission WHERE (group_members.user_id = ? AND group_members.group_id = ?)";
@@ -610,7 +625,7 @@ public class CommonModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT * FROM user_permissions_type WHERE id!='4'";

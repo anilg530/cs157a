@@ -2,14 +2,8 @@ package filehub.demo;
 
 import com.google.gson.Gson;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date;
 
 public class MessagingModel {
 
@@ -21,7 +15,7 @@ public class MessagingModel {
             PreparedStatement pstmt = null;
             try {
                 Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-                conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+                conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
                 String myQuery;
                 myQuery = "SELECT group_members.user_id,user.first_name,user.last_name FROM group_members " +
@@ -71,7 +65,7 @@ public class MessagingModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "INSERT INTO user_messages(message,message_status,sent_to,sent_from) values(?, ?, ?, ?) ";
@@ -115,7 +109,7 @@ public class MessagingModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "INSERT INTO user_issues(issues_by,issues_message) values(?, ?) ";
@@ -157,7 +151,7 @@ public class MessagingModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "INSERT INTO user_report(user_reported,reported_by,report_message) values(?, ?, ?) ";
@@ -201,7 +195,7 @@ public class MessagingModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT count(id) FROM user_messages WHERE (sent_to = ? AND message_status = ?)";
@@ -243,7 +237,7 @@ public class MessagingModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "UPDATE user_messages SET message_status = ?" +
@@ -284,7 +278,7 @@ public class MessagingModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT user_messages.message,user_messages.sent_from,user_messages.message_status,user_messages.sent_on,user.first_name,user.last_name FROM user_messages" +
@@ -337,7 +331,7 @@ public class MessagingModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT user_messages.message,user_messages.sent_to,user_messages.message_status,user_messages.sent_on,user.first_name,user.last_name FROM user_messages" +
@@ -398,7 +392,7 @@ public class MessagingModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT username,first_name,last_name FROM user " +

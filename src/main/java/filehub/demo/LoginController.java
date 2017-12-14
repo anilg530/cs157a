@@ -48,12 +48,9 @@ public class LoginController {
 
     @RequestMapping(value = {"/"})
     public String homepage(HttpServletRequest request, HttpSession session, Model model) {
-
         model.addAttribute("page_name", "FileHub Login Page");
         return "welcome_page";
-
     }
-
 
     @RequestMapping(value = {"/logout"})
     public void logout(HttpServletResponse response, HttpSession session) {

@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -53,7 +52,7 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT file_path FROM file_data WHERE (id = ? AND file_status = 'Active')";
@@ -96,7 +95,7 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT * FROM file_data WHERE (file_path = ? AND file_status = 'Active' AND type='Folder')";
@@ -145,7 +144,7 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
             String myQuery;
             myQuery = "SELECT * FROM file_data WHERE (group_id = ? AND folder_path = ? AND file_status = 'Active' AND type = 'File')";
             pstmt = conn.prepareStatement(myQuery);
@@ -309,7 +308,7 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT id FROM file_data WHERE (group_id = ? AND file_path = ? AND file_status = ?)";
@@ -356,7 +355,7 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT id FROM file_data WHERE (group_id = ? AND folder_path = ? AND file_name = ? AND file_status = ?)";
@@ -404,7 +403,7 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT id FROM file_data WHERE (group_id = ? AND folder_path = ? AND file_name = ? AND file_status = ? AND id != ?)";
@@ -471,7 +470,7 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "INSERT INTO file_data(group_id,file_name,folder_Path,file_path,file_status,type,uploaded_by)" +
@@ -545,7 +544,7 @@ public class FileModel {
                 try {
                     Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-                    conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+                    conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
                     stmt = conn.createStatement();
                     String myQuery;
@@ -618,7 +617,7 @@ public class FileModel {
                 try {
                     Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-                    conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+                    conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
                     stmt = conn.createStatement();
                     String myQuery;
@@ -662,7 +661,7 @@ public class FileModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -749,7 +748,7 @@ public class FileModel {
                 try {
                     Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-                    conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+                    conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
                     stmt = conn.createStatement();
                     String myQuery;
@@ -810,7 +809,7 @@ public class FileModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -852,7 +851,7 @@ public class FileModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -898,7 +897,7 @@ public class FileModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -942,7 +941,7 @@ public class FileModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             stmt = conn.createStatement();
             String myQuery;
@@ -1004,7 +1003,7 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "UPDATE file_data SET notes = ?,notes_by = ? " +
@@ -1088,7 +1087,7 @@ public class FileModel {
             PreparedStatement pstmt = null;
             try {
                 Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-                conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+                conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
                 String myQuery;
                 myQuery = "UPDATE file_data SET file_status = ? , modified_by = ? " +
@@ -1249,8 +1248,7 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "INSERT INTO file_upload_log(action_by,action_info) values(?, ?) ";
@@ -1291,8 +1289,7 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT url_code FROM file_url WHERE (file_id = ?)";
@@ -1337,7 +1334,7 @@ public class FileModel {
             PreparedStatement pstmt = null;
             try {
                 Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-                conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+                conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
                 String myQuery;
                 myQuery = "SELECT * FROM file_url WHERE file_id = ?";
@@ -1376,7 +1373,7 @@ public class FileModel {
             PreparedStatement pstmt = null;
             try {
                 Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-                conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+                conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
                 String myQuery;
                 myQuery = "INSERT INTO file_url(url_code,file_id) values(?, ?) ";
@@ -1419,7 +1416,7 @@ public class FileModel {
         PreparedStatement pstmt = null;
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT url_code FROM file_url WHERE (url_code = ?)";
@@ -1459,7 +1456,7 @@ public class FileModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "SELECT file_id FROM file_url WHERE (url_code = ?)";
@@ -1501,7 +1498,7 @@ public class FileModel {
         try {
             Class.forName(CommonModel.JDBC_DRIVER).newInstance();
 
-            conn = DriverManager.getConnection(CommonModel.DB_URL, CommonModel.USER, CommonModel.PASS);
+            conn = DriverManager.getConnection(CommonModel.DB_SERVER, CommonModel.DB_USER, CommonModel.DB_PASS);
 
             String myQuery;
             myQuery = "DELETE FROM file_url WHERE (file_id = ?)";
