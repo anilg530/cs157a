@@ -406,7 +406,8 @@ public class MessagingModel {
             if (sqlResult != null) {
                 if (sqlResult.isBeforeFirst()) {
                     while (sqlResult.next()) {
-                        Messaging_autocomplete_suggestions temp = new Messaging_autocomplete_suggestions(sqlResult.getString(2) + " " + sqlResult.getString(3), sqlResult.getString(1));
+                        Messaging_autocomplete_suggestions temp = new Messaging_autocomplete_suggestions(sqlResult.getString(2)
+                                + " " + sqlResult.getString(3), sqlResult.getString(1));
                         resultArray.suggestions.add(temp);
                     }
                 }

@@ -65,7 +65,8 @@
 
                     <a class="btn no-padding" href="javascript:;"
                        data-attr="<% out.print(userId); %>" data-attr2="<% out.print(fullName); %>"
-                       data-attr3="<% out.print(group_id); %>" data-attr4="<% out.print(GroupModel.getGroupName(group_id)); %>"
+                       data-attr3="<% out.print(group_id); %>"
+                       data-attr4="<% out.print(GroupModel.getGroupName(group_id)); %>"
                        onclick="userDelete(this);" data-toggle="tooltip" data-original-title="Delete"><i
                             class="fa fa-trash-o"></i></a>
 
@@ -85,7 +86,7 @@
 </div>
 
 <script>
-    function userDelete(object){
+    function userDelete(object) {
         $(object).tooltip('hide');
 
         var userId = $(object).attr('data-attr');
@@ -114,17 +115,17 @@
                             url: '/group/members/delete',
                             dataType: 'json',
                             data: {
-                                groupId:groupId,
-                                userId:userId,
-                                fullName:fullName
+                                groupId: groupId,
+                                userId: userId,
+                                fullName: fullName
                             },
                             beforeSend: function () {
                             },
                             success: function (response) {
-                                if(response.status == 'success'){
+                                if (response.status == 'success') {
                                     successToast(response.title, response.content);
                                     window.location.reload();
-                                }else{
+                                } else {
                                     errorToast(response.title, response.content);
                                 }
                             },
